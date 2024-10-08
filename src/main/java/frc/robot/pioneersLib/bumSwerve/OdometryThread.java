@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
-public class HybridOdometryThread extends Thread {
+public class OdometryThread extends Thread {
 
 	private final Lock signalsLock = new ReentrantLock();
 	private List<BaseStatusSignal> phoenixSignals = new ArrayList<>();
@@ -27,16 +27,16 @@ public class HybridOdometryThread extends Thread {
 	private static final int PHOENIX_SIGNAL = 0;
 	private static final int POLLED_SIGNAL = 1;
 
-	private static HybridOdometryThread instance = null;
+	private static OdometryThread instance = null;
 
-	public static HybridOdometryThread getInstance() {
+	public static OdometryThread getInstance() {
 		if (instance == null) {
-			instance = new HybridOdometryThread();
+			instance = new OdometryThread();
 		}
 		return instance;
 	}
 
-	private HybridOdometryThread() {
+	private OdometryThread() {
 		setName("HybridOdometryThread");
 		setDaemon(true);
 	}
@@ -64,7 +64,7 @@ public class HybridOdometryThread extends Thread {
 		}
 		return queue;
 	}
-
+	
 	public Queue<Double> registerSignal(Supplier<OptionalDouble> signal) {
 		Queue<Double> queue = new ArrayBlockingQueue<>(
 			20

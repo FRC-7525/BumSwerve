@@ -25,8 +25,8 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
         gyro = new ADIS16448_IMU();
         gyroController = new ADIS16448_IMUSim(gyro);
 
-        yawTimestampQueue = HybridOdometryThread.getInstance().makeTimestampQueue();
-        yawPositionQueue = HybridOdometryThread.getInstance()
+        yawTimestampQueue = OdometryThread.getInstance().makeTimestampQueue();
+        yawPositionQueue = OdometryThread.getInstance()
                 .registerSignal(() -> {
                     if (gyro.isConnected()) {
                         return OptionalDouble.of(gyro.getAngle());
