@@ -53,7 +53,7 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
     public void updateInputs(SwerveGyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
         inputs.yawPosition = Rotation2d.fromDegrees(gyro.getAngle());
-        inputs.yawVelocityRotPerSec = gyro.getRate()/360;
+        inputs.yawVelocityRPS = gyro.getRate()/360;
 
         if (yawTimestampQueue != null && yawPositionQueue != null) {
             inputs.odometryYawTimestamps = yawTimestampQueue

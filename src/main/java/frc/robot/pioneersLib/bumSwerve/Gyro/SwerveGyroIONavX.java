@@ -50,7 +50,7 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 	public void updateInputs(SwerveGyroIOInputs inputs) {
 		inputs.connected = navx.isConnected();
 		inputs.yawPosition = Rotation2d.fromRadians(navx.getRotation3d().minus(offset).getAngle());
-		inputs.yawVelocityRotPerSec = navx.getRate()/360;
+		inputs.yawVelocityRPS = navx.getRate()/360;
 
 		if (yawTimestampQueue != null && yawPositionQueue != null) {
 			inputs.odometryYawTimestamps = yawTimestampQueue
