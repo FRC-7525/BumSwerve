@@ -4,6 +4,7 @@ import java.util.OptionalDouble;
 import java.util.Queue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
@@ -47,6 +48,13 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
         gyroController.setGyroAngleX(0);
         gyroController.setGyroAngleY(0);
         gyroController.setGyroAngleZ(0);
+    }
+    
+    // TODO: Set these angles (and prob rates) based on module states
+    public void setGyroAngle(Rotation3d rotation) {
+        gyroController.setGyroAngleX(rotation.getX());
+        gyroController.setGyroAngleY(rotation.getY());
+        gyroController.setGyroAngleZ(rotation.getZ());
     }
 
     @Override
