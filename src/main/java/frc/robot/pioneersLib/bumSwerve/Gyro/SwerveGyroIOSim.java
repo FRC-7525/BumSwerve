@@ -15,6 +15,8 @@ import frc.robot.pioneersLib.bumSwerve.OdometryThread;
  * robot rotation. Everything is in deg
  */
 
+ // TODO: DELETE THIS LAYER IT'S LOWKEY USELESS
+
 public class SwerveGyroIOSim implements SwerveGyroIO {
     // Most comparable to NavX out of what wpilib sim offers
     private final ADIS16448_IMU gyro;

@@ -1,5 +1,6 @@
 package frc.robot.pioneersLib.bumSwerve;
 
+import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIO;
 
 public class SwerveModule {
@@ -7,10 +8,12 @@ public class SwerveModule {
 
     private SwerveMotorIO driveMotor;
     private SwerveMotorIO turnMotor;
+    private SwerveAbsoluteEncoderIO absoluteEncoder;
 
-    public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor) {
+    public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder) {
         this.driveMotor = driveMotor;
         this.turnMotor = turnMotor;
+        this.absoluteEncoder = absoluteEncoder;
     }
 
     public SwerveMotorIO getDriveMotor() {
@@ -19,5 +22,9 @@ public class SwerveModule {
     
     public SwerveMotorIO getTurnMotor() {
         return turnMotor;
+    }
+
+    public SwerveAbsoluteEncoderIO getEncoder() {
+        return absoluteEncoder;
     }
 }
