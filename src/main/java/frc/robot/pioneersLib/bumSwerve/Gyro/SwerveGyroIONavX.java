@@ -19,7 +19,7 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 
 	private Rotation3d offset;
 	/**
-	 * Creates a new NavX objet to take high freq odo data
+	 * Creates a new NavX objet that takes high frequency odometry measurments
 	 */
 	public SwerveGyroIONavX() {
 		// TODO: Change it so u don't have to plug into specific usb port
