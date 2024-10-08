@@ -72,6 +72,8 @@ public interface SwerveMotorIO {
      */
     public default void configurePID(double kP, double kI, double kD) {}
 
+    public default void configureFF(double kS, double kV) {}
+
     // TODO: Make this a function in module.java as it should be used in sim & does not need to be isolated to motors
     /**
      * Sets a feed forward controller based on several real-world parameters. Not used in SIM

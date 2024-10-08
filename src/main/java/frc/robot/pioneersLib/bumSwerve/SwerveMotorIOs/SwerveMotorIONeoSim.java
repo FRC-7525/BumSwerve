@@ -83,7 +83,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         controller.setD(kD, 0);
     }
     
-    public void configureFF(double kV) {
+    @Override
+    public void configureFF(double kS, double kV) {
         // TODO: What ff value is this???? I'm assuming it's kV or the sum of kS and kV??
         controller.setFF(kV, 0);
     }
