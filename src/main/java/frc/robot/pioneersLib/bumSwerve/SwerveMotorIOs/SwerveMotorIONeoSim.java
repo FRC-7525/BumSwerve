@@ -22,21 +22,19 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     private CANSparkMax dummySpark;
     private SparkPIDController controller;
     private RelativeEncoder encoder;
-    private DCMotorSim motorSim;
 
-    private double gearRatio;
     private boolean isDrive;
 
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
+
+    // TODO: Do sum about rev sim being ass
 
     public SwerveMotorIONeoSim(int id, boolean isDrive, double gearRatio) {
         revSim = REVPhysicsSim.getInstance();
         dummySpark = new CANSparkMax(id, MotorType.kBrushless);
         controller = dummySpark.getPIDController();
 
-        motorSim = new DCMotorSim(DCMotor.getNEO(1), gearRatio, isDrive ? 0.000520786 : 0.00062093);
-        motorSim.update(0.02);
         encoder = dummySpark.getEncoder();
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
