@@ -1,4 +1,4 @@
-package frc.robot.pioneersLib.bumSwerve;
+package frc.robot.pioneersLib.bumSwerve.Gyro;
 
 import java.util.OptionalDouble;
 import java.util.Queue;
@@ -6,6 +6,7 @@ import java.util.Queue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
+import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 
 /*
  * IO implementation for the ADIS16448 IMU, allows for gyro simulation
@@ -20,7 +21,9 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
 
     private final Queue<Double> yawPositionQueue;
     private final Queue<Double> yawTimestampQueue;
-
+    /**
+     * Creates a new simulated gyro object using the ADIS16448 IMU Sim
+     */
     public SwerveGyroIOSim() {
         gyro = new ADIS16448_IMU();
         gyroController = new ADIS16448_IMUSim(gyro);
@@ -36,10 +39,11 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
                 });
     }
 
+    /**
+     * Zeroes simulation gyro's rotation on all axes directly
+     */
     @Override
     public void zero() {
-        // Zero the gyro, unclear what axis is what. Why don't ppl use pitch roll and
-        // yaw :(
         gyroController.setGyroAngleX(0);
         gyroController.setGyroAngleY(0);
         gyroController.setGyroAngleZ(0);

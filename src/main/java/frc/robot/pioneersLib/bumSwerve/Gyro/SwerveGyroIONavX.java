@@ -1,10 +1,12 @@
-package frc.robot.pioneersLib.bumSwerve;
+package frc.robot.pioneersLib.bumSwerve.Gyro;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SerialPort;
+import frc.robot.pioneersLib.bumSwerve.OdometryThread;
+
 import java.util.OptionalDouble;
 import java.util.Queue;
 
@@ -16,7 +18,9 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 	private final Queue<Double> yawTimestampQueue;
 
 	private Rotation3d offset;
-
+	/**
+	 * Creates a new NavX objet to take high freq odo data
+	 */
 	public SwerveGyroIONavX() {
 		// TODO: Change it so u don't have to plug into specific usb port
 		navx = new AHRS(SerialPort.Port.kUSB1);
@@ -34,6 +38,9 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 			});
 	}
 
+	/**
+	 * Zeroes the gyro yaw position with an offset
+	 */
 	@Override
 	public void zero() {
 		this.offset = navx.getRotation3d();
