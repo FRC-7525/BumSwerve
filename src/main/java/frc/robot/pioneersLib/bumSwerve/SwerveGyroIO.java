@@ -24,7 +24,7 @@ public interface SwerveGyroIO {
 		public Rotation2d yawPosition = new Rotation2d();
 		public double[] odometryYawTimestamps = new double[] {};
 		public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
-		public double yawVelocityDegPerSec = 0.0;
+		public double yawVelocityRotPerSec = 0.0;
 	}
 
 	public default void zeryGyroscope() {}
