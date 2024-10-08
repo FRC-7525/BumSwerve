@@ -27,7 +27,7 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 		yawPositionQueue = HybridOdometryThread.getInstance()
 			.registerSignal(() -> {
 				if (navx.isConnected()) {
-					return OptionalDouble.of(navx.getRotation3d().minus(offset).getAngle());
+					return OptionalDouble.of(Units.degreesToRadians(navx.getRotation3d().minus(offset).getAngle()));
 				} else {
 					return OptionalDouble.empty();
 				}
@@ -43,8 +43,7 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 	public void updateInputs(SwerveGyroIOInputs inputs) {
 		inputs.connected = navx.isConnected();
 		inputs.yawPosition = Rotation2d.fromRadians(navx.getRotation3d().minus(offset).getAngle());
-		inputs.yawVelocityRadPerSec = Units.degreesToRadians(navx.getRate());
-		inputs.yawPosDeg = Units.radiansToDegrees(navx.getRotation3d().minus(offset).getAngle());
+		inputs.yawVelocityDegPerSec = navx.getRate();
 
 		if (yawTimestampQueue != null && yawPositionQueue != null) {
 			inputs.odometryYawTimestamps = yawTimestampQueue

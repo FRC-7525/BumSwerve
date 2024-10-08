@@ -4,14 +4,13 @@ import java.util.OptionalDouble;
 import java.util.Queue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 
 /*
  * IO implementation for the ADIS16448 IMU, allows for gyro simulation
  * using a wpilib sim so we don't have to rely on module positions for
- * robot rotation
+ * robot rotation. Everything is in deg
  */
 
 public class SwerveGyroIOSim implements SwerveGyroIO {
@@ -30,7 +29,7 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
         yawPositionQueue = HybridOdometryThread.getInstance()
                 .registerSignal(() -> {
                     if (gyro.isConnected()) {
-                        return OptionalDouble.of(Units.degreesToRadians(gyro.getAngle()));
+                        return OptionalDouble.of(gyro.getAngle());
                     } else {
                         return OptionalDouble.empty();
                     }
@@ -50,8 +49,7 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
     public void updateInputs(SwerveGyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
         inputs.yawPosition = Rotation2d.fromDegrees(gyro.getAngle());
-        inputs.yawVelocityRadPerSec = Units.degreesToRadians(gyro.getRate());
-        inputs.yawPosDeg = gyro.getAngle();
+        inputs.yawVelocityDegPerSec = gyro.getRate();
 
         if (yawTimestampQueue != null && yawPositionQueue != null) {
             inputs.odometryYawTimestamps = yawTimestampQueue
