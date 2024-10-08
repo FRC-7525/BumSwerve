@@ -43,6 +43,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
         // Take into account gear ratio
         FeedbackConfigs feedback = new FeedbackConfigs();
+        // TODO: 1 or gear ratio? do u need to use gear ratio if u already do in the sim configs?
         feedback.SensorToMechanismRatio = gearRatio;
         configurator.apply(feedback);
 
@@ -93,9 +94,16 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/60);
     }
 
+    /**
+     * Enable or disable brake mode on the motor
+     * <br></br>
+     * Default is coast
+     */
     @Override
-    public void setBrakeMode(boolean enable) {
-        dummyTalon.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    public void setBrakeMode(boolean enableBreak) {
+        dummyTalon.setNeutralMode(enableBreak ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
+    
+    
 
 }

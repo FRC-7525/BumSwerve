@@ -99,9 +99,10 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 
         feedbackController = new PIDController(0, 0, 0);
 
-        if (isDrive) {
-            setFeedForward(OPTIMAL_VOLTAGE, MAX_LINEAR_SPEED, WHEEL_GRIP_COEFFICIENT_OF_FRICTION);
-        }
+        // See IO for why it's commented, just use an empty simpleFF and have a configure FF function in the IO that u feed the output of the current SetFF into bc setFF only calculates kV
+        // if (isDrive) {
+        //     setFeedForward(OPTIMAL_VOLTAGE, MAX_LINEAR_SPEED, WHEEL_GRIP_COEFFICIENT_OF_FRICTION);
+        // }
     }
 
     @Override
@@ -155,14 +156,15 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         feedbackController.setPID(kP, kI, kD);
     }
 
-    @Override
-    public void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {  
-        double kv = optimalVoltage / maxLinearSpeed;
-        // ^ Volt-seconds per meter (max voltage divided by max speed)
-        double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
-        // ^ Volt-seconds^2 per meter (max voltage divided by max accel)
-        drivFeedforward = new SimpleMotorFeedforward(0, kv, ka);
-    }
+    // See IO for why it's commented
+    // @Override
+    // public void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {  
+    //     double kv = optimalVoltage / maxLinearSpeed;
+    //     // ^ Volt-seconds per meter (max voltage divided by max speed)
+    //     double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
+    //     // ^ Volt-seconds^2 per meter (max voltage divided by max accel)
+    //     drivFeedforward = new SimpleMotorFeedforward(0, kv, ka);
+    // }
 
     @Override
 	public double calculateMaxAcceleration(double cof) {

@@ -72,6 +72,7 @@ public interface SwerveMotorIO {
      */
     public default void configurePID(double kP, double kI, double kD) {}
 
+    // TODO: Make thisa function in module.java as it should be used in sim & does not need to be isolated to motors
     /**
      * Sets a feed forward controller based on several real-world parameters. Not used in SIM
      * <br></br>
@@ -80,7 +81,7 @@ public interface SwerveMotorIO {
      * @param maxLinearSpeed In meters
      * @param wheelGripCoefficientOfFriction
      */
-    public default void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {}
+    // public default void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {}
 
     /**
      * Calculates the max acceleration of the wheel given the coefficient of friction and using gravity
