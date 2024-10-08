@@ -36,13 +36,13 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private double gearing;
     private boolean isDrive;
     
-    public SwerveMotorIOKrakenSim(int placeholderCanID, boolean isDrive, double gearRatio) {
+    public SwerveMotorIOKrakenSim(int placeholderCanID, boolean isDrive, double gearRatio, double motorMOI) {
         dummyTalon = new TalonFX(placeholderCanID);
         talonController = dummyTalon.getSimState();    
         configurator = dummyTalon.getConfigurator();
 
-        // Note: These MOI values are for L3+ SDS Swerve Modules w kraken drive & neo turn
-        motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), gearing, isDrive ? 0.000520786 : 0.00062093);
+        // Note: These MOI values are for L3+ SDS Swerve Modules w kraken drive & neo turn isDrive ? 0.000520786 : 0.00062093
+        motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), gearing, motorMOI);
         motorSim.update(0.02);
 
         configs = new Slot0Configs();
