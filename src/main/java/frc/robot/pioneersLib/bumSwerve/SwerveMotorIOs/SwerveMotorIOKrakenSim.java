@@ -1,5 +1,10 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveMotorIOs;
 
+import java.security.PublicKey;
+import java.util.Queue;
+
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -9,8 +14,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 
 public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
@@ -20,6 +27,12 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
     private DCMotorSim motorSim;
     private Slot0Configs configs;
+
+    private StatusSignal<Double> motorPosition;
+    private StatusSignal<Double> motorVelocityRPS;
+
+    private final Queue<Double> timestampQueue;
+    private final Queue<Double> motorPositionQueue;
 
     private double gearing;
     private boolean isDrive;
@@ -47,9 +60,30 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         feedback.SensorToMechanismRatio = gearRatio;
         configurator.apply(feedback);
 
+        motorPosition = dummyTalon.getPosition();
+        motorVelocityRPS = dummyTalon.getVelocity();
+
+        timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
+		motorPositionQueue = OdometryThread.getInstance().registerSignal(dummyTalon, motorPosition);
+
         this.gearing = gearRatio;
         this.isDrive = isDrive;
     }  
+    
+    public void updateInputs(SwerveMotorIOInputs inputs) {
+        BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS);
+        
+        inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble());
+        inputs.motorVelocityRPS = dummyTalon.getVelocity().getValueAsDouble();
+        inputs.motorCurrentAmps = new double[] {0.0};
+
+        inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
+    }
+
+    public void updateOutputs(SwerveMotorIOOutputs Outputs) {
+        Outputs.motorAppliedVolts = talonController.getMotorVoltage();
+    }
 
     @Override
     public void setVoltage(double volts) {
