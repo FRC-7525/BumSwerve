@@ -2,6 +2,7 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotorIOs;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface SwerveMotorIO {
@@ -46,4 +47,22 @@ public interface SwerveMotorIO {
      * @param enable
      */
     public default void setBrakeMode(boolean enable) {}
+
+    /**
+     * Configure the PID values for the controller used for this motor
+     * @param kP
+     * @param kI
+     * @param kD
+     */
+    public default void configurePID(double kP, double kI, double kD) {}
+
+    /**
+     * Create a feed forward controller based on several real-world parameters. Not used in SIM
+     * <br></br>
+     * Controller is used only for drive
+     * @param optimalVoltage
+     * @param maxLinearSpeed In meters
+     * @param wheelGripCoefficientOfFriction
+     */
+    public default SimpleMotorFeedforward createFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {}
 }

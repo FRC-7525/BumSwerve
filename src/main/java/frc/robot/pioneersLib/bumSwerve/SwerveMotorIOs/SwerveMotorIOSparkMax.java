@@ -12,17 +12,22 @@ import com.kauailabs.navx.AHRSProtocol.TuningVar;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 
 
 public class SwerveMotorIOSparkMax implements SwerveMotorIO {
-    private CANSparkMax motor;
-    private RelativeEncoder encoder;
+    private final CANSparkMax motor;
+    private final RelativeEncoder encoder;
 
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
+
+    private PIDController feedbackController;
+    private SimpleMotorFeedforward drivFeedforward;
 
     //Default config values
     private final boolean MOTOR_INVERTED = true;
@@ -35,7 +40,12 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private final double RPS_CONVERSION_FACTOR = 60;
     private double MOTOR_GEAR_RATIO = 21.4286;
 
-    public SwerveMotorIOSparkMax(int canID) {
+    /**
+     * Creates a SparkMax Swerve Motor object pointing to the specified CAN ID. Also need to specify if the motor is used for turn or for drive
+     * @param canID
+     * @param isDrive
+     */
+    public SwerveMotorIOSparkMax(int canID, boolean isDrive) {
         motor = new CANSparkMax(canID, MotorType.kBrushless);
         encoder = motor.getEncoder();
 
@@ -70,6 +80,8 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
                 return OptionalDouble.of(0);
             }
         });
+
+        feedbackController = new PIDController(0, 0, 0);
     }
 
     @Override
@@ -80,6 +92,9 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / MOTOR_GEAR_RATIO)).toArray(Rotation2d[]::new);
+
+        timestampQueue.clear();
+        motorPositionQueue.clear();
     }
 
     @Override
@@ -96,6 +111,22 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     public void setBrakeMode(boolean enable) {
         motor.setIdleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
     }
+
+    @Override
+    public void configurePID(double kP, double kI, double kD) {
+        feedbackController.setPID(kP, kI, kD);
+    }
+
+    @Override
+    public SimpleMotorFeedforward createFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {  
+        double kv = optimalVoltage / maxLinearSpeed;
+        double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
+        return new SimpleMotorFeedforward(0, kv, ka);
+    }
+
+	public double calculateMaxAcceleration(double cof) {
+		return cof * 9.81;
+	}
 
     /**
      * Sets the can timeout in ms of the motor. If timeout is reached an error is produced
