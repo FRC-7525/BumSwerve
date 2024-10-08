@@ -65,9 +65,9 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         configurator.apply(configs);
     }
 
-    public void configureFF(double kV, double kS) {
-        configs.kV = kV;
+    public void configureFF(double kS, double kV) {
         configs.kS = kS;
+        configs.kV = kV;
 
         configurator.apply(configs);
     }
