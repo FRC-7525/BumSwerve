@@ -1,6 +1,5 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveMotorIOs;
 
-import java.security.PublicKey;
 import java.util.Queue;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -72,7 +71,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     
     public void updateInputs(SwerveMotorIOInputs inputs) {
         BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS);
-        
+
         inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble());
         inputs.motorVelocityRPS = dummyTalon.getVelocity().getValueAsDouble();
         inputs.motorCurrentAmps = new double[] {0.0};
