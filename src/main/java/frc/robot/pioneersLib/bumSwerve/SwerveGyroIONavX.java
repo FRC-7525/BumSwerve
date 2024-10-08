@@ -23,8 +23,8 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 		navx.reset();
 		offset = new Rotation3d();
 
-		yawTimestampQueue = HybridOdometryThread.getInstance().makeTimestampQueue();
-		yawPositionQueue = HybridOdometryThread.getInstance()
+		yawTimestampQueue = OdometryThread.getInstance().makeTimestampQueue();
+		yawPositionQueue = OdometryThread.getInstance()
 			.registerSignal(() -> {
 				if (navx.isConnected()) {
 					return OptionalDouble.of(navx.getRotation3d().minus(offset).getAngle());
