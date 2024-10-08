@@ -14,7 +14,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 
 public class SwerveMotorIONeoSim implements SwerveMotorIO {
@@ -37,6 +36,16 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
         encoder = dummySpark.getEncoder();
 
+        dummySpark.restoreFactoryDefaults();
+		dummySpark.setCANTimeout(0);
+
+		dummySpark.setInverted(false);
+		dummySpark.setSmartCurrentLimit(40);
+		dummySpark.enableVoltageCompensation(12);
+		dummySpark.setClosedLoopRampRate(0.15);
+
+        revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
+
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
         motorPositionQueue = OdometryThread.getInstance().registerSignal(() -> {
             double value = encoder.getPosition();
@@ -46,8 +55,6 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
                 return OptionalDouble.of(0);
             }
         });
-
-        revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
     }
 
     public void updateInputs(SwerveMotorIOInputs inputs) {
@@ -91,5 +98,9 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     public void setPosition(double positionDeg) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
         controller.setReference(positionDeg / 360, ControlType.kPosition, 0);
+    }
+
+    public void setInverted(boolean inverted) {
+        dummySpark.setInverted(inverted);
     }
 }
