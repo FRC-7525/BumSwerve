@@ -1,4 +1,4 @@
-package frc.robot.pioneersLib.bumSwerve.SwerveMotorIOs;
+package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
