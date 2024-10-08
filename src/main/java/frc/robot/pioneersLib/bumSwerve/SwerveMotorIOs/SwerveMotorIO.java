@@ -43,6 +43,22 @@ public interface SwerveMotorIO {
     public default void setVoltage(double volts) {}
 
     /**
+     * Use PID to move the motor to the specified setpoint
+     * <br></br>
+     * Only use with turn motors
+     * @param setpoint Position in degrees
+     */
+    public default void setPosition(double setpoint) {}
+
+    /**
+     * Use FeedForward/Feedback PID to get motor to specified velocity
+     * <br></br>
+     * Only use with drive motors
+     * @param speedpoint Velocity in RPS
+     */
+    public default void setVelocity(double speedpoint) {}
+
+    /**
      * Enable or disable brake mode on the motor
      * @param enable
      */
@@ -57,12 +73,21 @@ public interface SwerveMotorIO {
     public default void configurePID(double kP, double kI, double kD) {}
 
     /**
-     * Create a feed forward controller based on several real-world parameters. Not used in SIM
+     * Sets a feed forward controller based on several real-world parameters. Not used in SIM
      * <br></br>
      * Controller is used only for drive
      * @param optimalVoltage
      * @param maxLinearSpeed In meters
      * @param wheelGripCoefficientOfFriction
      */
-    public default SimpleMotorFeedforward createFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {}
+    public default void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {}
+
+    /**
+     * Calculates the max acceleration of the wheel given the coefficient of friction and using gravity
+     * @param cof Coefficient of friction
+     * @return Max acceleration of the wheel
+     */
+    public default double calculateMaxAcceleration(double cof) {
+        return 0.0;
+    }
 }

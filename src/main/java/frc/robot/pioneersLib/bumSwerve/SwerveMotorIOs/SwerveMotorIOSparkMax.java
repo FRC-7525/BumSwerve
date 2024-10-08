@@ -3,6 +3,8 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotorIOs;
 import java.util.OptionalDouble;
 import java.util.Queue;
 
+import org.opencv.features2d.Feature2D;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -15,11 +17,14 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 
 
 public class SwerveMotorIOSparkMax implements SwerveMotorIO {
+    private boolean isDrive;
+
     private final CANSparkMax motor;
     private final RelativeEncoder encoder;
 
@@ -30,6 +35,10 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private SimpleMotorFeedforward drivFeedforward;
 
     //Default config values
+    private final double OPTIMAL_VOLTAGE = 12;
+    private final double MAX_LINEAR_SPEED = Units.feetToMeters(19.6);
+    private final double WHEEL_GRIP_COEFFICIENT_OF_FRICTION = 1.19;
+
     private final boolean MOTOR_INVERTED = true;
     private final int SPARK_TIMEOUT_MS = 250;
     private final int MOTOR_CURRENT_LIMIT = 30;
@@ -37,7 +46,10 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private final int SPARK_MEASUREMENT_PERIOD_MS = 10;
     private final int SPARK_AVG_DEPTH = 2;
     private final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
+
     private final double RPS_CONVERSION_FACTOR = 60;
+    private final double DEGREE_CONVERSION_FACTOR = 360;
+
     private double MOTOR_GEAR_RATIO = 21.4286;
 
     /**
@@ -45,7 +57,11 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
      * @param canID
      * @param isDrive
      */
-    public SwerveMotorIOSparkMax(int canID, boolean isDrive) {
+    public SwerveMotorIOSparkMax(int canID, boolean isDrive, double gearRatio) {
+        this.isDrive = isDrive;
+
+        MOTOR_GEAR_RATIO = gearRatio;
+
         motor = new CANSparkMax(canID, MotorType.kBrushless);
         encoder = motor.getEncoder();
 
@@ -82,12 +98,16 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         });
 
         feedbackController = new PIDController(0, 0, 0);
+
+        if (isDrive) {
+            setFeedForward(OPTIMAL_VOLTAGE, MAX_LINEAR_SPEED, WHEEL_GRIP_COEFFICIENT_OF_FRICTION);
+        }
     }
 
     @Override
     public void updateInputs(SwerveMotorIOInputs inputs) {
-        inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition() / MOTOR_GEAR_RATIO);
-        inputs.motorVelocityRPS = (encoder.getPosition() / RPS_CONVERSION_FACTOR) / MOTOR_GEAR_RATIO;
+        inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition() / MOTOR_GEAR_RATIO); //TODO: Switch these out with getters
+        inputs.motorVelocityRPS = (encoder.getVelocity() / RPS_CONVERSION_FACTOR) / MOTOR_GEAR_RATIO;
         inputs.motorCurrentAmps = new double[] { motor.getOutputCurrent() };
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -108,6 +128,24 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     }
 
     @Override
+    public void setPosition(double setpoint) {
+        if (isDrive) throw new Error("Cannot use setPosition with a drive motor");
+
+        //TODO: Create getter for position
+        setVoltage(feedbackController.calculate(encoder.getPosition() * DEGREE_CONVERSION_FACTOR, setpoint));
+    }
+
+    @Override
+    public void setVelocity(double speedpoint) {
+        if (!isDrive) throw new Error("Cannot use setVelocity with a turn motor");
+
+        //TODO: Find better way to have constants
+        double velocityRPS = speedpoint / 2.0 /*TODO: Switch this out with a constant */;
+        //TODO: Create getter for velocity
+        setVoltage(drivFeedforward.calculate(velocityRPS) + feedbackController.calculate(encoder.getVelocity() / RPS_CONVERSION_FACTOR / MOTOR_GEAR_RATIO, velocityRPS));
+    }
+
+    @Override
     public void setBrakeMode(boolean enable) {
         motor.setIdleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
     }
@@ -118,12 +156,15 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     }
 
     @Override
-    public SimpleMotorFeedforward createFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {  
+    public void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {  
         double kv = optimalVoltage / maxLinearSpeed;
+        // ^ Volt-seconds per meter (max voltage divided by max speed)
         double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
-        return new SimpleMotorFeedforward(0, kv, ka);
+        // ^ Volt-seconds^2 per meter (max voltage divided by max accel)
+        drivFeedforward = new SimpleMotorFeedforward(0, kv, ka);
     }
 
+    @Override
 	public double calculateMaxAcceleration(double cof) {
 		return cof * 9.81;
 	}
@@ -204,13 +245,5 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
      */
     public void burnFlash() {
         motor.burnFlash();
-    }
-
-    /**
-     * Sets the gear ratio of the motor
-     * @param gearRatio
-     */
-    public void setGearRatio(double gearRatio) {
-        MOTOR_GEAR_RATIO = gearRatio;
     }
 }
