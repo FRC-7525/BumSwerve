@@ -64,7 +64,7 @@ public class OdometryThread extends Thread {
 		}
 		return queue;
 	}
-
+	
 	public Queue<Double> registerSignal(Supplier<OptionalDouble> signal) {
 		Queue<Double> queue = new ArrayBlockingQueue<>(
 			20

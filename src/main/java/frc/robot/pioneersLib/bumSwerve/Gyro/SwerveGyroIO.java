@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.pioneersLib.bumSwerve;
+package frc.robot.pioneersLib.bumSwerve.Gyro;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
@@ -24,13 +24,17 @@ public interface SwerveGyroIO {
 		public Rotation2d yawPosition = new Rotation2d();
 		public double[] odometryYawTimestamps = new double[] {};
 		public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
-		public double yawVelocityRadPerSec = 0.0;
-		public double yawPosDeg = 0.0;
+		public double yawVelocityRPS = 0.0;
 	}
 
-	public default void zeryGyroscope() {}
-
+	/**
+	 * Zero the gyro's rotation position
+	 */
 	public default void zero() {}
 
+	/**
+	 * Updates the inputs class with the current gyro data
+	 * @param inputs Inputs class that's automatically logged by Akit from the Autolog annotation
+	 */
 	public default void updateInputs(SwerveGyroIOInputs inputs) {}
 }
