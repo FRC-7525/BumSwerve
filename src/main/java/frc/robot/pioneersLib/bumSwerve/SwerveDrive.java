@@ -234,7 +234,7 @@ public class SwerveDrive {
 				// Use the angle delta from the kinematics and module deltas
 				Twist2d twist = kinematics.toTwist2d(moduleDeltas);
 				rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-				if (isSim) gyroIO.setAnlge(new Rotation3d(rawGyroRotation.getCos(), 0, rawGyroRotation.getSin()));
+				if (isSim) gyroIO.setAngle(new Rotation3d(rawGyroRotation.getCos(), 0, rawGyroRotation.getSin()));
 			}
 
 			// Apply update

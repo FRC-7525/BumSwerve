@@ -38,7 +38,7 @@ public interface SwerveGyroIO {
 	 * Used to set gyro rotation in sim
 	 * @param rotation Rotation3d object with x, y, z values
 	 */
-	public default void setAnlge(Rotation3d rotation) {}
+	public default void setAngle(Rotation3d rotation) {}
 
 	/**
 	 * Updates the inputs class with the current gyro data

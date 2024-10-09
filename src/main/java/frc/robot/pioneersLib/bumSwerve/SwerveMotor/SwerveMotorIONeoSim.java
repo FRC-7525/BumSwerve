@@ -12,6 +12,7 @@ import java.util.Queue;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
@@ -26,6 +27,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     private double positionError;
 
+    private PIDController turnController;
+
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
 
@@ -37,6 +40,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
 
         controller = dummySpark.getPIDController();
+        turnController = new PIDController(0, 0, 0);
 
         encoder = dummySpark.getEncoder();
         encoder.setPosition(0);
@@ -94,13 +98,18 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     @Override
     public void configurePID(double kP, double kI, double kD) {
+        if (isDrive) {
+            // slot 1 pos, 2 vel, 3 misc, 0 default??
+            controller.setP(kP, 0);
+            controller.setI(kI, 0);
+            controller.setD(kD, 0);
 
-        // slot 1 pos, 2 vel, 3 misc, 0 default??
-        controller.setP(kP, 0);
-        controller.setI(kI, 0);
-        controller.setD(kD, 0);
-
-        dummySpark.burnFlash();
+            dummySpark.burnFlash();
+        } else if (!isDrive) {
+            turnController.setP(kP);
+            turnController.setI(kI);
+            turnController.setD(kD);
+        }
     }
     
     @Override
@@ -118,10 +127,10 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     @Override
     public void setPosition(double positionDeg) {
+        revSim.run();
+
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
-        controller.setReference(positionDeg / 360, ControlType.kPosition, 0);
-        // System.out.println(positionDeg);
-        // System.out.println(positionError);
+        setVoltage(turnController.calculate(getAngle().getRotations(), positionDeg / 360));
         positionError = Math.abs(positionDeg/360 - encoder.getPosition());
     }
 
