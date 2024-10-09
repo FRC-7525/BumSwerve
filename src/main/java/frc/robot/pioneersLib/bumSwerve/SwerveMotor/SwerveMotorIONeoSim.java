@@ -34,6 +34,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     public SwerveMotorIONeoSim(int placeholderCANId, boolean isDrive, double gearRatio) {
         revSim = REVPhysicsSim.getInstance();
         dummySpark = new CANSparkMax(placeholderCANId, MotorType.kBrushless);
+        revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
+
         controller = dummySpark.getPIDController();
 
         encoder = dummySpark.getEncoder();
@@ -47,7 +49,9 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 		dummySpark.enableVoltageCompensation(12);
 		dummySpark.setClosedLoopRampRate(0.15);
 
-        revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
+        revSim.run();
+
+        dummySpark.burnFlash();
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
         motorPositionQueue = OdometryThread.getInstance().registerSignal(() -> {
@@ -61,7 +65,6 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     }
 
     public void updateInputs(SwerveMotorIOInputs inputs) {
-        revSim.run();
         inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition());
         inputs.motorCurrentAmps = new double[] {dummySpark.getOutputCurrent()};
         inputs.motorVelocityRPS = encoder.getVelocity();
@@ -79,8 +82,6 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         dummySpark.setVoltage(volts);
     }
 
-    // TODO: ADD IMPORTANT GETTERS PLS PLS PLS PLS PLS PLS
-
     @Override
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(encoder.getPosition());
@@ -95,15 +96,18 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     public void configurePID(double kP, double kI, double kD) {
 
         // slot 1 pos, 2 vel, 3 misc, 0 default??
-        controller.setP(kD, 0);
+        controller.setP(kP, 0);
         controller.setI(kI, 0);
         controller.setD(kD, 0);
+
+        dummySpark.burnFlash();
     }
     
     @Override
     public void configureFF(double kS, double kV, double kA) {
         // TODO: What ff value is this???? I'm assuming it's kV or the sum of kS and kV??, I hate rev sooooooooo much
         controller.setFF(kV, 0);
+        dummySpark.burnFlash();
     }
 
     @Override
@@ -117,7 +121,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
         controller.setReference(positionDeg / 360, ControlType.kPosition, 0);
         // System.out.println(positionDeg);
-        System.out.println(positionError);
+        // System.out.println(positionError);
         positionError = Math.abs(positionDeg/360 - encoder.getPosition());
     }
 
