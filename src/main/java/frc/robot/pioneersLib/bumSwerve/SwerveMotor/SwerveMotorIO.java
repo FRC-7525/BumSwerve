@@ -2,7 +2,6 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface SwerveMotorIO {
@@ -15,6 +14,7 @@ public interface SwerveMotorIO {
         public double[] motorCurrentAmps = new double[] {};
 
         public double[] odometryTimestamps = new double[] {};
+        public double[] odometryMotorAccumulatedPosition = new double[] {};
         public Rotation2d[] odometryMotorPositions = new Rotation2d[] {};
     }
 
@@ -35,6 +35,42 @@ public interface SwerveMotorIO {
      * @param outputs
      */
     public default void updateOutputs(SwerveMotorIOOutputs outputs) {}
+
+    /**
+     * Returns the current angle of the motor as a Rotation2d
+     */
+    public default Rotation2d getAngle() {
+        return new Rotation2d();
+    }
+
+    /**
+     * Returns the current position error of the motor from the feedback controller
+     */
+    public default double getPositionError() {
+        return 0.0;
+    }
+
+    /**
+     * @return Array of odometry timestamps
+     */
+    public default double[] getOdometryTimestamps() {
+        return new double[0];
+    }
+
+    /**
+     * @return Array of accumulated positions, should be used only for drive motors
+     */
+    public default double[] getOdometryAccumulatedPositions() {
+        return new double[0];
+    }
+
+    /**
+     * @return Array of odo motor positions
+     */
+    public default Rotation2d[] getOdometryPositions() {
+        return new Rotation2d[0];
+    }
+
 
     /**
      * Run the motor at the specified voltage

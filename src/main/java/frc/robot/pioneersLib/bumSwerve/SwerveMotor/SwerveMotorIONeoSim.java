@@ -24,6 +24,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     private boolean isDrive;
 
+    private double positionError;
+
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
 
@@ -77,7 +79,19 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     }
 
     @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRotations(encoder.getPosition());
+    }
+
+    @Override
+    public double getPositionError() {
+        return positionError;
+    }
+
+    @Override
     public void configurePID(double kP, double kI, double kD) {
+
+        // slot 1 pos, 2 vel, 3 misc, 0 default??
         controller.setP(kD, 0);
         controller.setI(kI, 0);
         controller.setD(kD, 0);
@@ -99,6 +113,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     public void setPosition(double positionDeg) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
         controller.setReference(positionDeg / 360, ControlType.kPosition, 0);
+
+        positionError = Math.abs(positionDeg/360 - encoder.getPosition());
     }
 
     public void setInverted(boolean inverted) {

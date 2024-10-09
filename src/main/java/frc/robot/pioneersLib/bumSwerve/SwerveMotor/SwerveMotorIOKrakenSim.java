@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
+import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOInputsAutoLogged;
 
 public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
@@ -27,13 +28,16 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private DCMotorSim motorSim;
     private Slot0Configs configs;
 
+    // TODO: Do I need to set update freq for these? or will they default to 1ms bc sim?
     private StatusSignal<Double> motorPosition;
     private StatusSignal<Double> motorVelocityRPS;
+    private StatusSignal<Double> motorCurrent;
 
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
 
     private double gearing;
+    private double positionError;
     private boolean isDrive;
     
     public SwerveMotorIOKrakenSim(int placeholderCanID, boolean isDrive, double gearRatio, double motorMOI) {
@@ -61,6 +65,9 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
         motorPosition = dummyTalon.getPosition();
         motorVelocityRPS = dummyTalon.getVelocity();
+        motorCurrent = dummyTalon.getSupplyCurrent();
+
+        positionError = 0.0;
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
 		motorPositionQueue = OdometryThread.getInstance().registerSignal(dummyTalon, motorPosition);
@@ -72,16 +79,41 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     public void updateInputs(SwerveMotorIOInputs inputs) {
         BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS);
 
-        inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble());
-        inputs.motorVelocityRPS = dummyTalon.getVelocity().getValueAsDouble();
-        inputs.motorCurrentAmps = new double[] {0.0};
+        inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble()/gearing);
+        inputs.motorVelocityRPS = dummyTalon.getVelocity().getValueAsDouble()/gearing;
+        inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
 
+        // TODO: Delete, :) just log them in module.java (I'm not doing allat, too much work)
+        inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
+        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
     }
 
     public void updateOutputs(SwerveMotorIOOutputs Outputs) {
         Outputs.motorAppliedVolts = talonController.getMotorVoltage();
+    }
+
+    public double[] getOdometryTimestamps() {
+        return timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+    }
+
+    public double[] getOdometryAccumulatedPositions() {
+        return motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
+    }
+
+    public Rotation2d[] getOdometryPositions() {
+        return motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
+    }
+
+    @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRotations(dummyTalon.getPosition().getValueAsDouble());
+    }
+
+    // TODO: This a bad way of doing it??? idrc to bad so sad
+    @Override
+    public double getPositionError() {
+        return positionError;
     }
 
     @Override
@@ -125,6 +157,8 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         motorSim.setInputVoltage(talonController.getMotorVoltage());
         talonController.setRawRotorPosition(motorSim.getAngularPositionRotations());
         talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/60);
+
+        positionError = Math.abs(positionDeg/360 - dummyTalon.getPosition().getValueAsDouble());
     }
 
     /**
