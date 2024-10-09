@@ -57,7 +57,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
      * @param isDrive
      * @param gearRatio
      */
-    public SwerveMotorIOSparkMax(int canID, boolean isDrive, double gearRatio) {
+    public SwerveMotorIOSparkMax(int canID, double gearRatio) {
         this.isDrive = isDrive;
 
         this.gearRatio = gearRatio;
@@ -170,6 +170,10 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         drivFeedforward = new SimpleMotorFeedforward(0, kV, kA);
     }
 
+    @Override
+    public void setIsDrive(boolean isDrive) {
+        this.isDrive = isDrive;
+    }
 
     /**
      * Sets the can timeout in ms of the motor. If timeout is reached an error is produced
