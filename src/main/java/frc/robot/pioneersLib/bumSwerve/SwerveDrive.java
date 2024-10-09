@@ -165,9 +165,9 @@ public class SwerveDrive {
 	 * @param kV
 	 * @param kA
 	 */
-	public void configureDriveFF(double kS, double kV) {
+	public void configureDriveFF(double kS, double kV, double kA) {
 		for (var module : modules) {
-			module.configureDriveFF(kS, kV);
+			module.configureDriveFF(kS, kV, kA);
 		}
 	}
 
