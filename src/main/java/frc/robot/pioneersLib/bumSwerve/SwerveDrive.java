@@ -80,7 +80,16 @@ public class SwerveDrive {
         this.modules = modules;
 		this.isSim = isSim;
 		this.numModules = modules.length;
+
+		for (var module : modules) {
+			module.configureDriveFF(0, calculateDriveFF());
+		}
     }
+
+	// TODO: Steal YAGSL one
+	public double calculateDriveFF() {
+		return 0;
+	}
 
 	/**
 	 * Drives the robot.
@@ -117,6 +126,42 @@ public class SwerveDrive {
 
 		// TODO: Does this work? lowkey feels like it's bum
 		runVelocity(speeds);
+	}	
+
+	/**
+	 * Configures the PID controllers used for angle PID
+	 * @param kP
+	 * @param kI
+	 * @param kD
+	 */
+	public void configureAnglePID(double kP, double kI, double kD) {
+		for (var module : modules) {
+			module.configureTurnPID(kP, kI, kD);
+		}
+	}
+
+	/**
+	 * Configures the feedforward controllers used for drive
+	 * Default is pre-calculated and should work
+	 * @param kV
+	 * @param kA
+	 */
+	public void configureDriveFF(double kS, double kV) {
+		for (var module : modules) {
+			module.configureDriveFF(kS, kV);
+		}
+	}
+
+	/**
+	 * Configures the feedforward controllers used for drive
+	 * @param kP
+	 * @param kI
+	 * @param kD
+	 */
+	public void configureDrivePID(double kP, double kI, double kD) {
+		for (var module : modules) {
+			module.configureDrivePID(kP, kI, kD);
+		}
 	}
 
 	/**

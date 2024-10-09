@@ -6,13 +6,21 @@ package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
+import frc.robot.subsystems.drive.Drive;
+
 
 public class Robot extends LoggedRobot {
-  @Override
-  public void robotInit() {}
+  Drive drive;
 
   @Override
-  public void robotPeriodic() {}
+  public void robotInit() {
+    this.drive = new Drive();
+  }
+
+  @Override
+  public void robotPeriodic() {
+    drive.periodic();
+  }
 
   @Override
   public void autonomousInit() {}

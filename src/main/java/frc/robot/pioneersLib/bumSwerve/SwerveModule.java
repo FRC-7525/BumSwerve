@@ -119,9 +119,42 @@ public class SwerveModule {
         return turnMotor.getAngle().plus(turnRelativeEncoderOffset);
     }
 
+    /**
+     * @return The calculated odometry positions of each module
+     */
     public SwerveModulePosition[] getOdometryPositions() {
         return odometryPositions;
     }
+
+    /**
+     * Configures the PID of the turn motor
+     * @param kP
+     * @param kI
+     * @param kD
+     */
+    public void configureTurnPID(double kP, double kI, double kD) {
+        turnMotor.configurePID(kP, kI, kD);
+    }
+
+    /**
+     * Configures the FF of the drive motor
+     * @param kV
+     * @param kA
+     */
+    public void configureDriveFF(double kS, double kV) {
+        driveMotor.configureFF(kS, kV);
+    }
+
+    /**
+     * Configures the PID of the drive motor
+     * @param kP
+     * @param kI
+     * @param kD
+     */
+    public void configureDrivePID(double kP, double kI, double kD) {
+        driveMotor.configurePID(kP, kI, kD);
+    }
+
 
     /**
      * Note: this only returns timestamps from the drive motor
