@@ -37,6 +37,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         controller = dummySpark.getPIDController();
 
         encoder = dummySpark.getEncoder();
+        encoder.setPosition(0);
 
         dummySpark.restoreFactoryDefaults();
 		dummySpark.setCANTimeout(0);
