@@ -40,7 +40,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private double positionError;
     private boolean isDrive;
     
-    public SwerveMotorIOKrakenSim(int placeholderCanID, boolean isDrive, double gearRatio, double motorMOI) {
+    public SwerveMotorIOKrakenSim(int placeholderCanID, double gearRatio, double motorMOI) {
         dummyTalon = new TalonFX(placeholderCanID);
         talonController = dummyTalon.getSimState();    
         configurator = dummyTalon.getConfigurator();
@@ -158,5 +158,10 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     @Override
     public void setBrakeMode(boolean enableBreak) {
         dummyTalon.setNeutralMode(enableBreak ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    }
+
+    @Override
+    public void setIsDrive(boolean isDrive) {
+        this.isDrive = isDrive;
     }
 }

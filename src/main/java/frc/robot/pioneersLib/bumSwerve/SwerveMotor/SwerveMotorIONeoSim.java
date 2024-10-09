@@ -34,7 +34,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     // TODO: Do sum about rev sim being ass
 
-    public SwerveMotorIONeoSim(int placeholderCANId, boolean isDrive, double gearRatio) {
+    public SwerveMotorIONeoSim(int placeholderCANId, double gearRatio) {
         revSim = REVPhysicsSim.getInstance();
         dummySpark = new CANSparkMax(placeholderCANId, MotorType.kBrushless);
         revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
@@ -136,5 +136,10 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     public void setInverted(boolean inverted) {
         dummySpark.setInverted(inverted);
+    }
+
+    @Override
+    public void setIsDrive(boolean isDrive) {
+        this.isDrive = isDrive;
     }
 }

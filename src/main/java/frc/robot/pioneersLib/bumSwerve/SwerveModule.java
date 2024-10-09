@@ -46,7 +46,7 @@ public class SwerveModule {
         driveMotor.setIsDrive(true);
 
         this.turnMotor = turnMotor;
-        driveMotor.setIsDrive(false);
+        turnMotor.setIsDrive(false);
 
         this.absoluteEncoder = absoluteEncoder;
         this.moduleName = moduleName;
