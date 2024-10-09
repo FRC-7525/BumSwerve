@@ -58,8 +58,6 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
      * @param gearRatio
      */
     public SwerveMotorIOSparkMax(int canID, double gearRatio) {
-        this.isDrive = isDrive;
-
         this.gearRatio = gearRatio;
 
         motor = new CANSparkMax(canID, MotorType.kBrushless);
