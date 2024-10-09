@@ -20,13 +20,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOInputsAutoLogged;
-import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIO;
-import frc.robot.subsystems.drive.Drive;
 
 public class SwerveDrive {
     static final Lock odometryLock = new ReentrantLock();
@@ -45,6 +42,7 @@ public class SwerveDrive {
     private double wheelRadius;
 	private int numModules;
 	private boolean isSim;
+	private Rotation2d lastHeading;
 
 	private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
     private SwerveDrivePoseEstimator poseEstimator;
@@ -64,6 +62,7 @@ public class SwerveDrive {
 
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
         headingCorrectionController = new PIDController(0, 0, 0);
+		lastHeading = new Rotation2d();
 
         this.gyroIO = gyroIO;
         this.maxSpeed = maxSpeed;
@@ -74,7 +73,45 @@ public class SwerveDrive {
 		this.numModules = modules.length;
     }
 
+	/**
+	 * Drives the robot.
+	 * @param xSupplier X speed supplier, in range 0-1
+	 * @param ySupplier Y speed supplier, in range 0-1
+	 * @param omegaSupplier Omage supplier, in range 0-1
+	 * @param fieldRelative Whether the speeds are field relative
+	 * @param useHeadingCorrection Whether to use heading correction
+	 */
+	public void drive(double xSupplier, double ySupplier, double omegaSupplier, boolean fieldRelative, boolean useHeadingCorrection) {
+		boolean isFlipped =
+			DriverStation.getAlliance().isPresent() &&
+			DriverStation.getAlliance().get() == Alliance.Red;
+
+		ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+			xSupplier * getMaxSpeed(),
+			ySupplier * getMaxSpeed(),
+			omegaSupplier * getMaxAngularVelocity(),
+			getRobotRotation()
+		);
+		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier * getMaxSpeed(), ySupplier * getMaxSpeed(), omegaSupplier * getMaxAngularVelocity(), isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
+		
+		// Heading correction / field rel stuff
+		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
+		boolean headingCorrection = useHeadingCorrection && omegaSupplier == 0 && (ySupplier > 0.05 || xSupplier > 0.05);
+
+		// TODO: TEST TEST TEST, this is trash code
+		if (headingCorrection) {
+			speeds.omegaRadiansPerSecond = headingCorrectionController.calculate(getRobotRotation().getRadians(), lastHeading.getRadians());
+
+		} else {
+			lastHeading = getRobotRotation();
+		}
+
+		// TODO: Does this work? lowkey feels like it's bum
+		runVelocity(speeds);
+	}
+
     public void periodic() {
+		// Largley taken from Akit example
 		odometryLock.lock(); // Prevents odometry updates while reading data
 		gyroIO.updateInputs(gyroInputs);
 		for (var module : modules) {
@@ -189,6 +226,7 @@ public class SwerveDrive {
 	) {
 		poseEstimator.addVisionMeasurement(visionPose, timestamp, visionMeasurementStdDevs);
 	}
+
     /**
      * @return Array of module translations in the order FL, FR, BL, BR
      */
@@ -211,5 +249,36 @@ public class SwerveDrive {
 				-trackWidthY / 2
 			),
 		};
+	}
+
+	/**
+	 * Configures the PID controller used for heading correction
+	 * @param kP
+	 * @param kI
+	 * @param kD
+	 */
+	public void configureHeadingCorrectionPID(double kP, double kI, double kD) {
+		headingCorrectionController.setPID(kP, kI, kD);
+	}
+
+	/** 
+	 * @return The robots current rotation as a rotation2d
+	 */
+	public Rotation2d getRobotRotation() {
+		return poseEstimator.getEstimatedPosition().getRotation();
+	}
+	
+	/**
+	 * @return The robots max speed
+	 */
+	public double getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	/**
+	 * @return The robots calculated max angular velocity
+	 */
+	public double getMaxAngularVelocity() {
+		return maxSpeed / wheelRadius;
 	}
 }
