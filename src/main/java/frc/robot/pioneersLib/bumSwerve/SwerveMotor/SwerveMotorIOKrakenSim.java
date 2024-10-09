@@ -62,7 +62,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         // Take into account gear ratio
         FeedbackConfigs feedback = new FeedbackConfigs();
         // TODO: 1 or gear ratio? do u need to use gear ratio if u already do in the sim configs?
-        feedback.SensorToMechanismRatio = gearRatio;
+        //feedback.SensorToMechanismRatio = gearRatio;
         configurator.apply(feedback);
 
         motorPosition = dummyTalon.getPosition();
@@ -79,7 +79,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS);
 
         inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble()/gearing);
-        inputs.motorVelocityRPS = dummyTalon.getVelocity().getValueAsDouble()/gearing;
+        inputs.motorVelocityRPS = motorVelocityRPS.getValueAsDouble();
         inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
 
         inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -87,8 +87,8 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
     }
 
-    public void updateOutputs(SwerveMotorIOOutputs Outputs) {
-        Outputs.motorAppliedVolts = talonController.getMotorVoltage();
+    public void updateOutputs(SwerveMotorIOOutputs outputs) {
+        outputs.motorAppliedVolts = talonController.getMotorVoltage();
     }
 
     @Override
@@ -159,7 +159,4 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     public void setBrakeMode(boolean enableBreak) {
         dummyTalon.setNeutralMode(enableBreak ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
-    
-    
-
 }
