@@ -146,8 +146,8 @@ public class SwerveModule {
      * @param kV
      * @param kA
      */
-    public void configureDriveFF(double kS, double kV) {
-        driveMotor.configureFF(kS, kV);
+    public void configureDriveFF(double kS, double kV, double kA) {
+        driveMotor.configureFF(kS, kV, kA);
     }
 
     /**

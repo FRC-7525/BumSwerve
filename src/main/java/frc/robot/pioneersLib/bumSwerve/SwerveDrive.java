@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -85,14 +86,28 @@ public class SwerveDrive {
 		this.isSim = isSim;
 		this.numModules = modules.length;
 
+		SimpleMotorFeedforward driveFF = createDriveFeedforward(12, maxSpeed, 1.19);
+
 		for (var module : modules) {
-			module.configureDriveFF(0, calculateDriveFF());
+			module.configureDriveFF(driveFF.ks, driveFF.kv, driveFF.ka);
 		}
     }
 
-	// TODO: Steal YAGSL one
-	public double calculateDriveFF() {
-		return 0;
+	public static SimpleMotorFeedforward createDriveFeedforward(
+		double optimalVoltage,
+		double maxSpeed,
+		double wheelGripCoefficientOfFriction
+	) {
+		double kv = optimalVoltage / maxSpeed;
+		/// ^ Volt-seconds per meter (max voltage divided by max speed)
+		double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
+		/// ^ Volt-seconds^2 per meter (max voltage divided by max accel)
+		return new SimpleMotorFeedforward(0, kv, ka);
+	}
+
+	// 9.81 is "gravity"
+	public static double calculateMaxAcceleration(double cof) {
+		return cof * 9.81;
 	}
 
 	/**
