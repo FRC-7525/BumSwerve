@@ -96,6 +96,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
 
+        timestampQueue.clear();
+		motorPositionQueue.clear();
     }
 
     public void updateOutputs(SwerveMotorIOOutputs outputs) {
