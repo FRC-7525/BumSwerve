@@ -121,7 +121,7 @@ public class SwerveModule {
      * @return the rotation of the wheel with 0 being your absolute encoder's 0
      */
     public Rotation2d getAngle() {
-        return turnMotor.getAngle().plus(turnRelativeEncoderOffset);
+        return turnRelativeEncoderOffset != null ?turnMotor.getAngle().plus(turnRelativeEncoderOffset) : turnMotor.getAngle();
     }
 
     /**
@@ -168,6 +168,20 @@ public class SwerveModule {
      */
     public double[] getOdometryTimestamps() {
         return driveInputs.odometryTimestamps;
+    }
+
+    /**
+     * @return Module speed in m/s
+     */
+    public double getSpeed() {
+        return driveInputs.motorVelocityRPS * Units.inchesToMeters(2) * Math.PI * 2;
+    }
+
+    /**
+     * @return The swerve module state
+     */
+    public SwerveModuleState getState() {
+        return new SwerveModuleState(getSpeed(), getAngle());
     }
 
     // To interface directly with motors/encoders if ur weird

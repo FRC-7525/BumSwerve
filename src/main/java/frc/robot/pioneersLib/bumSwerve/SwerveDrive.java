@@ -3,6 +3,7 @@ package frc.robot.pioneersLib.bumSwerve;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
@@ -256,6 +257,19 @@ public class SwerveDrive {
         Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
         Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
     }
+
+	/**
+	 * Returns the module states (turn angles and drive velocities) for all of the
+	 * modules.
+	 */
+	@AutoLogOutput(key = "SwerveStates/Measured")
+	private SwerveModuleState[] getModuleStates() {
+		SwerveModuleState[] states = new SwerveModuleState[numModules];
+		for (int i = 0; i < numModules; i++) {
+			states[i] = modules[i].getState();
+		}
+		return states;
+	}
 	
 
 	// TODO: Have a working vision system so this matters
