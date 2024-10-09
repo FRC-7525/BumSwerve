@@ -31,7 +31,7 @@ public class SwerveModule {
 
     private Double speedSetPoint;
     private Double angleSetPoint;
-
+    
     /**
      * Creates a new SwerveModule
      * @param driveMotor

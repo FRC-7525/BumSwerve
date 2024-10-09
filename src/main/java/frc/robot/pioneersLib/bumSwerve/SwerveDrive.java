@@ -54,6 +54,9 @@ public class SwerveDrive {
 			new SwerveModulePosition(),
 		};
 
+
+	// TODO: Be able to accept just 1 module as the configs for all the rest to reuce repeated code
+
 	/**
 	 * Creates a new SwerveDrive object
 	 * @param trackWidthX Distance between the left and right wheels in meters
