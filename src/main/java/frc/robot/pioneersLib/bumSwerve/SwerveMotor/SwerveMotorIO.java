@@ -92,7 +92,7 @@ public interface SwerveMotorIO {
      * @param kD
      */
     public default void configurePID(double kP, double kI, double kD) {}
-    
+
     /**
      * 
      * @param kS
@@ -100,4 +100,10 @@ public interface SwerveMotorIO {
      * @param kA
      */
     public default void configureFF(double kS, double kV, double kA) {}
+
+    /**
+     * Sets if the motor is a drive or turn motor
+     * @param isDrive
+     */
+    public default void setIsDrive(boolean isDrive) {}
 }

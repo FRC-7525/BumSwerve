@@ -35,7 +35,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     private final Queue<Double> motorPositionQueue;
 
     private double gearRatio;
-    private final boolean isDrive;
+    private boolean isDrive;
 
     TalonFXConfiguration driveConfig;
 
@@ -45,7 +45,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     private static final double SIGNAL_UPDATE_FREQUENCY = 50.0;
     private static final double VOLTAGE_CLOSED_LOOP_RAMP_PERIOD = 0.15;
 
-    public SwerveMotorIOTalonFX(int canID, boolean isDrive, double gearRatio) {
+    public SwerveMotorIOTalonFX(int canID, double gearRatio) {
         this.gearRatio = gearRatio;
         this.isDrive = isDrive;
 
@@ -158,6 +158,11 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     @Override
     public void configureFF(double kS, double kV, double kA) {
         drivFeedforward = new SimpleMotorFeedforward(0, kV, kA);
+    }
+
+    @Override
+    public void setIsDrive(boolean isDrive) {
+        this.isDrive = isDrive;
     }
 
     /**
