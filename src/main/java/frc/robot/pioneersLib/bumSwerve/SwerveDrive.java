@@ -92,6 +92,17 @@ public class SwerveDrive {
 		}
     }
 
+	@AutoLogOutput(key = "Robot Pose")
+	public Pose2d getRobotPose() {
+		return poseEstimator.getEstimatedPosition();
+	}
+
+	/**
+	 * Creates a new simple FF object
+	 * @param optimalVoltage Optimal voltage (typically 12V)
+	 * @param maxSpeed Max module speed
+	 * @param wheelGripCoefficientOfFriction Coefficient of friction of the wheels
+	 */
 	public static SimpleMotorFeedforward createDriveFeedforward(
 		double optimalVoltage,
 		double maxSpeed,
@@ -104,7 +115,10 @@ public class SwerveDrive {
 		return new SimpleMotorFeedforward(0, kv, ka);
 	}
 
-	// 9.81 is "gravity"
+	/**
+	 * @param cof Coefficient of friction of the wheels
+	 * @return Max possible acceleration
+	 */
 	public static double calculateMaxAcceleration(double cof) {
 		return cof * 9.81;
 	}
