@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
-import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOInputsAutoLogged;
 
 public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
@@ -46,7 +45,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         configurator = dummyTalon.getConfigurator();
 
         this.gearing = gearRatio;
-        this.isDrive = isDrive;
 
         // Note: These MOI values are for L3+ SDS Swerve Modules w kraken drive & neo turn isDrive ? 0.000520786 : 0.00062093
         motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), gearing, motorMOI);

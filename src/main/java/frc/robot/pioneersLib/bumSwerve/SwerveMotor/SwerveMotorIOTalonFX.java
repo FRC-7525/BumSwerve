@@ -4,7 +4,6 @@ import java.util.Queue;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -15,15 +14,10 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.fasterxml.jackson.databind.cfg.ConstructorDetector.SingleArgConstructor;
-import com.google.flatbuffers.Constants;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
-import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 
 public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     private final TalonFX motor;
@@ -53,7 +47,6 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     public SwerveMotorIOTalonFX(int canID, double gearRatio) {
         this.gearRatio = gearRatio;
-        this.isDrive = isDrive;
 
         configs = new Slot0Configs();
 

@@ -1,28 +1,21 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 
-import java.sql.DriverAction;
 import java.util.OptionalDouble;
 import java.util.Queue;
-
-import org.opencv.features2d.Feature2D;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.google.flatbuffers.Constants;
-import com.kauailabs.navx.AHRSProtocol.TuningVar;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
-import frc.robot.subsystems.drive.Drive;
 
 
 public class SwerveMotorIOSparkMax implements SwerveMotorIO {

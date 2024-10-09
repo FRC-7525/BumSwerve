@@ -11,11 +11,13 @@ import java.util.Queue;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
+import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 
 public class SwerveMotorIONeoSim implements SwerveMotorIO {
     private REVPhysicsSim revSim;
@@ -32,6 +34,15 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
 
+    // Default values
+    private final boolean MOTOR_INVERTED = false;
+    private final int SPARK_TIMEOUT_MS = 250;
+    private final int MOTOR_CURRENT_LIMIT = 30;
+    private final double MAX_VOLTS = 12.0;
+    private final int SPARK_MEASUREMENT_PERIOD_MS = 10;
+    private final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
+    private final double RAMP_RATE = 0.16;
+
     // TODO: Do sum about rev sim being ass
 
     public SwerveMotorIONeoSim(int placeholderCANId, double gearRatio) {
@@ -46,12 +57,21 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         encoder.setPosition(0);
 
         dummySpark.restoreFactoryDefaults();
-		dummySpark.setCANTimeout(0);
+        encoder.setMeasurementPeriod(
+			SPARK_MEASUREMENT_PERIOD_MS
+		);
+        dummySpark.setPeriodicFramePeriod(
+                    PeriodicFrame.kStatus2,
+                    (int) (SPARK_FRAME_PERIOD)
+                );	
+        // TODO: Why does AKIT do this??	
+        dummySpark.setCANTimeout(SPARK_TIMEOUT_MS);
+        dummySpark.setCANTimeout(0);
 
-		dummySpark.setInverted(false);
-		dummySpark.setSmartCurrentLimit(40);
-		dummySpark.enableVoltageCompensation(12);
-		dummySpark.setClosedLoopRampRate(0.15);
+		dummySpark.setInverted(MOTOR_INVERTED);
+		dummySpark.setSmartCurrentLimit(MOTOR_CURRENT_LIMIT);
+		dummySpark.enableVoltageCompensation(MAX_VOLTS);
+		dummySpark.setClosedLoopRampRate(RAMP_RATE);
 
         revSim.run();
 
