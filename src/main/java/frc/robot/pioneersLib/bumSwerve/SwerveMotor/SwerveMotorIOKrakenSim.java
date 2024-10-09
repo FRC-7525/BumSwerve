@@ -50,7 +50,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
         // Note: These MOI values are for L3+ SDS Swerve Modules w kraken drive & neo turn isDrive ? 0.000520786 : 0.00062093
         motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), gearing, motorMOI);
-        motorSim.update(0.02);
 
         configs = new Slot0Configs();
 
@@ -126,6 +125,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
     @Override
     public void setVelocity(double velocityRPS) {
+        motorSim.update(0.02);
         if (!isDrive) throw new Error("Cannot use setVelocity with a turn motor");
 
         VelocityVoltage command = new VelocityVoltage(velocityRPS).withSlot(0);
@@ -133,8 +133,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         motorSim.setInputVoltage(talonController.getMotorVoltage());
         talonController.setRawRotorPosition(motorSim.getAngularPositionRotations());
         talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/60);
-
-        System.out.println("SETTING VOLTAGE");
     }
 
     @Override
