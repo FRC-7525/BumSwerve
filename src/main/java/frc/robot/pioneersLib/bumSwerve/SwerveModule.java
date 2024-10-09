@@ -32,6 +32,14 @@ public class SwerveModule {
     private Double speedSetPoint;
     private Double angleSetPoint;
 
+    /**
+     * Creates a new SwerveModule
+     * @param driveMotor
+     * @param turnMotor
+     * @param absoluteEncoder
+     * @param absoluteEncoderOffset
+     * @param moduleName
+     */
     public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder, double absoluteEncoderOffset, String moduleName) {
         this.driveMotor = driveMotor;
         this.turnMotor = turnMotor;

@@ -54,7 +54,16 @@ public class SwerveDrive {
 			new SwerveModulePosition(),
 		};
 
-    // TODO: Uh i mean u can only have 4 modules rn make that not so
+	/**
+	 * Creates a new SwerveDrive object
+	 * @param trackWidthX Distance between the left and right wheels in meters
+	 * @param trackWidthY Distance between the front and back wheels in meters
+	 * @param modules Array of SwerveModule objects in the order FL, FR, BL, BR
+	 * @param gyroIO Gyro object
+	 * @param maxSpeed Max speed of the robot in m/s
+	 * @param wheelRadius Radius of the wheels in meters
+	 * @param isSim If or not the drivetrain is in simulation
+	 */
     public SwerveDrive(double trackWidthX, double trackWidthY, SwerveModule[] modules, SwerveGyroIO gyroIO, double maxSpeed, double wheelRadius, boolean isSim) {
         SwerveDrive.trackWidthX = trackWidthX;
         SwerveDrive.trackWidthY = trackWidthY;
@@ -110,6 +119,9 @@ public class SwerveDrive {
 		runVelocity(speeds);
 	}
 
+	/**
+	 * Updates odometry measurments
+	 */
     public void periodic() {
 		// Largley taken from Akit example
 		odometryLock.lock(); // Prevents odometry updates while reading data
@@ -172,8 +184,12 @@ public class SwerveDrive {
 		}
     }
 
-    // Taken from akit example
+	/**
+	 * Runs the velocity of the robot
+	 * @param speeds Chassis speeds to set module states to
+	 */
     public void runVelocity(ChassisSpeeds speeds) {
+		// Taken largley from akit
         // Turns chassis speeds over a time into like splits that u can discretley set module states to
         ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(
             speeds,
