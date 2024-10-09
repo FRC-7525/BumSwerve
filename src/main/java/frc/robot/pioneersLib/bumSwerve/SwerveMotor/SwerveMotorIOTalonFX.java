@@ -5,8 +5,13 @@ import java.util.Queue;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -28,16 +33,17 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     private final StatusSignal<Double> motorAppliedVolts;
     private final StatusSignal<Double> motorCurrent;
 
-    private PIDController feedbackController;
-    private SimpleMotorFeedforward drivFeedforward;
-
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
 
     private double gearRatio;
     private boolean isDrive;
 
-    TalonFXConfiguration driveConfig;
+    private TalonFXConfiguration driveConfig;
+    private TalonFXConfigurator configurator;
+    private Slot0Configs configs;
+
+    private double positionError;
 
     //Default config values
     private static final double CURRENT_LIMIT = 40.0;
@@ -49,14 +55,18 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         this.gearRatio = gearRatio;
         this.isDrive = isDrive;
 
+        configs = new Slot0Configs();
+
         motor = new TalonFX(canID);
+
+        configurator = motor.getConfigurator();
 
         driveConfig = new TalonFXConfiguration();
         driveConfig.CurrentLimits.SupplyCurrentLimit = CURRENT_LIMIT;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        motor.getConfigurator().apply(driveConfig);
+        configurator.apply(driveConfig);
         //TODO: Apparently this might not work (idk what it's even supposed to do)
-        motor.getConfigurator().apply(driveConfig.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(VOLTAGE_CLOSED_LOOP_RAMP_PERIOD)); 
+        configurator.apply(driveConfig.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(VOLTAGE_CLOSED_LOOP_RAMP_PERIOD)); 
 
         motor.optimizeBusUtilization();
 
@@ -73,11 +83,17 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 			motorCurrent
 		);
 
+        configs.kP = 0.0;
+        configs.kI = 0.0;
+        configs.kD = 0.0;
+        configurator.apply(configs);
+
+        FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.SensorToMechanismRatio = gearRatio;
+        configurator.apply(feedback);
+
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
 		motorPositionQueue = OdometryThread.getInstance().registerSignal(motor, motor.getPosition());
-
-        feedbackController = new PIDController(0, 0, 0);
-        drivFeedforward = new SimpleMotorFeedforward(0, 0, 0);
     }
 
     @Override
@@ -118,7 +134,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public double getPositionError() {
-        return feedbackController.getPositionError();
+        return positionError;
     }
 
     @Override
@@ -130,15 +146,18 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     public void setPosition(double setpoint) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
 
-        setVoltage(feedbackController.calculate(getAngle().getDegrees(), setpoint));
+        PositionVoltage command = new PositionVoltage(setpoint/360).withSlot(0);
+        motor.setControl(command);
+
+        positionError = Math.abs(setpoint/360 - motorPosition.getValueAsDouble());
     }
 
     @Override
     public void setVelocity(double speedpoint) {
         if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
 
-        double velocityRPS = speedpoint / SwerveDrive.wheelRadius;
-        setVoltage(drivFeedforward.calculate(velocityRPS) + feedbackController.calculate(getVelocity(), velocityRPS));
+        VelocityVoltage command = new VelocityVoltage(speedpoint).withSlot(0);
+        motor.setControl(command);
     }
 
 
@@ -152,12 +171,20 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public void configurePID(double kP, double kI, double kD) {
-        feedbackController.setPID(kP, kI, kD);
+        configs.kP = kP;
+        configs.kI = kI;
+        configs.kD = kD;
+
+        configurator.apply(configs);
     }
 
     @Override
     public void configureFF(double kS, double kV, double kA) {
-        drivFeedforward = new SimpleMotorFeedforward(0, kV, kA);
+        configs.kS = kS;
+        configs.kV = kV;
+        configs.kA = kA;
+
+        configurator.apply(configs);
     }
 
     @Override

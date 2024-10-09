@@ -35,7 +35,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private final Queue<Double> motorPositionQueue;
 
     private PIDController feedbackController;
-    private SimpleMotorFeedforward drivFeedforward;
+    private SimpleMotorFeedforward driveFeedForward;
 
     //Default config values
 
@@ -85,6 +85,8 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 			(int) (SPARK_FRAME_PERIOD)
 		);
 
+        burnFlash();
+
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
         motorPositionQueue = OdometryThread.getInstance().registerSignal(() -> {
             double value = encoder.getPosition();
@@ -96,7 +98,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         });
 
         feedbackController = new PIDController(0, 0, 0);
-        drivFeedforward = new SimpleMotorFeedforward(0, 0, 0);
+        driveFeedForward = new SimpleMotorFeedforward(0, 0, 0);
     }
 
     @Override
@@ -150,7 +152,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
 
         double velocityRPS = speedpoint / SwerveDrive.wheelRadius;
-        setVoltage(drivFeedforward.calculate(velocityRPS) + feedbackController.calculate(getVelocity(), velocityRPS));
+        setVoltage(driveFeedForward.calculate(velocityRPS) + feedbackController.calculate(getVelocity(), velocityRPS));
     }
 
     @Override
@@ -165,7 +167,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 
     @Override
     public void configureFF(double kS, double kV, double kA) {
-        drivFeedforward = new SimpleMotorFeedforward(0, kV, kA);
+        driveFeedForward = new SimpleMotorFeedforward(0, kV, kA);
     }
 
     @Override
