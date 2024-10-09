@@ -32,13 +32,13 @@ public class Drive extends Subsystem<DriveStates> {
         gyroIO = new SwerveGyroIOSim();
         // TODO: Finish abs encoder things
         modules = new SwerveModule[] {
-                new SwerveModule(new SwerveMotorIOKrakenSim(1, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(5, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
+                new SwerveModule(new SwerveMotorIOKrakenSim(1, 5.357, 0.000520786), new SwerveMotorIONeoSim(5, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "FrontLeft"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(2, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(6, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
+                new SwerveModule(new SwerveMotorIOKrakenSim(2, 5.357, 0.000520786), new SwerveMotorIONeoSim(6, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "FrontRight"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(3, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(7, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
+                new SwerveModule(new SwerveMotorIOKrakenSim(3, 5.357, 0.000520786), new SwerveMotorIONeoSim(7, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "BackLeft"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(4, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(8, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
+                new SwerveModule(new SwerveMotorIOKrakenSim(4, 5.357, 0.000520786), new SwerveMotorIONeoSim(8, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "BackRight")
         };
 
