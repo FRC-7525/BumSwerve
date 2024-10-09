@@ -1,5 +1,6 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 
+import java.sql.DriverAction;
 import java.util.OptionalDouble;
 import java.util.Queue;
 
@@ -19,7 +20,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
+import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
+import frc.robot.subsystems.drive.Drive;
 
 
 public class SwerveMotorIOSparkMax implements SwerveMotorIO {
@@ -35,9 +38,6 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private SimpleMotorFeedforward drivFeedforward;
 
     //Default config values
-    private final double OPTIMAL_VOLTAGE = 12;
-    private final double MAX_LINEAR_SPEED = Units.feetToMeters(19.6);
-    private final double WHEEL_GRIP_COEFFICIENT_OF_FRICTION = 1.19;
 
     private final boolean MOTOR_INVERTED = true;
     private final int SPARK_TIMEOUT_MS = 250;
@@ -48,19 +48,19 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
 
     private final double RPS_CONVERSION_FACTOR = 60;
-    private final double DEGREE_CONVERSION_FACTOR = 360;
 
-    private double MOTOR_GEAR_RATIO = 21.4286;
+    private double gearRatio = 21.4286;
 
     /**
      * Creates a SparkMax Swerve Motor object pointing to the specified CAN ID. Also need to specify if the motor is used for turn or for drive
      * @param canID
      * @param isDrive
+     * @param gearRatio
      */
     public SwerveMotorIOSparkMax(int canID, boolean isDrive, double gearRatio) {
         this.isDrive = isDrive;
 
-        MOTOR_GEAR_RATIO = gearRatio;
+        this.gearRatio = gearRatio;
 
         motor = new CANSparkMax(canID, MotorType.kBrushless);
         encoder = motor.getEncoder();
@@ -98,21 +98,18 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         });
 
         feedbackController = new PIDController(0, 0, 0);
-
-        // See IO for why it's commented, just use an empty simpleFF and have a configure FF function in the IO that u feed the output of the current SetFF into bc setFF only calculates kV
-        // if (isDrive) {
-        //     setFeedForward(OPTIMAL_VOLTAGE, MAX_LINEAR_SPEED, WHEEL_GRIP_COEFFICIENT_OF_FRICTION);
-        // }
+        drivFeedforward = new SimpleMotorFeedforward(0, 0, 0);
     }
 
     @Override
     public void updateInputs(SwerveMotorIOInputs inputs) {
-        inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition() / MOTOR_GEAR_RATIO); //TODO: Switch these out with getters
-        inputs.motorVelocityRPS = (encoder.getVelocity() / RPS_CONVERSION_FACTOR) / MOTOR_GEAR_RATIO;
+        inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition() / gearRatio); //TODO: Switch these out with getters
+        inputs.motorVelocityRPS = (encoder.getVelocity() / RPS_CONVERSION_FACTOR) / gearRatio;
         inputs.motorCurrentAmps = new double[] { motor.getOutputCurrent() };
 
+        inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / MOTOR_GEAR_RATIO)).toArray(Rotation2d[]::new);
+        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / gearRatio)).toArray(Rotation2d[]::new);
 
         timestampQueue.clear();
         motorPositionQueue.clear();
@@ -124,26 +121,38 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     }
 
     @Override
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRotations(encoder.getPosition());
+    }
+
+    @Override
+    public double getVelocity() {
+        return encoder.getVelocity() / RPS_CONVERSION_FACTOR / gearRatio;
+    }
+
+    @Override
+    public double getPositionError() {
+        return feedbackController.getPositionError();
+    }
+
+    @Override
     public void setVoltage(double volts) {
         motor.setVoltage(volts);
     }
 
     @Override
     public void setPosition(double setpoint) {
-        if (isDrive) throw new Error("Cannot use setPosition with a drive motor");
+        if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
 
-        //TODO: Create getter for position
-        setVoltage(feedbackController.calculate(encoder.getPosition() * DEGREE_CONVERSION_FACTOR, setpoint));
+        setVoltage(feedbackController.calculate(getAngle().getDegrees(), setpoint));
     }
 
     @Override
     public void setVelocity(double speedpoint) {
-        if (!isDrive) throw new Error("Cannot use setVelocity with a turn motor");
+        if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
 
-        //TODO: Find better way to have constants
-        double velocityRPS = speedpoint / 2.0 /*TODO: Switch this out with a constant */;
-        //TODO: Create getter for velocity
-        setVoltage(drivFeedforward.calculate(velocityRPS) + feedbackController.calculate(encoder.getVelocity() / RPS_CONVERSION_FACTOR / MOTOR_GEAR_RATIO, velocityRPS));
+        double velocityRPS = speedpoint / SwerveDrive.wheelRadius;
+        setVoltage(drivFeedforward.calculate(velocityRPS) + feedbackController.calculate(getVelocity(), velocityRPS));
     }
 
     @Override
@@ -156,20 +165,11 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         feedbackController.setPID(kP, kI, kD);
     }
 
-    // See IO for why it's commented
-    // @Override
-    // public void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {  
-    //     double kv = optimalVoltage / maxLinearSpeed;
-    //     // ^ Volt-seconds per meter (max voltage divided by max speed)
-    //     double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
-    //     // ^ Volt-seconds^2 per meter (max voltage divided by max accel)
-    //     drivFeedforward = new SimpleMotorFeedforward(0, kv, ka);
-    // }
-
     @Override
-	public double calculateMaxAcceleration(double cof) {
-		return cof * 9.81;
-	}
+    public void configureFF(double kS, double kV, double kA) {
+        drivFeedforward = new SimpleMotorFeedforward(0, kV, kA);
+    }
+
 
     /**
      * Sets the can timeout in ms of the motor. If timeout is reached an error is produced

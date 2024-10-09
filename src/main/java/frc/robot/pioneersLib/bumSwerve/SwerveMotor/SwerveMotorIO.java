@@ -44,6 +44,13 @@ public interface SwerveMotorIO {
     }
 
     /**
+     * @return The velocity of the motor in RPS
+     */
+    public default double getVelocity() {
+        return 0.0;
+    }
+
+    /**
      * Returns the current position error of the motor from the feedback controller
      */
     public default double getPositionError() {
@@ -85,7 +92,7 @@ public interface SwerveMotorIO {
      * @param kD
      */
     public default void configurePID(double kP, double kI, double kD) {}
-
+    
     /**
      * 
      * @param kS
@@ -93,25 +100,4 @@ public interface SwerveMotorIO {
      * @param kA
      */
     public default void configureFF(double kS, double kV, double kA) {}
-
-    // TODO: Make this a function in module.java as it should be used in sim & does not need to be isolated to motors
-    /**
-     * Sets a feed forward controller based on several real-world parameters. Not used in SIM
-     * <br></br>
-     * Controller is used only for drive
-     * @param optimalVoltage
-     * @param maxLinearSpeed In meters
-     * @param wheelGripCoefficientOfFriction
-     */
-    // public default void setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {}
-
-    //TODO: Put this in module, not motor (unless there's a good reason)
-    /**
-     * Calculates the max acceleration of the wheel given the coefficient of friction and using gravity
-     * @param cof Coefficient of friction
-     * @return Max acceleration of the wheel
-     */
-    public default double calculateMaxAcceleration(double cof) {
-        return 0.0;
-    }
 }

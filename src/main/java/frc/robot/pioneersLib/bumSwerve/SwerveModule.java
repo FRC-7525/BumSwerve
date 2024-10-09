@@ -2,6 +2,7 @@ package frc.robot.pioneersLib.bumSwerve;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -54,6 +55,31 @@ public class SwerveModule {
     // TODO: Make a "Set is drive" function in the motorIO so you don't have to feed in "In drive" when you create a swerve motor
 
     /**
+     * Sets a feed forward controller based on several real-world parameters.
+     * <br></br>
+     * Controller is used only for drive
+     * @param optimalVoltage
+     * @param maxLinearSpeed In meters
+     * @param wheelGripCoefficientOfFriction
+     */
+    public SimpleMotorFeedforward setFeedForward(double optimalVoltage, double maxLinearSpeed, double wheelGripCoefficientOfFriction) {
+        double kv = optimalVoltage / maxLinearSpeed;
+        // ^ Volt-seconds per meter (max voltage divided by max speed)
+        double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
+        // ^ Volt-seconds^2 per meter (max voltage divided by max accel)
+        return new SimpleMotorFeedforward(0, kv, ka);
+    }
+
+    /**
+     * Calculates the max acceleration of the wheel given the coefficient of friction and using gravity
+     * @param cof Coefficient of friction
+     * @return Max acceleration of the wheel
+     */
+	public double calculateMaxAcceleration(double cof) {
+		return cof * 9.81;
+	}
+
+    /**
      * Runs the module at the specified state
      * @param state
      */
@@ -70,7 +96,7 @@ public class SwerveModule {
         // TODO: I'm bad at math, is this right?
         angleSetPoint = optimizedState.angle.getDegrees();
 
-        // Converts m/s peeds to rot/s for setpoint then accounts for turn error
+        // Converts m/s speeds to RPS for setpoint then accounts for turn error
         speedSetPoint = Math.cos(turnMotor.getPositionError()) * (optimizedState.speedMetersPerSecond/ (Units.inchesToMeters(2) * Math.PI * 2));
 
         return optimizedState;

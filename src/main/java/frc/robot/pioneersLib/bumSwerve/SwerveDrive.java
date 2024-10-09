@@ -40,8 +40,8 @@ public class SwerveDrive {
     private static double trackWidthX;
     private static double trackWidthY;
 
-    private double maxSpeed;
-    private double wheelRadius;
+    public static double maxSpeed;
+    public static double wheelRadius;
 	private int numModules;
 	private boolean isSim;
 	private Rotation2d lastHeading;
@@ -79,8 +79,8 @@ public class SwerveDrive {
 		lastHeading = new Rotation2d();
 
         this.gyroIO = gyroIO;
-        this.maxSpeed = maxSpeed;
-        this.wheelRadius = wheelRadius;
+        SwerveDrive.maxSpeed = maxSpeed;
+        SwerveDrive.wheelRadius = wheelRadius;
 
         this.modules = modules;
 		this.isSim = isSim;
@@ -114,7 +114,7 @@ public class SwerveDrive {
 	 * Drives the robot.
 	 * @param xSupplier X speed supplier, in range 0-1
 	 * @param ySupplier Y speed supplier, in range 0-1
-	 * @param omegaSupplier Omage supplier, in range 0-1
+	 * @param omegaSupplier Omega supplier, in range 0-1
 	 * @param fieldRelative Whether the speeds are field relative
 	 * @param useHeadingCorrection Whether to use heading correction
 	 */
@@ -187,7 +187,7 @@ public class SwerveDrive {
 	 * Updates odometry measurments
 	 */
     public void periodic() {
-		// Largley taken from Akit example
+		// Largely taken from Akit example
 		odometryLock.lock(); // Prevents odometry updates while reading data
 		gyroIO.updateInputs(gyroInputs);
 		for (var module : modules) {
@@ -247,8 +247,8 @@ public class SwerveDrive {
 	 * @param speeds Chassis speeds to set module states to
 	 */
     public void runVelocity(ChassisSpeeds speeds) {
-		// Taken largley from akit
-        // Turns chassis speeds over a time into like splits that u can discretley set module states to
+		// Taken largely from akit
+        // Turns chassis speeds over a time into like splits that u can discretely set module states to
         ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(
             speeds,
             0.02
