@@ -8,6 +8,8 @@ import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIONavX;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
+import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
+import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOInputsAutoLogged;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOKrakenSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
 import frc.robot.pioneersLib.subsystem.Subsystem;
@@ -30,13 +32,13 @@ public class Drive extends Subsystem<DriveStates> {
         gyroIO = new SwerveGyroIOSim();
         // TODO: Finish abs encoder things
         modules = new SwerveModule[] {
-                new SwerveModule(new SwerveMotorIOKrakenSim(1, true, 3, 3), new SwerveMotorIONeoSim(5, false, 3), null,
+                new SwerveModule(new SwerveMotorIOKrakenSim(1, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(5, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "FrontLeft"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(2, true, 3, 3), new SwerveMotorIONeoSim(5, false, 3), null,
+                new SwerveModule(new SwerveMotorIOKrakenSim(2, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(6, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "FrontRight"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(3, true, 3, 3), new SwerveMotorIONeoSim(5, false, 3), null,
+                new SwerveModule(new SwerveMotorIOKrakenSim(3, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(7, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "BackLeft"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(4, true, 3, 3), new SwerveMotorIONeoSim(5, false, 3), null,
+                new SwerveModule(new SwerveMotorIOKrakenSim(4, true, 5.357, 0.000520786), new SwerveMotorIONeoSim(8, false, 21.4286), new SwerveAbsoluteEncoderIO() {},
                         0, "BackRight")
         };
 

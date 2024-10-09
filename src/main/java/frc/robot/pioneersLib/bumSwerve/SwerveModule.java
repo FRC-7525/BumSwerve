@@ -46,6 +46,9 @@ public class SwerveModule {
         this.absoluteEncoder = absoluteEncoder;
         this.moduleName = moduleName;
         this.absoluteEncoderOffset = absoluteEncoderOffset;
+
+        this.turnInputs = new SwerveMotorIOInputsAutoLogged();
+        this.driveInputs = new SwerveMotorIOInputsAutoLogged();
     }
 
     // TODO: Make a "Set is drive" function in the motorIO so you don't have to feed in "In drive" when you create a swerve motor

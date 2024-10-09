@@ -5,50 +5,64 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import frc.robot.subsystems.drive.Drive;
 
-
 public class Robot extends LoggedRobot {
-  Drive drive;
+	Drive drive;
 
-  @Override
-  public void robotInit() {
-    this.drive = new Drive();
-  }
+	@Override
+	public void robotInit() {
+		this.drive = new Drive();
+		Logger.addDataReceiver(new NT4Publisher());
+		Logger.start();
 
-  @Override
-  public void robotPeriodic() {
-    drive.periodic();
-  }
+	}
 
-  @Override
-  public void autonomousInit() {}
+	@Override
+	public void robotPeriodic() {
+		drive.periodic();
+	}
 
-  @Override
-  public void autonomousPeriodic() {}
+	@Override
+	public void autonomousInit() {
+	}
 
-  @Override
-  public void teleopInit() {}
+	@Override
+	public void autonomousPeriodic() {
+	}
 
-  @Override
-  public void teleopPeriodic() {}
+	@Override
+	public void teleopInit() {
+	}
 
-  @Override
-  public void disabledInit() {}
+	@Override
+	public void teleopPeriodic() {
+	}
 
-  @Override
-  public void disabledPeriodic() {}
+	@Override
+	public void disabledInit() {
+	}
 
-  @Override
-  public void testInit() {}
+	@Override
+	public void disabledPeriodic() {
+	}
 
-  @Override
-  public void testPeriodic() {}
+	@Override
+	public void testInit() {
+	}
 
-  @Override
-  public void simulationInit() {}
+	@Override
+	public void testPeriodic() {
+	}
 
-  @Override
-  public void simulationPeriodic() {}
+	@Override
+	public void simulationInit() {
+	}
+
+	@Override
+	public void simulationPeriodic() {
+	}
 }

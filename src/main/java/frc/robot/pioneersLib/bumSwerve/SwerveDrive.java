@@ -211,20 +211,14 @@ public class SwerveDrive {
 			}
 
 			// Update gyro angle
-			if (gyroInputs.connected) {
-				if (isSim) {
-					// Use the angle delta from the kinematics and module deltas
-					Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-					rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-					// TODO: This right or naw? + remove repeated code or get rid of sim layer for gyro
-					gyroIO.setAnlge(new Rotation3d(rawGyroRotation.getCos(), 0, rawGyroRotation.getSin()));
-				}
+			if (gyroInputs.connected && !isSim) {
 				// Use the real gyro angle (Or the bogus one for sim)
 				rawGyroRotation = gyroInputs.odometryYawPositions[i];
 			} else {
 				// Use the angle delta from the kinematics and module deltas
 				Twist2d twist = kinematics.toTwist2d(moduleDeltas);
 				rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+				if (isSim) gyroIO.setAnlge(new Rotation3d(rawGyroRotation.getCos(), 0, rawGyroRotation.getSin()));
 			}
 
 			// Apply update
