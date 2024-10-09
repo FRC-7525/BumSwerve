@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
@@ -254,6 +255,26 @@ public class SwerveDrive {
 			poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
 		}
     }
+
+	/**
+	 * @return The robots chassis speeds
+	 */
+	public ChassisSpeeds getChassisSpeed() {
+		ChassisSpeeds robotChassisSpeed = kinematics.toChassisSpeeds(getModuleStates());
+		return robotChassisSpeed;
+	}
+
+	/**
+	 * @return The robots speed in ft/s
+	 */
+	@AutoLogOutput(key = "SwerveDrive/Speed")
+	public double getSpeed() {
+		double robotSpeed = Math.sqrt(
+			Math.pow(getChassisSpeed().vxMetersPerSecond, 2) +
+			Math.pow(getChassisSpeed().vyMetersPerSecond, 2)
+		);
+		return Units.metersToFeet(robotSpeed);
+	}
 
 	/**
 	 * Runs the velocity of the robot
