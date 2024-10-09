@@ -31,9 +31,9 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     // TODO: Do sum about rev sim being ass
 
-    public SwerveMotorIONeoSim(int id, boolean isDrive, double gearRatio) {
+    public SwerveMotorIONeoSim(int placeholderCANId, boolean isDrive, double gearRatio) {
         revSim = REVPhysicsSim.getInstance();
-        dummySpark = new CANSparkMax(id, MotorType.kBrushless);
+        dummySpark = new CANSparkMax(placeholderCANId, MotorType.kBrushless);
         controller = dummySpark.getPIDController();
 
         encoder = dummySpark.getEncoder();

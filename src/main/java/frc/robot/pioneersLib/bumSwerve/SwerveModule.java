@@ -48,6 +48,8 @@ public class SwerveModule {
         this.absoluteEncoderOffset = absoluteEncoderOffset;
     }
 
+    // TODO: Make a "Set is drive" function in the motorIO so you don't have to feed in "In drive" when you create a swerve motor
+
     /**
      * Runs the module at the specified state
      * @param state
