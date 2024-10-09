@@ -51,28 +51,6 @@ public interface SwerveMotorIO {
     }
 
     /**
-     * @return Array of odometry timestamps
-     */
-    public default double[] getOdometryTimestamps() {
-        return new double[0];
-    }
-
-    /**
-     * @return Array of accumulated positions, should be used only for drive motors
-     */
-    public default double[] getOdometryAccumulatedPositions() {
-        return new double[0];
-    }
-
-    /**
-     * @return Array of odo motor positions
-     */
-    public default Rotation2d[] getOdometryPositions() {
-        return new Rotation2d[0];
-    }
-
-
-    /**
      * Run the motor at the specified voltage
      * @param volts
      */

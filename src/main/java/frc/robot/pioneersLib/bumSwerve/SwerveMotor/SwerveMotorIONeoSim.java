@@ -79,6 +79,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         dummySpark.setVoltage(volts);
     }
 
+    // TODO: ADD IMPORTANT GETTERS PLS PLS PLS PLS PLS PLS
+
     @Override
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(encoder.getPosition());

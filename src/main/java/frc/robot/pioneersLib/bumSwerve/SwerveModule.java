@@ -1,11 +1,14 @@
 package frc.robot.pioneersLib.bumSwerve;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIO;
+import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOInputsAutoLogged;
 
 public class SwerveModule {
 
@@ -20,17 +23,25 @@ public class SwerveModule {
 
     private SwerveModulePosition[] odometryPositions;
 
-    public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder) {
+    private SwerveMotorIOInputsAutoLogged turnInputs;
+    private SwerveMotorIOInputsAutoLogged driveInputs;
+
+    private double absoluteEncoderOffset;
+    private String moduleName;
+
+    public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder, double absoluteEncoderOffset, String moduleName) {
         this.driveMotor = driveMotor;
         this.turnMotor = turnMotor;
         this.absoluteEncoder = absoluteEncoder;
+        this.moduleName = moduleName;
+        this.absoluteEncoderOffset = absoluteEncoderOffset;
     }
 
     /**
      * Runs the module at the specified state
      * @param state
      */
-    public void runState(SwerveModuleState state) {
+    public SwerveModuleState runState(SwerveModuleState state) {
 
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null) {
@@ -49,18 +60,26 @@ public class SwerveModule {
 
         // Taken ish from akit advanced example (I'm not rewriting allat)
         // Updates odo so it can be used in pose estimator in SwerveDrive
-        int sampleCount = driveMotor.getOdometryTimestamps().length; // All signals are sampled together with the thread so lengths should be the same??
+        int sampleCount = driveInputs.odometryTimestamps.length; // All signals are sampled together with the thread so lengths should be the same??
 		odometryPositions = new SwerveModulePosition[sampleCount];
 		for (int i = 0; i < sampleCount; i++) {
-			double positionMeters = driveMotor.getOdometryAccumulatedPositions()[i] * 2 * Math.PI;
+			double positionMeters = driveInputs.odometryMotorAccumulatedPosition[i] * 2 * Math.PI;
 			Rotation2d angle =
-				turnMotor.getOdometryPositions()[i].plus(
+				turnInputs.odometryMotorPositions[i].plus(
 						turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset : new Rotation2d()
 					);
 			odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
 		}
+
+        return optimizedState;
     }
     
+    public void updateInputs() {
+        turnMotor.updateInputs(turnInputs);
+        driveMotor.updateInputs(driveInputs);
+        Logger.processInputs("Drive/" + moduleName +"/DriveMotor", driveInputs);
+        Logger.processInputs("Drive/" + moduleName + "/TurnMotor", turnInputs);
+    }
 
     /**
      * Stops the module from moving
@@ -79,10 +98,6 @@ public class SwerveModule {
 
     public SwerveModulePosition[] getOdometryPositions() {
         return odometryPositions;
-    }
-
-    public double[] getOdometryTimestamps() {
-        return driveMotor.getOdometryTimestamps();
     }
 
     // To interface directly with motors/encoders if ur weird

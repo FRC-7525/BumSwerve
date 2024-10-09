@@ -83,7 +83,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         inputs.motorVelocityRPS = dummyTalon.getVelocity().getValueAsDouble()/gearing;
         inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
 
-        // TODO: Delete, :) just log them in module.java (I'm not doing allat, too much work)
         inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
@@ -93,24 +92,12 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         Outputs.motorAppliedVolts = talonController.getMotorVoltage();
     }
 
-    public double[] getOdometryTimestamps() {
-        return timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-    }
-
-    public double[] getOdometryAccumulatedPositions() {
-        return motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-    }
-
-    public Rotation2d[] getOdometryPositions() {
-        return motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
-    }
-
     @Override
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(dummyTalon.getPosition().getValueAsDouble());
     }
 
-    // TODO: This a bad way of doing it??? idrc to bad so sad
+    // TODO: This a bad way of doing it??? idrc t0o bad so sad
     @Override
     public double getPositionError() {
         return positionError;
