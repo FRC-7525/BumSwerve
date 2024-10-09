@@ -14,6 +14,8 @@
 package frc.robot.pioneersLib.bumSwerve.Gyro;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface SwerveGyroIO {
@@ -31,6 +33,12 @@ public interface SwerveGyroIO {
 	 * Zero the gyro's rotation position
 	 */
 	public default void zero() {}
+
+	/**
+	 * Used to set gyro rotation in sim
+	 * @param rotation Rotation3d object with x, y, z values
+	 */
+	public default void setAnlge(Rotation3d rotation) {}
 
 	/**
 	 * Updates the inputs class with the current gyro data

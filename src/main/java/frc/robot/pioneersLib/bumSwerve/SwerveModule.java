@@ -29,6 +29,9 @@ public class SwerveModule {
     private double absoluteEncoderOffset;
     private String moduleName;
 
+    private Double speedSetPoint;
+    private Double angleSetPoint;
+
     public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder, double absoluteEncoderOffset, String moduleName) {
         this.driveMotor = driveMotor;
         this.turnMotor = turnMotor;
@@ -52,11 +55,25 @@ public class SwerveModule {
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
 
         // TODO: I'm bad at math, is this right?
-        turnMotor.setPosition(optimizedState.angle.getDegrees());
-        
+        angleSetPoint = optimizedState.angle.getDegrees();
+
         // Converts m/s peeds to rot/s for setpoint then accounts for turn error
-        double driveSetpoint = optimizedState.speedMetersPerSecond/ (Units.inchesToMeters(2) * Math.PI * 2);
-        driveMotor.setVelocity(Math.cos(turnMotor.getPositionError()) * driveSetpoint);
+        speedSetPoint = Math.cos(turnMotor.getPositionError()) * (optimizedState.speedMetersPerSecond/ (Units.inchesToMeters(2) * Math.PI * 2));
+
+        return optimizedState;
+    }
+
+    /**
+     * Runs the module at the specified state
+     */
+    public void periodic() {
+        if (angleSetPoint != null) {
+            turnMotor.setPosition(angleSetPoint);
+
+            if (speedSetPoint != null) {
+                driveMotor.setVelocity(speedSetPoint);
+            }
+        }
 
         // Taken ish from akit advanced example (I'm not rewriting allat)
         // Updates odo so it can be used in pose estimator in SwerveDrive
@@ -70,8 +87,6 @@ public class SwerveModule {
 					);
 			odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
 		}
-
-        return optimizedState;
     }
     
     public void updateInputs() {
@@ -98,6 +113,15 @@ public class SwerveModule {
 
     public SwerveModulePosition[] getOdometryPositions() {
         return odometryPositions;
+    }
+
+    /**
+     * Note: this only returns timestamps from the drive motor
+     * which should be the same as the turn motor because the thread takes samples at the same time
+     * @return The timestamp of the odometry data
+     */
+    public double[] getOdometryTimestamps() {
+        return driveInputs.odometryTimestamps;
     }
 
     // To interface directly with motors/encoders if ur weird

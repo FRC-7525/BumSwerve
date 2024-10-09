@@ -5,22 +5,28 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
+import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOInputsAutoLogged;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIO;
+import frc.robot.subsystems.drive.Drive;
 
 public class SwerveDrive {
     static final Lock odometryLock = new ReentrantLock();
@@ -37,10 +43,12 @@ public class SwerveDrive {
 
     private double maxSpeed;
     private double wheelRadius;
+	private int numModules;
+	private boolean isSim;
 
 	private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
     private SwerveDrivePoseEstimator poseEstimator;
-    private SwerveModulePosition[] lastModulePositions =
+    private SwerveModulePosition[] lastModulePositions = // "for delta tracking", no idea what this does :( helps pose estimator ig
 		new SwerveModulePosition[] {
 			new SwerveModulePosition(),
 			new SwerveModulePosition(),
@@ -48,10 +56,8 @@ public class SwerveDrive {
 			new SwerveModulePosition(),
 		};
 
-    private SwerveModuleState[] setpoints;
-
     // TODO: Uh i mean u can only have 4 modules rn make that not so
-    public SwerveDrive(double trackWidthX, double trackWidthY, SwerveModule[] modules, SwerveGyroIO gyroIO, double maxSpeed, double wheelRadius) {
+    public SwerveDrive(double trackWidthX, double trackWidthY, SwerveModule[] modules, SwerveGyroIO gyroIO, double maxSpeed, double wheelRadius, boolean isSim) {
         SwerveDrive.trackWidthX = trackWidthX;
         SwerveDrive.trackWidthY = trackWidthY;
         OdometryThread.getInstance().start();
@@ -64,6 +70,8 @@ public class SwerveDrive {
         this.wheelRadius = wheelRadius;
 
         this.modules = modules;
+		this.isSim = isSim;
+		this.numModules = modules.length;
     }
 
     public void periodic() {
@@ -75,7 +83,8 @@ public class SwerveDrive {
 		odometryLock.unlock();
 		Logger.processInputs("Drive/Gyro", gyroInputs);
 		for (var module : modules) {
-			module.runState(new SwerveModuleState());
+			// Updates odo and runs setpoints
+			module.periodic();
 		}
 
 		// Stop moving when disabled
@@ -91,10 +100,10 @@ public class SwerveDrive {
 		for (int i = 0; i < sampleCount; i++) {
 			// Read wheel positions and deltas from each module
 			SwerveModulePosition[] modulePositions =
-				new SwerveModulePosition[Constants.Drive.NUM_MODULES];
+				new SwerveModulePosition[numModules];
 			SwerveModulePosition[] moduleDeltas =
-				new SwerveModulePosition[Constants.Drive.NUM_MODULES];
-			for (int moduleIndex = 0; moduleIndex < Constants.Drive.NUM_MODULES; moduleIndex++) {
+				new SwerveModulePosition[numModules];
+			for (int moduleIndex = 0; moduleIndex < numModules; moduleIndex++) {
 				modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
 				moduleDeltas[moduleIndex] = new SwerveModulePosition(
 					modulePositions[moduleIndex].distanceMeters -
@@ -106,7 +115,14 @@ public class SwerveDrive {
 
 			// Update gyro angle
 			if (gyroInputs.connected) {
-				// Use the real gyro angle
+				if (isSim) {
+					// Use the angle delta from the kinematics and module deltas
+					Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+					rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+					// TODO: This right or naw? + remove repeated code or get rid of sim layer for gyro
+					gyroIO.setAnlge(new Rotation3d(rawGyroRotation.getCos(), 0, rawGyroRotation.getSin()));
+				}
+				// Use the real gyro angle (Or the bogus one for sim)
 				rawGyroRotation = gyroInputs.odometryYawPositions[i];
 			} else {
 				// Use the angle delta from the kinematics and module deltas
@@ -126,6 +142,7 @@ public class SwerveDrive {
             speeds,
             0.02
         );
+		// Turns chassis speeds into module states and then makes sure they're attainable
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(
             setpointStates,
@@ -136,7 +153,7 @@ public class SwerveDrive {
         SwerveModuleState[] optimizedSetpointStates =
             new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {
-            // The module returns the optimized state, useful for logging
+			// Sets module setpoints, periodic actually runs the states
             optimizedSetpointStates[i] = modules[i].runState(setpointStates[i]);
         }
 
@@ -144,7 +161,34 @@ public class SwerveDrive {
         Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
         Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
     }
+	
 
+	// TODO: Have a working vision system so this matters
+
+	/**
+	 * Adds a vision measurement to the pose estimator.
+	 *
+	 * @param visionPose The pose of the robot as measured by the vision camera.
+	 * @param timestamp  The timestamp of the vision measurement in seconds.
+	 */
+	public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+		poseEstimator.addVisionMeasurement(visionPose, timestamp);
+	}
+
+	/**
+	 * Adds a vision measurment to the pose estimator.
+	 * 
+	 * @param visionPose The pose of the robot measured by the vision camera.
+	 * @param timestamp The timestamp of the vision measurment in seconds.
+	 * @param visionMeasurementStdDevs The standard deviations of the vision measurement.
+	 */
+	public void addVisionMeasurement(
+		Pose2d visionPose,
+		double timestamp,
+		Matrix<N3, N1> visionMeasurementStdDevs
+	) {
+		poseEstimator.addVisionMeasurement(visionPose, timestamp, visionMeasurementStdDevs);
+	}
     /**
      * @return Array of module translations in the order FL, FR, BL, BR
      */
