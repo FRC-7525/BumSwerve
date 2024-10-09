@@ -26,23 +26,44 @@ public class Drive extends Subsystem<DriveStates> {
     private SwerveModule[] modules;
     private XboxController controller;
 
+    private boolean sim;
+
     public Drive() {
         super("Drive", DriveStates.REGULAR);
         controller = new XboxController(0);
-        gyroIO = new SwerveGyroIOSim();
-        // TODO: Finish abs encoder things
-        modules = new SwerveModule[] {
-                new SwerveModule(new SwerveMotorIOKrakenSim(1, 5.357, 0.000520786), new SwerveMotorIONeoSim(5, 21.4286), new SwerveAbsoluteEncoderIO() {},
-                        0, "FrontLeft"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(2, 5.357, 0.000520786), new SwerveMotorIONeoSim(6, 21.4286), new SwerveAbsoluteEncoderIO() {},
-                        0, "FrontRight"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(3, 5.357, 0.000520786), new SwerveMotorIONeoSim(7, 21.4286), new SwerveAbsoluteEncoderIO() {},
-                        0, "BackLeft"),
-                new SwerveModule(new SwerveMotorIOKrakenSim(4, 5.357, 0.000520786), new SwerveMotorIONeoSim(8, 21.4286), new SwerveAbsoluteEncoderIO() {},
-                        0, "BackRight")
-        };
+        sim = true;
 
-        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, true);
+        if (sim) {
+            gyroIO = new SwerveGyroIOSim();
+            // TODO: Finish abs encoder things
+            modules = new SwerveModule[] {
+                    new SwerveModule(new SwerveMotorIOKrakenSim(1, 5.357, 0.000520786),
+                            new SwerveMotorIONeoSim(5, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {
+                            },
+                            0, "FrontLeft"),
+                    new SwerveModule(new SwerveMotorIOKrakenSim(2, 5.357, 0.000520786),
+                            new SwerveMotorIONeoSim(6, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {
+                            },
+                            0, "FrontRight"),
+                    new SwerveModule(new SwerveMotorIOKrakenSim(3, 5.357, 0.000520786),
+                            new SwerveMotorIONeoSim(7, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {
+                            },
+                            0, "BackLeft"),
+                    new SwerveModule(new SwerveMotorIOKrakenSim(4, 5.357, 0.000520786),
+                            new SwerveMotorIONeoSim(8, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {
+                            },
+                            0, "BackRight")
+            };
+        } else {
+            gyroIO = new SwerveGyroIONavX();
+            // TODO: I'm not typing allat lol
+        }
+
+        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
         // TODO: Tune
         drive.configureAnglePID(0.5, 0, 0);
         drive.configureDrivePID(0.01, 0, 0);
