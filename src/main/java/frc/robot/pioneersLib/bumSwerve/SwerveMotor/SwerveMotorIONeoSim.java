@@ -116,7 +116,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     public void setPosition(double positionDeg) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
         controller.setReference(positionDeg / 360, ControlType.kPosition, 0);
-
+        // System.out.println(positionDeg);
+        System.out.println(positionError);
         positionError = Math.abs(positionDeg/360 - encoder.getPosition());
     }
 

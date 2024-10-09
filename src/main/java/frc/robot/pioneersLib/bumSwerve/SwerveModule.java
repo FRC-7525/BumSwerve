@@ -71,7 +71,7 @@ public class SwerveModule {
         angleSetPoint = optimizedState.angle.getDegrees();
 
         // Converts m/s peeds to rot/s for setpoint then accounts for turn error
-        speedSetPoint = Math.cos(turnMotor.getPositionError()) * (optimizedState.speedMetersPerSecond/ (Units.inchesToMeters(2) * Math.PI * 2));
+        speedSetPoint = Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * (optimizedState.speedMetersPerSecond/ (Units.inchesToMeters(2) * Math.PI * 2));
 
         return optimizedState;
     }
