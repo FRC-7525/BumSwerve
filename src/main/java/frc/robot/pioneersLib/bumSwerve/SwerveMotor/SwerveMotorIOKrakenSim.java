@@ -133,6 +133,8 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         motorSim.setInputVoltage(talonController.getMotorVoltage());
         talonController.setRawRotorPosition(motorSim.getAngularPositionRotations());
         talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/60);
+
+        System.out.println("SETTING VOLTAGE");
     }
 
     @Override

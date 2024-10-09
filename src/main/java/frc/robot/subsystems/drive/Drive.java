@@ -46,6 +46,7 @@ public class Drive extends Subsystem<DriveStates> {
         // TODO: Tune
         drive.configureAnglePID(1, 0, 0);
         drive.configureDrivePID(1, 0, 0);
+        drive.configureDriveFF(1, 1);
     }
 
     public void runState() {
