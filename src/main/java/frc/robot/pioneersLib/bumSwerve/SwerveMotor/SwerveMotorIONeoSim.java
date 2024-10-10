@@ -152,6 +152,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         revSim.run();
 
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
+
         setVoltage(turnController.calculate(getAngle().getRotations(), positionDeg / 360));
         positionError = Math.abs(positionDeg/360 - encoder.getPosition());
     }

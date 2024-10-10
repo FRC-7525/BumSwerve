@@ -142,10 +142,10 @@ public class SwerveDrive {
 		ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
 			xSupplier.getAsDouble() * getMaxSpeed(),
 			ySupplier.getAsDouble() * getMaxSpeed(),
-			Math.PI,
+			omegaSupplier.getAsDouble() * getMaxAngularVelocity(),
 			getRobotRotation()
 		);
-		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(), omegaSupplier.getAsDouble() * getMaxAngularVelocity(), isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
+		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(), omegaSupplier.getAsDouble() * (getMaxAngularVelocity()), isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
 		
 		// Heading correction / field rel stuff
 		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
@@ -295,7 +295,7 @@ public class SwerveDrive {
         );
 
 		// Turns chassis speeds into module states and then makes sure they're attainable
-        SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds, new Translation2d());
+        SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(
             setpointStates,
             maxSpeed

@@ -33,6 +33,8 @@ public class SwerveModule {
     private Double speedSetPoint;
     private Double angleSetPoint;
     
+    private SwerveModuleState lastModuleState;
+
     /**
      * Creates a new SwerveModule
      * @param driveMotor
@@ -83,9 +85,23 @@ public class SwerveModule {
 		return cof * 9.81;
 	}
 
+	public static void antiJitter(
+		SwerveModuleState moduleState,
+		SwerveModuleState lastModuleState,
+		double maxSpeed
+	) {
+		if (
+			Math.abs(moduleState.speedMetersPerSecond) <=
+			(maxSpeed * 0.2)
+		) {
+			moduleState.angle = lastModuleState.angle;
+		}
+	}
+
     /**
      * Runs the module at the specified state
      * @param state
+     * @return The optimized SwerveModuleState
      */
     public SwerveModuleState runState(SwerveModuleState state) {
 
@@ -94,14 +110,21 @@ public class SwerveModule {
             turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
         }
 
-        // Prevents the turn motor from doing uneeded rotations
+		// Set last moule state at start
+		if (lastModuleState == null) {
+			lastModuleState = state;
+		}
+
+        // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
+        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // TODO: I'm bad at math, is this right?
         angleSetPoint = optimizedState.angle.getDegrees();
 
-        speedSetPoint = Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * (optimizedState.speedMetersPerSecond/ (Units.inchesToMeters(2) * Math.PI * 2));
+        speedSetPoint = Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * (optimizedState.speedMetersPerSecond / (SwerveDrive.wheelRadius * Math.PI * 2));
 
+        lastModuleState = state;
         return optimizedState;
     }
 
@@ -122,7 +145,7 @@ public class SwerveModule {
         int sampleCount = driveInputs.odometryTimestamps.length; // All signals are sampled together with the thread so lengths should be the same??
 		odometryPositions = new SwerveModulePosition[sampleCount];
 		for (int i = 0; i < sampleCount; i++) {
-			double positionMeters = driveInputs.odometryDriveAccumulatedPosition[i] * 2 * Math.PI * Units.inchesToMeters(2);
+			double positionMeters = driveInputs.odometryDriveAccumulatedPosition[i] * 2 * Math.PI * SwerveDrive.wheelRadius;
 			Rotation2d angle =
 				turnInputs.odometryMotorPositions[i].plus(
 						turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset : new Rotation2d()
