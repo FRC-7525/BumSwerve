@@ -105,7 +105,12 @@ public class SwerveModule {
 
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null) {
-            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
+            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg().getValueAsDouble()).minus(turnMotor.getAngle());
+        }
+
+        //feeds value directly to encoder if it is sim.
+        if (absoluteEncoder.isSim()) {
+            absoluteEncoder.setRotationDeg(turnMotor.getAngle().getDegrees());
         }
 
 		// Set last moule state at start
