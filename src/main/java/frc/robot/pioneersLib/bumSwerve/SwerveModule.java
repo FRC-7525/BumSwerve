@@ -12,8 +12,6 @@ import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOInputsAutoLogged;
 
 public class SwerveModule {
-
-    // TODO: DO AKIT LOGGING IN HERE AND REMOVE MAGIC NUMBERS!
     // TODO: ADD OPEN LOOP CONTROL
     public static final double ODOMETRY_FREQUENCY = 250.0;
 
@@ -34,6 +32,8 @@ public class SwerveModule {
     private Double angleSetPoint;
     
     private SwerveModuleState lastModuleState;
+
+    private double antiJitterThreshold = 0.1;
 
     /**
      * Creates a new SwerveModule
@@ -57,8 +57,6 @@ public class SwerveModule {
         this.turnInputs = new SwerveMotorIOInputsAutoLogged();
         this.driveInputs = new SwerveMotorIOInputsAutoLogged();
     }
-
-    // TODO: Make a "Set is drive" function in the motorIO so you don't have to feed in "In drive" when you create a swerve motor
 
     /**
      * Sets a feed forward controller based on several real-world parameters.
@@ -85,14 +83,14 @@ public class SwerveModule {
 		return cof * 9.81;
 	}
 
-	public static void antiJitter(
+	public void antiJitter(
 		SwerveModuleState moduleState,
 		SwerveModuleState lastModuleState,
 		double maxSpeed
 	) {
 		if (
 			Math.abs(moduleState.speedMetersPerSecond) <=
-			(maxSpeed * 0.2)
+			(maxSpeed * antiJitterThreshold)
 		) {
 			moduleState.angle = lastModuleState.angle;
 		}
@@ -257,5 +255,13 @@ public class SwerveModule {
      */
     public SwerveAbsoluteEncoderIO getEncoder() {
         return absoluteEncoder;
+    }
+
+    /**
+     * Sets the Anti Jitter Threshold for the motors
+     * @param threshold
+     */
+    public void setAntiJitterThreshold(double threshold) {
+        antiJitterThreshold = threshold;
     }
 }

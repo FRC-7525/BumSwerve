@@ -15,8 +15,6 @@ import frc.robot.pioneersLib.bumSwerve.OdometryThread;
  * robot rotation. Everything is in deg
  */
 
- // TODO: DELETE THIS LAYER IT'S LOWKEY USELESS
-
 public class SwerveGyroIOSim implements SwerveGyroIO {
     // Most comparable to NavX out of what wpilib sim offers
     private final ADIS16448_IMU gyro;
@@ -51,8 +49,7 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
         gyroController.setGyroAngleY(0);
         gyroController.setGyroAngleZ(0);
     }
-    
-    // TODO: Set these angles (and prob rates) based on module states
+
     public void setGyroAngle(Rotation3d rotation) {
         gyroController.setGyroAngleX(rotation.getX());
         gyroController.setGyroAngleY(rotation.getY());

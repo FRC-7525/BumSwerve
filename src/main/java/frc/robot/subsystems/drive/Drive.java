@@ -10,6 +10,8 @@ import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOKrakenSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
+import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOSparkMax;
+import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 
 public class Drive extends Subsystem<DriveStates> {
@@ -57,8 +59,37 @@ public class Drive extends Subsystem<DriveStates> {
                             0, "BackRight")
             };
         } else {
-            gyroIO = new SwerveGyroIONavX();
-            // TODO: I'm not typing allat lol
+            gyroIO = new SwerveGyroIONavX(1);
+            modules = new SwerveModule[] {
+                    new SwerveModule(
+                            new SwerveMotorIOTalonFX(1, 5.357),
+                            new SwerveMotorIOSparkMax(5, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {},
+                            0, 
+                            "FrontLeft"
+                    ),
+                    new SwerveModule(
+                            new SwerveMotorIOTalonFX(2, 5.357),
+                            new SwerveMotorIOSparkMax(6, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {},
+                            0, 
+                            "FrontRight"
+                    ),
+                    new SwerveModule(
+                            new SwerveMotorIOTalonFX(3, 5.357),
+                            new SwerveMotorIOSparkMax(7, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {},
+                            0, 
+                            "BackLeft"
+                    ),
+                    new SwerveModule(
+                            new SwerveMotorIOTalonFX(4, 5.357),
+                            new SwerveMotorIOSparkMax(8, 21.4286),
+                            new SwerveAbsoluteEncoderIO() {},
+                            0, 
+                            "BackRight"
+                    )
+            };
         }
 
         drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);

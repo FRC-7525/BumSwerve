@@ -51,16 +51,12 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
         configs = new Slot0Configs();
 
-        // TODO: See if dummy PID is uneeded
         configs.kP = 0.0;
         configs.kI = 0.0;
         configs.kD = 0.0;
         configurator.apply(configs);
-
-        // Take into account gear ratio
+        
         FeedbackConfigs feedback = new FeedbackConfigs();
-        // TODO: 1 or gear ratio? do u need to use gear ratio if u already do in the sim configs?
-        //feedback.SensorToMechanismRatio = gearRatio;
         configurator.apply(feedback);
 
         motorPosition = dummyTalon.getPosition();

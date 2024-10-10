@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
@@ -42,8 +43,6 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     private final int SPARK_MEASUREMENT_PERIOD_MS = 10;
     private final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
     private final double RAMP_RATE = 0.16;
-
-    // TODO: Do sum about rev sim being ass
 
     public SwerveMotorIONeoSim(int placeholderCANId, double gearRatio) {
         revSim = REVPhysicsSim.getInstance();

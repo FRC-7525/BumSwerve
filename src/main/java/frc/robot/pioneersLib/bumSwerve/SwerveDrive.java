@@ -37,7 +37,6 @@ public class SwerveDrive {
     private final SwerveModule[] modules; // FL, FR, BL, BR
 	private Rotation2d rawGyroRotation = new Rotation2d();
 
-    // TODO: Take in track width in the constructor
     private static double trackWidthX;
     private static double trackWidthY;
 
@@ -56,9 +55,6 @@ public class SwerveDrive {
 			new SwerveModulePosition(),
 			new SwerveModulePosition(),
 		};
-
-
-	// TODO: Be able to accept just 1 module as the configs for all the rest to reuce repeated code
 
 	/**
 	 * Creates a new SwerveDrive object
@@ -206,6 +202,7 @@ public class SwerveDrive {
     public void periodic() {
 		// Largely taken from Akit example
 		odometryLock.lock(); // Prevents odometry updates while reading data
+
 		gyroIO.updateInputs(gyroInputs);
 		for (var module : modules) {
 			module.updateInputs();
@@ -300,10 +297,6 @@ public class SwerveDrive {
             setpointStates,
             maxSpeed
         );
-
-		Logger.recordOutput("Swerve State Speed", setpointStates[0].speedMetersPerSecond);
-		Logger.recordOutput("Swerve State Angle", setpointStates[0].angle.getDegrees());
-		Logger.recordOutput("Chassis speed target rad/s", discreteSpeeds.omegaRadiansPerSecond);
 
         // Send setpoints to modules
         SwerveModuleState[] optimizedSetpointStates =
