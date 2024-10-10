@@ -2,6 +2,8 @@ package frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.StatusSignal;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface SwerveAbsoluteEncoderIO{
@@ -27,8 +29,8 @@ public interface SwerveAbsoluteEncoderIO{
     /*Gets rotation degree as a Rotation2d */
     public Rotation2d getTurnAbsolutePosition();
     
-    /*Gets rotation degree as a double */
-    public double getRotationDeg();
+    /*Returns position status signal */
+    public StatusSignal<Double> getRotationDeg();
 
 
 }

@@ -1,5 +1,6 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder;
 
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -72,7 +73,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
     }
 
     @Override
-    public double getRotationDeg() {
-        return turnAbsolutePosition.getValueAsDouble();
+    public StatusSignal<Double> getRotationDeg() {
+        return turnAbsolutePosition;
     }
 }

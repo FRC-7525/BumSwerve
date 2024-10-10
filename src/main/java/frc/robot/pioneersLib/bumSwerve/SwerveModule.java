@@ -45,7 +45,7 @@ public class SwerveModule {
 
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null) {
-            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
+            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg().getValueAsDouble()).minus(turnMotor.getAngle());
         }
 
         // Prevents the turn motor from doing uneeded rotations
