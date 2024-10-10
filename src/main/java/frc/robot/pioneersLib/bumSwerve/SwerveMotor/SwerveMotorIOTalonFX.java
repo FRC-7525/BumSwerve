@@ -127,6 +127,11 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     }
 
     @Override
+    public void setEncoderPosition(double positionDeg) {
+        motor.setPosition(positionDeg/360);
+    }
+
+    @Override
     public double getPositionError() {
         return positionError;
     }

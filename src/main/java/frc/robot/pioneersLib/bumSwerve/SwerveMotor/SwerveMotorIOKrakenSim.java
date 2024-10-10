@@ -106,6 +106,11 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     }
     
     @Override
+    public void setEncoderPosition(double positionDeg) {
+        dummyTalon.setPosition(positionDeg/360);
+    }
+
+    @Override
     public void configurePID(double kP, double kI, double kD) {
         configs.kP = kP;
         configs.kI = kI;

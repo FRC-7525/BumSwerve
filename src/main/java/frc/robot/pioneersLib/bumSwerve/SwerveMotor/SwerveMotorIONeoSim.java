@@ -105,6 +105,11 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     public void setVoltage(double volts) {
         dummySpark.setVoltage(volts);
+    }   
+
+    @Override
+    public void setEncoderPosition(double positionDeg) {
+        encoder.setPosition(positionDeg / 360);
     }
 
     @Override

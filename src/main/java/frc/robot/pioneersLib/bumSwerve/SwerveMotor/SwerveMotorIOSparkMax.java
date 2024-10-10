@@ -142,6 +142,11 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     }
 
     @Override
+    public void setEncoderPosition(double positionDeg) {
+        encoder.setPosition(positionDeg / 360);
+    }
+
+    @Override
     public void setVelocity(double speedpoint) {
         if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
 

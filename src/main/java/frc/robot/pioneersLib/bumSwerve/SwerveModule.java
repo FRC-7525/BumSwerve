@@ -25,7 +25,6 @@ public class SwerveModule {
     private SwerveMotorIOInputsAutoLogged turnInputs;
     private SwerveMotorIOInputsAutoLogged driveInputs;
 
-    private double absoluteEncoderOffset;
     private String moduleName;
 
     private Double speedSetPoint;
@@ -52,7 +51,6 @@ public class SwerveModule {
 
         this.absoluteEncoder = absoluteEncoder;
         this.moduleName = moduleName;
-        this.absoluteEncoderOffset = absoluteEncoderOffset;
 
         this.turnInputs = new SwerveMotorIOInputsAutoLogged();
         this.driveInputs = new SwerveMotorIOInputsAutoLogged();
@@ -105,7 +103,7 @@ public class SwerveModule {
 
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null) {
-            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg().getValueAsDouble()).minus(turnMotor.getAngle());
+            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
         }
 
         //feeds value directly to encoder if it is sim.

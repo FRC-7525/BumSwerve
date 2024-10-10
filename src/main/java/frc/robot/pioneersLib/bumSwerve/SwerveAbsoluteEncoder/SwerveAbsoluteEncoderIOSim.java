@@ -65,8 +65,8 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     }
 
     @Override
-    public StatusSignal<Double> getRotationDeg() {
-        return turnAbsolutePosition;
+    public double getRotationDeg() {
+        return turnAbsolutePosition.getValueAsDouble() / 360;
     }
 
     @Override 
