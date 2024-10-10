@@ -47,7 +47,7 @@ public class SwerveDrive {
 	private boolean isSim;
 	private Rotation2d lastHeading;
 
-	private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
+	private SwerveDriveKinematics kinematics;
     private SwerveDrivePoseEstimator poseEstimator;
     private SwerveModulePosition[] lastModulePositions = // "for delta tracking", no idea what this does :( helps pose estimator ig
 		new SwerveModulePosition[] {
@@ -75,6 +75,7 @@ public class SwerveDrive {
         SwerveDrive.trackWidthY = trackWidthY;
         OdometryThread.getInstance().start();
 
+		kinematics = new SwerveDriveKinematics(getModuleTranslations());
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
         headingCorrectionController = new PIDController(0, 0, 0);
 		lastHeading = new Rotation2d();
@@ -144,7 +145,7 @@ public class SwerveDrive {
 			Math.PI,
 			getRobotRotation()
 		);
-		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(), Math.PI, isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
+		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(), omegaSupplier.getAsDouble() * getMaxAngularVelocity(), isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
 		
 		// Heading correction / field rel stuff
 		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
