@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
+import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOInputsAutoLogged;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOInputsAutoLogged;
 
@@ -24,6 +25,7 @@ public class SwerveModule {
 
     private SwerveMotorIOInputsAutoLogged turnInputs;
     private SwerveMotorIOInputsAutoLogged driveInputs;
+    private SwerveAbsoluteEncoderIOInputsAutoLogged absoluteEncoderInputs;
 
     private String moduleName;
 
@@ -54,6 +56,7 @@ public class SwerveModule {
 
         this.turnInputs = new SwerveMotorIOInputsAutoLogged();
         this.driveInputs = new SwerveMotorIOInputsAutoLogged();
+        this.absoluteEncoderInputs = new SwerveAbsoluteEncoderIOInputsAutoLogged();
     }
 
     /**
@@ -158,8 +161,10 @@ public class SwerveModule {
     public void updateInputs() {
         turnMotor.updateInputs(turnInputs);
         driveMotor.updateInputs(driveInputs);
+        absoluteEncoder.updateInputs(absoluteEncoderInputs);
         Logger.processInputs("Drive/" + moduleName +"/DriveMotor", driveInputs);
         Logger.processInputs("Drive/" + moduleName + "/TurnMotor", turnInputs);
+        Logger.processInputs("Drive/" + moduleName + "/AbsoluteEncoder", absoluteEncoderInputs);
     }
 
     /**
