@@ -43,7 +43,7 @@ public class SwerveModule {
      * @param absoluteEncoderOffset
      * @param moduleName
      */
-    public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder, double absoluteEncoderOffset, String moduleName) {
+    public SwerveModule(SwerveMotorIO driveMotor, SwerveMotorIO turnMotor, SwerveAbsoluteEncoderIO absoluteEncoder, String moduleName) {
         this.driveMotor = driveMotor;
         driveMotor.setIsDrive(true);
 
