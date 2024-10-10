@@ -22,8 +22,8 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     private MagnetSensorConfigs magnetSensorConfiguration;
     private StatusSignal<Double> turnAbsolutePosition;
 
-    public SwerveAbsoluteEncoderIOSim(int ID) {
-        this.absoluteEncoderOffset = 0;
+    public SwerveAbsoluteEncoderIOSim(int ID, double encoderOffset) {
+        this.absoluteEncoderOffset = encoderOffset;
         this.inverted = false;
 
         this.dummyCANcoder = new CANcoder(ID);

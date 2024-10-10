@@ -21,8 +21,8 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
     private CANcoderConfigurator configurator;
     private MagnetSensorConfigs magnetSensorConfiguration;
 
-    public SwerveAbsoluteEncoderIOCANcoder(int ID) {
-        this.absoluteEncoderOffset = 0;
+    public SwerveAbsoluteEncoderIOCANcoder(int ID, double encoderOffset) {
+        this.absoluteEncoderOffset = encoderOffset;
         this.inverted = false;
         
         this.CANcoder = new CANcoder(ID);

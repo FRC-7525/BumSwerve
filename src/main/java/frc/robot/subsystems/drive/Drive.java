@@ -42,19 +42,19 @@ public class Drive extends Subsystem<DriveStates> {
             modules = new SwerveModule[] {
                     new SwerveModule(new SwerveMotorIOKrakenSim(1, 5.357, 0.000520786),
                             new SwerveMotorIONeoSim(5, 21.4286),
-                            new SwerveAbsoluteEncoderIOSim(9),
+                            new SwerveAbsoluteEncoderIOSim(9, 121.0),
                             0, "FrontLeft"),
                     new SwerveModule(new SwerveMotorIOKrakenSim(2, 5.357, 0.000520786),
                             new SwerveMotorIONeoSim(6, 21.4286),
-                            new SwerveAbsoluteEncoderIOSim(10),
+                            new SwerveAbsoluteEncoderIOSim(10, 11.0),
                             0, "FrontRight"),
                     new SwerveModule(new SwerveMotorIOKrakenSim(3, 5.357, 0.000520786),
                             new SwerveMotorIONeoSim(7, 21.4286),
-                            new SwerveAbsoluteEncoderIOSim(11),
+                            new SwerveAbsoluteEncoderIOSim(11, 21.0),
                             0, "BackLeft"),
                     new SwerveModule(new SwerveMotorIOKrakenSim(4, 5.357, 0.000520786),
                             new SwerveMotorIONeoSim(8, 21.4286),
-                            new SwerveAbsoluteEncoderIOSim(12),
+                            new SwerveAbsoluteEncoderIOSim(12, 1),
                             0, "BackRight")
             };
         } else {
@@ -63,28 +63,28 @@ public class Drive extends Subsystem<DriveStates> {
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(1, 5.357),
                             new SwerveMotorIOSparkMax(5, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2),
+                            new SwerveAbsoluteEncoderIOCANcoder(2, 315),
                             0, 
                             "FrontLeft"
                     ),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(2, 5.357),
                             new SwerveMotorIOSparkMax(6, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2),
+                            new SwerveAbsoluteEncoderIOCANcoder(2, 31),
                             0, 
                             "FrontRight"
                     ),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(3, 5.357),
                             new SwerveMotorIOSparkMax(7, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2),
+                            new SwerveAbsoluteEncoderIOCANcoder(2, 315),
                             0, 
                             "BackLeft"
                     ),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(4, 5.357),
                             new SwerveMotorIOSparkMax(8, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2),
+                            new SwerveAbsoluteEncoderIOCANcoder(2, 124),
                             0, 
                             "BackRight"
                     )
