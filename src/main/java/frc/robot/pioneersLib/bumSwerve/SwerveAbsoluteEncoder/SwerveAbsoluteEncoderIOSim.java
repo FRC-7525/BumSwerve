@@ -14,7 +14,6 @@ import edu.wpi.first.math.util.Units;
 public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
 
     private double absoluteEncoderOffset;
-    private double encoderRotationDeg;
     private boolean inverted;
 
     private CANcoder dummyCANcoder;
@@ -22,12 +21,9 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     private CANcoderConfigurator configurator;
     private MagnetSensorConfigs magnetSensorConfiguration;
     private StatusSignal<Double> turnAbsolutePosition;
-    
 
-
-    SwerveAbsoluteEncoderIOSim(int ID) {
+    public SwerveAbsoluteEncoderIOSim(int ID) {
         this.absoluteEncoderOffset = 0;
-        this.encoderRotationDeg = 0;
         this.inverted = false;
 
         this.dummyCANcoder = new CANcoder(ID);
@@ -46,7 +42,7 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs) {
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = encoderRotationDeg;
+        inputs.turnAbsolutePosition = dummyCANcoder.getPosition().getValueAsDouble()/360;
     }
 
     @Override
@@ -72,7 +68,7 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     }
     @Override
     public void setRotationDeg(double rotationDeg) {
-        encoderRotationDeg = 0;
+        CANcoderController.setRawPosition(rotationDeg/360);
     }
 
     @Override
