@@ -79,7 +79,7 @@ public class Drive extends Subsystem<DriveStates> {
 
         drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
         // TODO: Tune
-        drive.configureAnglePID(0.0, 0, 0.0);
+        drive.configureAnglePID(0.1, 0, 0.0);
         drive.configureDrivePID(0.01, 0, 0);
     }
 
