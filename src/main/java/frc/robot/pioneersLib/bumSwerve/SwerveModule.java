@@ -48,6 +48,11 @@ public class SwerveModule {
             turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg().getValueAsDouble()).minus(turnMotor.getAngle());
         }
 
+        //feeds value directly to encoder if it is sim.
+        if (absoluteEncoder.isSim()) {
+            absoluteEncoder.setRotationDeg(turnMotor.getAngle().getDegrees());
+        }
+
         // Prevents the turn motor from doing uneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
 

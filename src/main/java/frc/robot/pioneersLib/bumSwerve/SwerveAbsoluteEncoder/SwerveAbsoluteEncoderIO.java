@@ -32,5 +32,7 @@ public interface SwerveAbsoluteEncoderIO{
     /*Returns position status signal */
     public StatusSignal<Double> getRotationDeg();
 
+    public boolean isSim();
+
 
 }

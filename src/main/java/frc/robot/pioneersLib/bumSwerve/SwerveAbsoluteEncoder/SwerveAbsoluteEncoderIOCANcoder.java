@@ -76,4 +76,9 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
     public StatusSignal<Double> getRotationDeg() {
         return turnAbsolutePosition;
     }
+
+    @Override
+    public boolean isSim() {
+        return false;
+    }
 }
