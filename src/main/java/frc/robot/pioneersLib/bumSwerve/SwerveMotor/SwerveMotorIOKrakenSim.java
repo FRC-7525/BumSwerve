@@ -80,9 +80,10 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         inputs.motorVelocityRPS = motorVelocityRPS.getValueAsDouble();
         inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
 
-        inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
+
+        if (isDrive) inputs.odometryDriveAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
 
         timestampQueue.clear();
 		motorPositionQueue.clear();

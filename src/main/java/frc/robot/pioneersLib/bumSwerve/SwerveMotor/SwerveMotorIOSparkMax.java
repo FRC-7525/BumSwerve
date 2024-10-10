@@ -100,9 +100,10 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         inputs.motorVelocityRPS = (encoder.getVelocity() / RPS_CONVERSION_FACTOR) / gearRatio;
         inputs.motorCurrentAmps = new double[] { motor.getOutputCurrent() };
 
-        inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value / gearRatio).toArray();
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / gearRatio)).toArray(Rotation2d[]::new);
+
+        if (isDrive) inputs.odometryDriveAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value / gearRatio).toArray();
 
         timestampQueue.clear();
         motorPositionQueue.clear();

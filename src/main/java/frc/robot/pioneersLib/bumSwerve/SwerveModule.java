@@ -122,7 +122,7 @@ public class SwerveModule {
         int sampleCount = driveInputs.odometryTimestamps.length; // All signals are sampled together with the thread so lengths should be the same??
 		odometryPositions = new SwerveModulePosition[sampleCount];
 		for (int i = 0; i < sampleCount; i++) {
-			double positionMeters = driveInputs.odometryMotorAccumulatedPosition[i] * 2 * Math.PI * Units.inchesToMeters(2);
+			double positionMeters = driveInputs.odometryDriveAccumulatedPosition[i] * 2 * Math.PI * Units.inchesToMeters(2);
 			Rotation2d angle =
 				turnInputs.odometryMotorPositions[i].plus(
 						turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset : new Rotation2d()

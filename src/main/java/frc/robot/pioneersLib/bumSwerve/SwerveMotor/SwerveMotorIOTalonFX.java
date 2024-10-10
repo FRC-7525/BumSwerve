@@ -102,9 +102,10 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio);
         inputs.motorCurrentAmps = new double[] { motorCurrent.getValueAsDouble() };
 
-        inputs.odometryMotorAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value / gearRatio).toArray();
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / gearRatio)).toArray(Rotation2d[]::new);
+
+        if (isDrive) inputs.odometryDriveAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value / gearRatio).toArray();
 
         timestampQueue.clear();
         motorPositionQueue.clear();

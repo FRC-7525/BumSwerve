@@ -14,7 +14,7 @@ public interface SwerveMotorIO {
         public double[] motorCurrentAmps = new double[] {};
 
         public double[] odometryTimestamps = new double[] {};
-        public double[] odometryMotorAccumulatedPosition = new double[] {};
+        public double[] odometryDriveAccumulatedPosition = new double[] {};
         public Rotation2d[] odometryMotorPositions = new Rotation2d[] {};
     }
 
