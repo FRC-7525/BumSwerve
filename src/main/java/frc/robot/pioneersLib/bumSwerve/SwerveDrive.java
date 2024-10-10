@@ -221,6 +221,9 @@ public class SwerveDrive {
 			for (var module : modules) {
 				module.stop();
 			}
+			Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+			Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+			
 		}
 
 		// Update odometry
@@ -289,16 +292,17 @@ public class SwerveDrive {
             speeds,
             0.02
         );
-		System.out.println(discreteSpeeds.omegaRadiansPerSecond);
 
 		// Turns chassis speeds into module states and then makes sure they're attainable
-        SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-		System.out.println(setpointStates[0].speedMetersPerSecond);
-		System.out.println(setpointStates[0].angle.getDegrees());
+        SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds, new Translation2d());
         SwerveDriveKinematics.desaturateWheelSpeeds(
             setpointStates,
             maxSpeed
         );
+
+		Logger.recordOutput("Swerve State Speed", setpointStates[0].speedMetersPerSecond);
+		Logger.recordOutput("Swerve State Angle", setpointStates[0].angle.getDegrees());
+		Logger.recordOutput("Chassis speed target rad/s", discreteSpeeds.omegaRadiansPerSecond);
 
         // Send setpoints to modules
         SwerveModuleState[] optimizedSetpointStates =
