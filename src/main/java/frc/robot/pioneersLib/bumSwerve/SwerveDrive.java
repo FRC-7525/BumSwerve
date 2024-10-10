@@ -2,6 +2,7 @@ package frc.robot.pioneersLib.bumSwerve;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -132,22 +133,23 @@ public class SwerveDrive {
 	 * @param fieldRelative Whether the speeds are field relative
 	 * @param useHeadingCorrection Whether to use heading correction
 	 */
-	public void drive(double xSupplier, double ySupplier, double omegaSupplier, boolean fieldRelative, boolean useHeadingCorrection) {
+	public void drive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier, boolean fieldRelative, boolean useHeadingCorrection) {
 		boolean isFlipped =
 			DriverStation.getAlliance().isPresent() &&
 			DriverStation.getAlliance().get() == Alliance.Red;
 
 		ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-			xSupplier * getMaxSpeed(),
-			ySupplier * getMaxSpeed(),
-			omegaSupplier * getMaxAngularVelocity(),
+			xSupplier.getAsDouble() * getMaxSpeed(),
+			ySupplier.getAsDouble() * getMaxSpeed(),
+			Math.PI,
 			getRobotRotation()
 		);
-		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier * getMaxSpeed(), ySupplier * getMaxSpeed(), omegaSupplier * getMaxAngularVelocity(), isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
+		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(), Math.PI, isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
 		
 		// Heading correction / field rel stuff
 		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
-		boolean headingCorrection = useHeadingCorrection && omegaSupplier == 0 && (ySupplier > 0.05 || xSupplier > 0.05);
+		boolean headingCorrection = useHeadingCorrection && omegaSupplier.getAsDouble() == 0 && (ySupplier.getAsDouble() > 0.05 || xSupplier.getAsDouble() > 0.05);
+		// System.out.println(omegaSupplier * getMaxAngularVelocity());
 
 		// TODO: TEST TEST TEST, this is trash code
 		if (headingCorrection) {
@@ -287,8 +289,12 @@ public class SwerveDrive {
             speeds,
             0.02
         );
+		System.out.println(discreteSpeeds.omegaRadiansPerSecond);
+
 		// Turns chassis speeds into module states and then makes sure they're attainable
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
+		System.out.println(setpointStates[0].speedMetersPerSecond);
+		System.out.println(setpointStates[0].angle.getDegrees());
         SwerveDriveKinematics.desaturateWheelSpeeds(
             setpointStates,
             maxSpeed
@@ -400,6 +406,9 @@ public class SwerveDrive {
 	 * @return The robots calculated max angular velocity
 	 */
 	public double getMaxAngularVelocity() {
-		return maxSpeed / wheelRadius;
+		return maxSpeed / Math.hypot(
+			trackWidthX / 2.0,
+			trackWidthY / 2.0
+		);
 	}
 }

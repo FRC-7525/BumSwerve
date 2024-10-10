@@ -71,6 +71,6 @@ public class Drive extends Subsystem<DriveStates> {
         drive.periodic();
 
         // Drive the robot
-        drive.drive(-controller.getLeftY(), -controller.getLeftX(), controller.getRightX(), false, false);
+        drive.drive(() -> -controller.getLeftY(),  () -> -controller.getLeftX(), () -> controller.getRightX(), true, false);
     }
 }
