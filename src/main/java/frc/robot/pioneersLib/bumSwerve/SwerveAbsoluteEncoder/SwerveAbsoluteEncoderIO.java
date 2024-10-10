@@ -17,9 +17,6 @@ public interface SwerveAbsoluteEncoderIO{
 
     public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs);
 
-    /*Sets encoder offset*/
-    public void setEncoderOffset(double offset);
-
     /*Inverts the encoder. True is CW, False is CCW */
     public void setInverted(boolean inverted);
 

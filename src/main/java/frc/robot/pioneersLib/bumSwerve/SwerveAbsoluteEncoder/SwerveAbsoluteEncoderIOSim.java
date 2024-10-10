@@ -46,13 +46,6 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     }
 
     @Override
-    public void setEncoderOffset(double offset) {
-        this.absoluteEncoderOffset = offset;
-        configurator.refresh(magnetSensorConfiguration);
-        configurator.apply(magnetSensorConfiguration.withMagnetOffset(offset/360));
-    }
-
-    @Override
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
         configurator.refresh(magnetSensorConfiguration);
