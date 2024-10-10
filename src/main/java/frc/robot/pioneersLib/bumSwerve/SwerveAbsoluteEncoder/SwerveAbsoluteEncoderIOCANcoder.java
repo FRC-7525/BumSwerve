@@ -1,4 +1,4 @@
-package frc.robot.pioneersLib.bumSwerve.Encoder;
+package frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
@@ -10,20 +10,18 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
-public class EncoderIOCANcoder implements EncoderIO {
+public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO {
     
-    int ID;
-    double CANcoderOffset;
-    boolean inverted;
+    private double absoluteEncoderOffset;
+    private boolean inverted;
 
-    CANcoder CANcoder;
-    StatusSignal<Double> turnAbsolutePosition;
-    CANcoderConfigurator configurator;
-    MagnetSensorConfigs magnetSensorConfiguration;
+    private CANcoder CANcoder;
+    private StatusSignal<Double> turnAbsolutePosition;
+    private CANcoderConfigurator configurator;
+    private MagnetSensorConfigs magnetSensorConfiguration;
 
-    public EncoderIOCANcoder(int ID) {
-        this.ID = ID;
-        this.CANcoderOffset = 0;
+    public SwerveAbsoluteEncoderIOCANcoder(int ID) {
+        this.absoluteEncoderOffset = 0;
         this.inverted = false;
         
         this.CANcoder = new CANcoder(ID);
@@ -40,19 +38,15 @@ public class EncoderIOCANcoder implements EncoderIO {
     }
 
     @Override
-    public void updateInputs(EncoderIOInputs inputs) {
-        inputs.absoluteEncoderOffset = CANcoderOffset;
+    public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs) {
+        inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-    }
-
-    @Override
-    public void updateOutputs(EncoderIOOutputs outputs) {
-        outputs.turnAbsolutePosition = turnAbsolutePosition.getValueAsDouble();
+        inputs.turnAbsolutePosition = turnAbsolutePosition.getValueAsDouble();
     }
 
     @Override
     public void setEncoderOffset(double offset) {
-        this.CANcoderOffset = offset;
+        this.absoluteEncoderOffset = offset;
         configurator.refresh(magnetSensorConfiguration);
         configurator.apply(magnetSensorConfiguration.withMagnetOffset(offset/360));
     }
@@ -72,5 +66,13 @@ public class EncoderIOCANcoder implements EncoderIO {
         return new Rotation2d(Units.degreesToRadians(turnAbsolutePosition.getValueAsDouble()));
     }
 
+    @Override //does nothing because it is only used in sim?
+    public void setRotationDeg(double rotationDeg) {
+        return;
+    }
 
+    @Override
+    public double getRotationDeg() {
+        return turnAbsolutePosition.getValueAsDouble();
+    }
 }
