@@ -42,7 +42,7 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
     public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs) {
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = dummyCANcoder.getPosition().getValueAsDouble()/360;
+        inputs.turnAbsolutePosition = dummyCANcoder.getPosition().getValueAsDouble() * 360;
     }
 
     @Override
