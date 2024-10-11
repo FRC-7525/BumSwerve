@@ -18,19 +18,20 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
+import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 
 public class SwerveMotorIONeoSim implements SwerveMotorIO {
     private REVPhysicsSim revSim;
     private CANSparkMax dummySpark;
-    private SparkPIDController controller;
     private RelativeEncoder encoder;
 
     private boolean isDrive;
 
     private double positionError;
 
-    private PIDController turnController;
+    private PIDController feedbackController;
+    private SimpleMotorFeedforward feedForwardController;
 
     private final Queue<Double> timestampQueue;
     private final Queue<Double> motorPositionQueue;
@@ -49,8 +50,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         dummySpark = new CANSparkMax(placeholderCANId, MotorType.kBrushless);
         revSim.addSparkMax(dummySpark, DCMotor.getNEO(1));
 
-        controller = dummySpark.getPIDController();
-        turnController = new PIDController(0, 0, 0);
+        feedForwardController = new SimpleMotorFeedforward(0, 0, 0);
+        feedbackController = new PIDController(0, 0, 0);
 
         encoder = dummySpark.getEncoder();
         encoder.setPosition(0);
@@ -124,31 +125,22 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
     @Override
     public void configurePID(double kP, double kI, double kD) {
-        if (isDrive) {
-            // slot 1 pos, 2 vel, 3 misc, 0 default??
-            controller.setP(kP, 0);
-            controller.setI(kI, 0);
-            controller.setD(kD, 0);
-
-            dummySpark.burnFlash();
-        } else if (!isDrive) {
-            turnController.setP(kP);
-            turnController.setI(kI);
-            turnController.setD(kD);
-        }
+        feedbackController.setP(kP);
+        feedbackController.setI(kI);
+        feedbackController.setD(kD);
     }
     
     @Override
     public void configureFF(double kS, double kV, double kA) {
-        // TODO: What ff value is this???? I'm assuming it's kV or the sum of kS and kV??, I hate rev sooooooooo much
-        controller.setFF(kV, 0);
-        dummySpark.burnFlash();
+        feedForwardController = new SimpleMotorFeedforward(kS, kV, kA);
     }
 
     @Override
     public void setVelocity(double velocityRPS) {
         if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
-        controller.setReference(velocityRPS, ControlType.kVelocity);
+
+        double speedpoint = velocityRPS / SwerveDrive.wheelRadius;
+        setVoltage(feedForwardController.calculate(velocityRPS) + feedbackController.calculate(getVelocity(), speedpoint));
     }
 
     @Override
@@ -157,7 +149,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
 
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
 
-        setVoltage(turnController.calculate(getAngle().getRotations(), positionDeg / 360));
+        setVoltage(feedbackController.calculate(getAngle().getRotations(), positionDeg / 360));
         positionError = Math.abs(positionDeg/360 - encoder.getPosition());
     }
 
