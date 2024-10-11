@@ -27,7 +27,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private DCMotorSim motorSim;
     private Slot0Configs configs;
 
-    // TODO: Do I need to set update freq for these? or will they default to 1ms bc sim?
     private StatusSignal<Double> motorPosition;
     private StatusSignal<Double> motorVelocityRPS;
     private StatusSignal<Double> motorCurrent;
@@ -38,6 +37,10 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private double gearing;
     private double positionError;
     private boolean isDrive;
+
+    //Default configs
+    private final double POSITION_UPDATE_FREQUENCY = 250.0;
+    private final double SIGNAL_UPDATE_FREQUENCY = 50.0;
     
     public SwerveMotorIOKrakenSim(int placeholderCanID, double gearRatio, double motorMOI) {
         dummyTalon = new TalonFX(placeholderCanID);
@@ -63,6 +66,13 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         motorVelocityRPS = dummyTalon.getVelocity();
         motorCurrent = dummyTalon.getSupplyCurrent();
 
+        BaseStatusSignal.setUpdateFrequencyForAll(POSITION_UPDATE_FREQUENCY, motorPosition);
+        BaseStatusSignal.setUpdateFrequencyForAll(
+			SIGNAL_UPDATE_FREQUENCY,
+			motorVelocityRPS,
+			motorCurrent
+		);
+
         positionError = 0.0;
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
@@ -70,7 +80,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     }  
     
     public void updateInputs(SwerveMotorIOInputs inputs) {
-        BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS);
+        BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS, motorCurrent);
 
         inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble()/gearing);
         inputs.motorVelocityRPS = motorVelocityRPS.getValueAsDouble();
@@ -94,7 +104,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         return Rotation2d.fromRotations(dummyTalon.getPosition().getValueAsDouble());
     }
 
-    // TODO: This a bad way of doing it??? idrc t0o bad so sad
     @Override
     public double getPositionError() {
         return positionError;
@@ -166,5 +175,29 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     @Override
     public void setIsDrive(boolean isDrive) {
         this.isDrive = isDrive;
+    }
+
+    /**
+     * Sets the update frequency of the Motor Position Status Signal to the specified frequency
+     * <br></br>
+     * Default value is 250 HZ
+     * @param frequency In Hertz
+     */
+    public void setPositionUpdateFrequency(double frequency) {
+        BaseStatusSignal.setUpdateFrequencyForAll(frequency, motorPosition);
+    }
+
+    /**
+     * Sets the update frequency of the Motor Velocity, and Motor Current Status Signals
+     * <br></br>
+     * Default value is 50 HZ
+     * @param frequency In hertz
+     */
+    public void setSignalUpdateFrequency(double frequency) {
+        BaseStatusSignal.setUpdateFrequencyForAll(
+            frequency,
+            motorVelocityRPS,
+            motorCurrent
+        );
     }
 }

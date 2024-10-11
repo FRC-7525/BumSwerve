@@ -56,7 +56,8 @@ public interface SwerveMotorIO {
     public default void setEncoderPosition(double positionDeg) {}
 
     /**
-     * Returns the current position error of the motor from the feedback controller
+     * @return The current position error of the motor from the feedback controller (in rotations)
+     * 
      */
     public default double getPositionError() {
         return 0.0;

@@ -123,9 +123,7 @@ public class SwerveModule {
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
         antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
-        // TODO: I'm bad at math, is this right?
         angleSetPoint = optimizedState.angle.getDegrees();
-
         speedSetPoint = Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * (optimizedState.speedMetersPerSecond / (SwerveDrive.wheelRadius * Math.PI * 2));
 
         lastModuleState = state;

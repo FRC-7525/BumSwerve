@@ -153,18 +153,15 @@ public class SwerveDrive {
 		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
 		boolean headingCorrection = useHeadingCorrection && omegaSupplier.getAsDouble() == 0
 				&& (ySupplier.getAsDouble() > 0.05 || xSupplier.getAsDouble() > 0.05);
-		// System.out.println(omegaSupplier * getMaxAngularVelocity());
 
 		// TODO: TEST TEST TEST, this is trash code
 		if (headingCorrection) {
 			speeds.omegaRadiansPerSecond = headingCorrectionController.calculate(getRobotRotation().getRadians(),
 					lastHeading.getRadians());
-
 		} else {
 			lastHeading = getRobotRotation();
 		}
 
-		// TODO: Does this work? lowkey feels like it's bum
 		runVelocity(speeds);
 	}
 
