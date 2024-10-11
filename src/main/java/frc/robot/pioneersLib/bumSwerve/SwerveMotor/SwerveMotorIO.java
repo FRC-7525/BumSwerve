@@ -111,4 +111,10 @@ public interface SwerveMotorIO {
      * @param isDrive
      */
     public default void setIsDrive(boolean isDrive) {}
+
+    /**
+     * Runs the motor with given voltage. For sysID
+     * @param volts
+     */
+    public default void runVolt(double volts) {}
 }

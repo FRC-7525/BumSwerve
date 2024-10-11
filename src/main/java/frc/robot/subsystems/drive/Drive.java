@@ -1,7 +1,14 @@
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
@@ -17,7 +24,7 @@ import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOSparkMax;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 
-public class Drive extends Subsystem<DriveStates> {
+public class Drive extends SubsystemBase {
     private SwerveDrive drive;
 
     private final double WHEEL_RADIUS = Units.inchesToMeters(2);
@@ -30,11 +37,16 @@ public class Drive extends Subsystem<DriveStates> {
     private XboxController controller;
 
     private boolean sim;
+    private SysIdRoutine sysId;
+    CommandScheduler commandScheduler;
+
+    private XboxController sysIdController = new XboxController(4);
 
     public Drive() {
-        super("Drive", DriveStates.REGULAR);
         controller = new XboxController(0);
         sim = true;
+
+        commandScheduler = CommandScheduler.getInstance();
 
         if (sim) {
             gyroIO = new SwerveGyroIOSim();
@@ -81,13 +93,45 @@ public class Drive extends Subsystem<DriveStates> {
         // TODO: Tune
         drive.configureAnglePID(0.1, 0, 0.0);
         drive.configureDrivePID(0.01, 0, 0);
-    }
 
-    public void runState() {
-        drive.periodic();
+        sysId = new SysIdRoutine(
+                new SysIdRoutine.Config(
+                  null, null, null, // Use default config
+                  (state) -> Logger.recordOutput("SysIdTestState", state.toString())
+                ),
+                new SysIdRoutine.Mechanism(
+                  (voltage) -> {
+                        for (int i = 0; i < modules.length; i++) {
+                                modules[i].runVolt(voltage.in(Volts));
+                        }
+                  },
+                  null, // No log consumer, since data is recorded by AdvantageKit
+                  this
+                )
+              );
+        }
 
-        // Drive the robot
-        drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
-                true, false);
-    }
+        public void runState() {
+                drive.periodic();
+
+                // Drive the robot
+                drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
+                        true, false);
+
+                if (sysIdController.getAButton()) {
+                        commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kForward));
+                }
+                if (sysIdController.getBButton()) {
+                        commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kReverse));
+                }
+        }
+
+        public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+                return sysId.quasistatic(direction);
+        }
+
+        /** Returns a command to run a dynamic test in the specified direction. */
+        public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return sysId.dynamic(direction);
+        } 
 }

@@ -167,4 +167,9 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     public void setIsDrive(boolean isDrive) {
         this.isDrive = isDrive;
     }
+
+    @Override
+    public void runVolt(double volts) {
+        motorSim.setInputVoltage(volts);
+    }
 }
