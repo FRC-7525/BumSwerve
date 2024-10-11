@@ -12,7 +12,12 @@ public interface VisionIO {
 
     @AutoLog
     public class VisionIOInputs {
-
+        boolean hasSideVision = false;
+        boolean hasFrontVision = false;
+        boolean sideCameraConnected = false;
+        boolean frontCameraConnected = false;
+        int sideTargetCount = 0;
+        int frontTargetCount = 0;
     }
 
     public default void updateInptus(VisionIOInputs inputs) {}

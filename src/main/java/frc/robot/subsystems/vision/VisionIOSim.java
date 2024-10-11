@@ -12,6 +12,8 @@ import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +29,8 @@ public class VisionIOSim implements VisionIO {
     private PhotonCameraSim frontCamera;
     private PhotonPoseEstimator sideEstimator;
     private PhotonPoseEstimator frontEstimator;
+    private Debouncer sideDebouncer;
+    private Debouncer frontDebouncer;
     private Pose2d robotPose;
     
     public VisionIOSim() {
@@ -71,13 +75,21 @@ public class VisionIOSim implements VisionIO {
         // Pose estimators :/
         frontEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCamera.getCamera(), Constants.Vision.ROBOT_TO_FRONT_CAMERA);
         sideEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, sideCamera.getCamera(), Constants.Vision.ROBOT_TO_SIDE_CAMERA);
+        sideDebouncer = new Debouncer(0.5, DebounceType.kFalling);
+        frontDebouncer = new Debouncer(0.5, DebounceType.kFalling);
 
         SmartDashboard.putData("Vision Debug Field", visionSim.getDebugField());
     }
 
     @Override
     public void updateInptus(VisionIOInputs inputs) {
-
+        // TODO: Don't call .update so much :(
+        inputs.hasSideVision = sideDebouncer.calculate(sideEstimator.update().isPresent());
+        inputs.hasFrontVision = frontDebouncer.calculate(frontEstimator.update().isPresent());
+        inputs.sideCameraConnected = sideCamera.getCamera().isConnected();
+        inputs.frontCameraConnected = frontCamera.getCamera().isConnected();
+        inputs.sideTargetCount = sideEstimator.update().get().targetsUsed.size();
+        inputs.frontTargetCount = frontEstimator.update().get().targetsUsed.size();
     }
 
     @Override

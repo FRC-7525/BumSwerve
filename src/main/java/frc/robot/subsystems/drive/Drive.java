@@ -11,18 +11,19 @@ import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIONavX;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
-import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOCANcoder;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOSim;
-import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO.SwerveAbsoluteEncoderIOInputs;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOKrakenSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOSparkMax;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 import frc.robot.pioneersLib.subsystem.Subsystem;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOSim;
 
 public class Drive extends Subsystem<DriveStates> {
     private SwerveDrive drive;
+    private Vision vision;
 
     private final double WHEEL_RADIUS = Units.inchesToMeters(2);
     private final double TRACK_WIDTH_X = Units.inchesToMeters(25);
@@ -34,13 +35,15 @@ public class Drive extends Subsystem<DriveStates> {
     private XboxController controller;
 
     private boolean sim;
-
+    
+    // TODO: Make a manger
     public Drive() {
         super("Drive", DriveStates.REGULAR);
         controller = new XboxController(0);
         sim = true;
 
         if (sim) {
+            vision = new Vision(new VisionIOSim(), this);
             gyroIO = new SwerveGyroIOSim();
             modules = new SwerveModule[] {
                     new SwerveModule(new SwerveMotorIOKrakenSim(1, 5.357, 0.000520786),
@@ -57,6 +60,7 @@ public class Drive extends Subsystem<DriveStates> {
                             new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
             };
         } else {
+            vision = new Vision(new VisionIOSim(), this);
             gyroIO = new SwerveGyroIONavX(1);
             modules = new SwerveModule[] {
                     new SwerveModule(
@@ -89,6 +93,7 @@ public class Drive extends Subsystem<DriveStates> {
 
     public void runState() {
         drive.periodic();
+        vision.periodic();
 
         // Drive the robot
         drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
