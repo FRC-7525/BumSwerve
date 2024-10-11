@@ -1,5 +1,9 @@
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
@@ -89,5 +93,15 @@ public class Drive extends Subsystem<DriveStates> {
         // Drive the robot
         drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
                 true, false);
+    }
+
+    public Pose2d getPose() {
+        return drive.getRobotPose();
+    }
+
+    public void addVisionMeasurment(Pose2d visionPose,
+            double timestamp,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        drive.addVisionMeasurement(visionPose, timestamp, visionMeasurementStdDevs);
     }
 }
