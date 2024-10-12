@@ -20,7 +20,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		this.drive = new Drive();
 		Logger.addDataReceiver(new NT4Publisher());
-		Logger.addDataReceiver(new WPILOGWriter("log"));
+		Logger.addDataReceiver(new WPILOGWriter("Logs"));
 		Logger.start();
 		commandScheduler = CommandScheduler.getInstance();
 		
