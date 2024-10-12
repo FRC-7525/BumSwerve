@@ -38,6 +38,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private double gearing;
     private double positionError;
     private boolean isDrive;
+    private double volts;
     
     public SwerveMotorIOKrakenSim(int placeholderCanID, double gearRatio, double motorMOI) {
         dummyTalon = new TalonFX(placeholderCanID);
@@ -73,8 +74,10 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS);
 
         inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble()/gearing);
+        inputs.motorPositionAsDouble = motorPosition.getValueAsDouble() / gearing;
         inputs.motorVelocityRPS = motorVelocityRPS.getValueAsDouble();
         inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
+        inputs.motorVolts = volts;
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
@@ -170,6 +173,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
     @Override
     public void runVolt(double volts) {
+        this.volts = volts;
         motorSim.setInputVoltage(volts);
     }
 }

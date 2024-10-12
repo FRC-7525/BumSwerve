@@ -10,8 +10,10 @@ public interface SwerveMotorIO {
     @AutoLog
     public static class SwerveMotorIOInputs {
         public Rotation2d motorPosition = new Rotation2d();
+        public double motorPositionAsDouble = 0.0;
         public double motorVelocityRPS = 0.0;
         public double[] motorCurrentAmps = new double[] {};
+        public double motorVolts = 0.0;
 
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDriveAccumulatedPosition = new double[] {};

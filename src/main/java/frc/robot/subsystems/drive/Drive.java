@@ -94,21 +94,21 @@ public class Drive extends SubsystemBase {
         drive.configureAnglePID(0.1, 0, 0.0);
         drive.configureDrivePID(0.01, 0, 0);
 
-        sysId = new SysIdRoutine(
-                new SysIdRoutine.Config(
-                  null, null, null, // Use default config
-                  (state) -> Logger.recordOutput("SysIdTestState", state.toString())
-                ),
-                new SysIdRoutine.Mechanism(
-                  (voltage) -> {
-                        for (int i = 0; i < modules.length; i++) {
-                                modules[i].runVolt(voltage.in(Volts));
-                        }
-                  },
-                  null, // No log consumer, since data is recorded by AdvantageKit
-                  this
-                )
-              );
+        sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> {
+                  for (int i = 0; i < 4; i++) {
+                    modules[i].runVolt(voltage.in(Volts));
+                  }
+                },
+                null,
+                this));
         }
 
         public void runState() {
@@ -123,6 +123,12 @@ public class Drive extends SubsystemBase {
                 }
                 if (sysIdController.getBButton()) {
                         commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kReverse));
+                }
+                if (sysIdController.getXButton()) {
+                        commandScheduler.schedule(sysId.dynamic(SysIdRoutine.Direction.kForward));
+                }
+                if (sysIdController.getYButton()) {
+                        commandScheduler.schedule(sysId.dynamic(SysIdRoutine.Direction.kReverse));
                 }
         }
 

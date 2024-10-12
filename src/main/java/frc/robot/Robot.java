@@ -7,24 +7,31 @@ package frc.robot;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.drive.Drive;
 
 public class Robot extends LoggedRobot {
 	Drive drive;
+	CommandScheduler commandScheduler;
 
 	@Override
 	public void robotInit() {
 		this.drive = new Drive();
 		Logger.addDataReceiver(new NT4Publisher());
+		Logger.addDataReceiver(new WPILOGWriter("log"));
 		Logger.start();
-
+		commandScheduler = CommandScheduler.getInstance();
+		
+		Logger.addDataReceiver(null);
 	}
-
+	
 	@Override
 	public void robotPeriodic() {
 		drive.periodic();
 		drive.runState();
+		commandScheduler.run();
 	}
 
 	@Override
