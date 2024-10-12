@@ -7,11 +7,14 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 
 public interface VisionIO {
 
     @AutoLog
     public class VisionIOInputs {
+        Pose2d sideVisionPose;
+        Pose2d frontVisionPose;
         boolean hasSideVision = false;
         boolean hasFrontVision = false;
         boolean sideCameraConnected = false;

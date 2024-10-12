@@ -77,19 +77,21 @@ public class VisionIOSim implements VisionIO {
         sideEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, sideCamera.getCamera(), Constants.Vision.ROBOT_TO_SIDE_CAMERA);
         sideDebouncer = new Debouncer(0.5, DebounceType.kFalling);
         frontDebouncer = new Debouncer(0.5, DebounceType.kFalling);
-
-        SmartDashboard.putData("Vision Debug Field", visionSim.getDebugField());
     }
 
     @Override
     public void updateInptus(VisionIOInputs inputs) {
-        // TODO: Don't call .update so much :(
-        inputs.hasSideVision = sideDebouncer.calculate(sideEstimator.update().isPresent());
-        inputs.hasFrontVision = frontDebouncer.calculate(frontEstimator.update().isPresent());
+        Optional<EstimatedRobotPose> sidePose = sideEstimator.update();
+        Optional<EstimatedRobotPose> frontPose = frontEstimator.update();
+
+        inputs.hasSideVision = sideDebouncer.calculate(sidePose.isPresent());
+        inputs.hasFrontVision = frontDebouncer.calculate(frontPose.isPresent());
         inputs.sideCameraConnected = sideCamera.getCamera().isConnected();
         inputs.frontCameraConnected = frontCamera.getCamera().isConnected();
-        inputs.sideTargetCount = sideEstimator.update().get().targetsUsed.size();
-        inputs.frontTargetCount = frontEstimator.update().get().targetsUsed.size();
+        inputs.sideTargetCount = sidePose.get().targetsUsed.size();
+        inputs.frontTargetCount = frontPose.get().targetsUsed.size();
+        if (inputs.hasSideVision) inputs.sideVisionPose = sidePose.get().estimatedPose.toPose2d();
+        if (inputs.hasFrontVision) inputs.frontVisionPose = frontPose.get().estimatedPose.toPose2d();
     }
 
     @Override
