@@ -24,6 +24,7 @@ public class Robot extends LoggedRobot {
 		Logger.start();
 		commandScheduler = CommandScheduler.getInstance();
 		
+		Logger.recordOutput("Drive/SysIdState", "none");
 		Logger.addDataReceiver(null);
 	}
 	
