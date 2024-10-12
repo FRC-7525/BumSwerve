@@ -41,19 +41,19 @@ public class VisionIOSim implements VisionIO {
 
         // TODO: Tune to accurate values & put in constants ig
         // A 640 x 480 camera with a 100 degree diagonal FOV.
-        sideCameraProperties.setCalibration(640, 480, Rotation2d.fromDegrees(100));
-        frontCameraProperties.setCalibration(640, 480, Rotation2d.fromDegrees(100));
+        sideCameraProperties.setCalibration(1200, 800, Rotation2d.fromDegrees(84.47));
+        frontCameraProperties.setCalibration(1200, 800, Rotation2d.fromDegrees(84.47));
         // Approximate detection noise with average and standard deviation error in pixels.
         sideCameraProperties.setCalibError(0.25, 0.08);
         frontCameraProperties.setCalibError(0.25, 0.08);
         // Set the camera image capture framerate (Note: this is limited by robot loop rate).
-        sideCameraProperties.setFPS(20);
-        frontCameraProperties.setFPS(20);
+        sideCameraProperties.setFPS(40);
+        frontCameraProperties.setFPS(40);
         // The average and standard deviation in milliseconds of image data latency.
-        sideCameraProperties.setAvgLatencyMs(35);
-        sideCameraProperties.setLatencyStdDevMs(5);
-        frontCameraProperties.setAvgLatencyMs(35);
-        frontCameraProperties.setLatencyStdDevMs(5);
+        sideCameraProperties.setAvgLatencyMs(40);
+        sideCameraProperties.setLatencyStdDevMs(10);
+        frontCameraProperties.setAvgLatencyMs(40);
+        frontCameraProperties.setLatencyStdDevMs(10);
 
         sideCamera = new PhotonCameraSim(new PhotonCamera("Side Camera"), sideCameraProperties);
         frontCamera = new PhotonCameraSim(new PhotonCamera("Front Camera"), frontCameraProperties);
