@@ -19,6 +19,7 @@ import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOSparkMax;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIOReal;
 import frc.robot.subsystems.vision.VisionIOSim;
 
 public class Drive extends Subsystem<DriveStates> {
@@ -36,7 +37,7 @@ public class Drive extends Subsystem<DriveStates> {
 
     private boolean sim;
     
-    // TODO: Make a manger
+    // TODO: Make a Manger
     public Drive() {
         super("Drive", DriveStates.REGULAR);
         controller = new XboxController(0);
@@ -60,7 +61,7 @@ public class Drive extends Subsystem<DriveStates> {
                             new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
             };
         } else {
-            vision = new Vision(new VisionIOSim(), this);
+            vision = new Vision(new VisionIOReal(), this);
             gyroIO = new SwerveGyroIONavX(1);
             modules = new SwerveModule[] {
                     new SwerveModule(

@@ -10,19 +10,15 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class VisionIOSim implements VisionIO {
 
     private VisionSystemSim visionSim;
-    private AprilTagFieldLayout fieldLayout;
     private SimCameraProperties sideCameraProperties;
     private SimCameraProperties frontCameraProperties;
     private PhotonCameraSim sideCamera;
@@ -35,7 +31,6 @@ public class VisionIOSim implements VisionIO {
     
     public VisionIOSim() {
         visionSim = new VisionSystemSim("Vision");
-        fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
         sideCameraProperties = new SimCameraProperties();
         frontCameraProperties = new SimCameraProperties();
 
@@ -58,7 +53,7 @@ public class VisionIOSim implements VisionIO {
         sideCamera = new PhotonCameraSim(new PhotonCamera("Side Camera"), sideCameraProperties);
         frontCamera = new PhotonCameraSim(new PhotonCamera("Front Camera"), frontCameraProperties);
 
-        visionSim.addAprilTags(fieldLayout);
+        visionSim.addAprilTags(Constants.Vision.APRIL_TAG_FIELD_LAYOUT);
         visionSim.addCamera(sideCamera, Constants.Vision.ROBOT_TO_SIDE_CAMERA);
         visionSim.addCamera(frontCamera, Constants.Vision.ROBOT_TO_FRONT_CAMERA);
 
@@ -73,8 +68,8 @@ public class VisionIOSim implements VisionIO {
 
         robotPose = new Pose2d();
         // Pose estimators :/
-        frontEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCamera.getCamera(), Constants.Vision.ROBOT_TO_FRONT_CAMERA);
-        sideEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, sideCamera.getCamera(), Constants.Vision.ROBOT_TO_SIDE_CAMERA);
+        frontEstimator = new PhotonPoseEstimator(Constants.Vision.APRIL_TAG_FIELD_LAYOUT, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCamera.getCamera(), Constants.Vision.ROBOT_TO_FRONT_CAMERA);
+        sideEstimator = new PhotonPoseEstimator(Constants.Vision.APRIL_TAG_FIELD_LAYOUT, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, sideCamera.getCamera(), Constants.Vision.ROBOT_TO_SIDE_CAMERA);
         sideDebouncer = new Debouncer(0.5, DebounceType.kFalling);
         frontDebouncer = new Debouncer(0.5, DebounceType.kFalling);
     }
