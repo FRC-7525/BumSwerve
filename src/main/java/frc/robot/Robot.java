@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.drive.Drive;
 
@@ -20,7 +21,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		this.drive = new Drive();
 		Logger.addDataReceiver(new NT4Publisher());
-		Logger.addDataReceiver(new WPILOGWriter("Logs"));
+		// Logger.addDataReceiver(new WPILOGWriter("Logs"));
 		Logger.start();
 		commandScheduler = CommandScheduler.getInstance();
 		

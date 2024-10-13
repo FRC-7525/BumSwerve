@@ -1,6 +1,9 @@
 package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.SignalLogger;
+
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.util.Units;
@@ -38,13 +41,18 @@ public class Drive extends SubsystemBase {
 
     private boolean sim;
     private SysIdRoutine sysId;
+    private String state;
     CommandScheduler commandScheduler;
 
-    private XboxController sysIdController = new XboxController(4);
+    private XboxController sysIdController = new XboxController(0);
 
     public Drive() {
+        SignalLogger.enableAutoLogging(true);
+        SignalLogger.setPath("Logs");
+        SignalLogger.start();
         controller = new XboxController(0);
         sim = true;
+        state = "none";
 
         commandScheduler = CommandScheduler.getInstance();
 
@@ -100,7 +108,7 @@ public class Drive extends SubsystemBase {
                 null,
                 null,
                 null,
-                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+                (state) -> SignalLogger.writeString("Phoenix6/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> {
                   for (int i = 0; i < 4; i++) {
@@ -113,23 +121,28 @@ public class Drive extends SubsystemBase {
 
         public void runState() {
                 drive.periodic();
-
                 // Drive the robot
                 drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
                         true, false);
 
                 if (sysIdController.getAButton()) {
                         commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kForward));
+                        state = "quasistatic-forward";
                 }
                 if (sysIdController.getBButton()) {
                         commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kReverse));
+                        state = "quasistatic-reverse";
                 }
                 if (sysIdController.getXButton()) {
                         commandScheduler.schedule(sysId.dynamic(SysIdRoutine.Direction.kForward));
+                        state = "dynamic-forward";
                 }
                 if (sysIdController.getYButton()) {
                         commandScheduler.schedule(sysId.dynamic(SysIdRoutine.Direction.kReverse));
+                        state = "dynamic-reverse";
                 }
+                SignalLogger.writeString("SysIdState", state);
+
         }
 
         public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
