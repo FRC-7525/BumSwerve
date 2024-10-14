@@ -34,7 +34,7 @@ public class Drive extends Subsystem<DriveStates> {
     public Drive() {
         super("Drive", DriveStates.REGULAR);
         controller = new XboxController(0);
-        sim = true;
+        sim = false;
 
         if (sim) {
             gyroIO = new SwerveGyroIOSim();
@@ -56,38 +56,39 @@ public class Drive extends Subsystem<DriveStates> {
             gyroIO = new SwerveGyroIONavX(1);
             modules = new SwerveModule[] {
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(1, 5.357),
-                            new SwerveMotorIOSparkMax(5, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2, 315), "FrontLeft"),
-                    new SwerveModule(
                             new SwerveMotorIOTalonFX(2, 5.357),
-                            new SwerveMotorIOSparkMax(6, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2, 31),
+                            new SwerveMotorIOSparkMax(1, 21.4286),
+                            new SwerveAbsoluteEncoderIOCANcoder(3, 171.826171875), 
+                            "FrontLeft"),
+                    new SwerveModule(
+                            new SwerveMotorIOTalonFX(5, 5.357),
+                            new SwerveMotorIOSparkMax(4, 21.4286),
+                            new SwerveAbsoluteEncoderIOCANcoder(6, -23.115234375),
                             "FrontRight"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(3, 5.357),
-                            new SwerveMotorIOSparkMax(7, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2, 315),
+                            new SwerveMotorIOTalonFX(11, 5.357),
+                            new SwerveMotorIOSparkMax(10, 21.4286),
+                            new SwerveAbsoluteEncoderIOCANcoder(12, 220.517578125),
                             "BackLeft"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(4, 5.357),
-                            new SwerveMotorIOSparkMax(8, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(2, 124),
+                            new SwerveMotorIOTalonFX(8, 5.357),
+                            new SwerveMotorIOSparkMax(7, 21.4286),
+                            new SwerveAbsoluteEncoderIOCANcoder(9, -67.939453125),
                             "BackRight")
             };
         }
 
         drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
         // TODO: Tune
-        drive.configureAnglePID(0.1, 0, 0.0);
-        drive.configureDrivePID(0.01, 0, 0);
+        drive.configureAnglePID(0.01, 0, 0.0);
+        drive.configureDrivePID(0.0001, 0, 0);
     }
 
     public void runState() {
         drive.periodic();
 
         // Drive the robot
-        drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
+        drive.drive(() -> controller.getLeftX(), () -> controller.getLeftY(), () -> controller.getRightX(),
                 true, false);
     }
 }
