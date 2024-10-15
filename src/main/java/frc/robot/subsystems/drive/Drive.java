@@ -34,7 +34,7 @@ public class Drive extends Subsystem<DriveStates> {
     public Drive() {
         super("Drive", DriveStates.REGULAR);
         controller = new XboxController(0);
-        sim = false;
+        sim = true;
 
         if (sim) {
             gyroIO = new SwerveGyroIOSim();
@@ -79,9 +79,12 @@ public class Drive extends Subsystem<DriveStates> {
         }
 
         drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
-        // TODO: Tune
-        drive.configureAnglePID(0.01, 0, 0.0);
-        drive.configureDrivePID(0.0001, 0, 0);
+
+        if (sim) {
+            // TODO: Tune
+            drive.configureAnglePID(1, 0, 0.0);
+            drive.configureDrivePID(0.01, 0, 0);
+        }
     }
 
     public void runState() {
@@ -89,6 +92,6 @@ public class Drive extends Subsystem<DriveStates> {
 
         // Drive the robot
         drive.drive(() -> controller.getLeftX(), () -> controller.getLeftY(), () -> controller.getRightX(),
-                true, false);
+                false, false);
     }
 }

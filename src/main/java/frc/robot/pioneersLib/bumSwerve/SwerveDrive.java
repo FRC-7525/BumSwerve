@@ -135,7 +135,7 @@ public class SwerveDrive {
 	 * @param useHeadingCorrection Whether to use heading correction
 	 */
 	public void drive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,
-			boolean fieldRelative, boolean useHeadingCorrection) {
+		boolean fieldRelative, boolean useHeadingCorrection) {
 		boolean isFlipped = DriverStation.getAlliance().isPresent() &&
 				DriverStation.getAlliance().get() == Alliance.Red;
 
@@ -145,7 +145,8 @@ public class SwerveDrive {
 				omegaSupplier.getAsDouble() * getMaxAngularVelocity(),
 				getRobotRotation());
 		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-				xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(),
+				xSupplier.getAsDouble() * getMaxSpeed(), 
+				ySupplier.getAsDouble() * getMaxSpeed(),
 				omegaSupplier.getAsDouble() * (getMaxAngularVelocity()),
 				isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
 
