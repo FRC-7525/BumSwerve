@@ -121,12 +121,12 @@ public class SwerveModule {
 
         // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
-        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
+        antiJitter(optimizedState, lastModuleState, SwerveDrive.maxSpeed);
 
         angleSetPoint = optimizedState.angle.getDegrees();
         speedSetPoint = Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * (optimizedState.speedMetersPerSecond / (SwerveDrive.wheelRadius * Math.PI * 2));
 
-        lastModuleState = state;
+        lastModuleState = optimizedState;
         return optimizedState;
     }
 

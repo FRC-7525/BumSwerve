@@ -82,7 +82,7 @@ public class Drive extends Subsystem<DriveStates> {
 
         if (sim) {
             // TODO: Tune
-            drive.configureAnglePID(1, 0, 0.0);
+            drive.configureAnglePID(0.5, 0, 0);
             drive.configureDrivePID(0.01, 0, 0);
         }
     }
@@ -92,6 +92,6 @@ public class Drive extends Subsystem<DriveStates> {
 
         // Drive the robot
         drive.drive(() -> controller.getLeftX(), () -> controller.getLeftY(), () -> controller.getRightX(),
-                false, false);
+                true, false);
     }
 }
