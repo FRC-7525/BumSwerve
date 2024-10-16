@@ -3,13 +3,15 @@ package frc.robot.pioneersLib.subsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-public abstract class Subsystem<StateType extends SubsystemStates> {
+public abstract class Subsystem<StateType extends SubsystemStates> extends SubsystemBase{
 
 	private Map<StateType, ArrayList<Trigger<StateType>>> triggerMap = new HashMap<
 		StateType,
