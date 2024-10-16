@@ -8,22 +8,23 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
-	Drive drive;
+
+	private Manager manager;
 
 	@Override
 	public void robotInit() {
-		this.drive = new Drive();
 		Logger.addDataReceiver(new NT4Publisher());
 		Logger.start();
 
+		manager = new Manager();
 	}
 
 	@Override
 	public void robotPeriodic() {
-		drive.periodic();
+		manager.periodic();
 	}
 
 	@Override

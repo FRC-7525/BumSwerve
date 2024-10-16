@@ -15,6 +15,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
@@ -32,6 +34,9 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     private double gearRatio;
     private boolean isDrive;
+
+    private PIDController feedbackController;
+    private SimpleMotorFeedforward feedforwardController;
 
     private TalonFXConfiguration driveConfig;
     private TalonFXConfigurator configurator;
@@ -81,8 +86,9 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         configs.kD = 0.0;
         configurator.apply(configs);
 
+        feedbackController = new PIDController(0, 0, 0);
+
         FeedbackConfigs feedback = new FeedbackConfigs();
-        feedback.SensorToMechanismRatio = gearRatio;
         configurator.apply(feedback);
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
@@ -155,8 +161,10 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     public void setVelocity(double speedpoint) {
         if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
 
-        VelocityVoltage command = new VelocityVoltage(speedpoint).withSlot(0);
-        motor.setControl(command);
+        // VelocityVoltage command = new VelocityVoltage(speedpoint).withSlot(0);
+        // motor.setControl(command);
+
+        setVoltage(feedforwardController.calculate(speedpoint) + feedbackController.calculate(getVelocity(), speedpoint));
     }
 
 
@@ -175,6 +183,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         configs.kD = kD;
 
         configurator.apply(configs);
+        feedbackController = new PIDController(kP, kI, kD);
     }
 
     @Override
@@ -184,6 +193,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         configs.kA = kA;
 
         configurator.apply(configs);
+        feedforwardController = new SimpleMotorFeedforward(kS, kV, kA);
     }
 
     @Override

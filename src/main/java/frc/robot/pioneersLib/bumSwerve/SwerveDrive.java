@@ -58,7 +58,8 @@ public class SwerveDrive {
 			};
 
 	/**
-	 * Creates a new SwerveDrive object
+	 * Creates a new SwerveDrive object, if configs are messed up
+	 * your robot wont drive correctly. Take time to make measurments.
 	 * 
 	 * @param trackWidthX Distance between the left and right wheels in meters
 	 * @param trackWidthY Distance between the front and back wheels in meters
@@ -135,7 +136,7 @@ public class SwerveDrive {
 	 * @param useHeadingCorrection Whether to use heading correction
 	 */
 	public void drive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,
-			boolean fieldRelative, boolean useHeadingCorrection) {
+		boolean fieldRelative, boolean useHeadingCorrection) {
 		boolean isFlipped = DriverStation.getAlliance().isPresent() &&
 				DriverStation.getAlliance().get() == Alliance.Red;
 
@@ -145,7 +146,8 @@ public class SwerveDrive {
 				omegaSupplier.getAsDouble() * getMaxAngularVelocity(),
 				getRobotRotation());
 		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-				xSupplier.getAsDouble() * getMaxSpeed(), ySupplier.getAsDouble() * getMaxSpeed(),
+				xSupplier.getAsDouble() * getMaxSpeed(), 
+				ySupplier.getAsDouble() * getMaxSpeed(),
 				omegaSupplier.getAsDouble() * (getMaxAngularVelocity()),
 				isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
 
@@ -153,18 +155,15 @@ public class SwerveDrive {
 		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
 		boolean headingCorrection = useHeadingCorrection && omegaSupplier.getAsDouble() == 0
 				&& (ySupplier.getAsDouble() > 0.05 || xSupplier.getAsDouble() > 0.05);
-		// System.out.println(omegaSupplier * getMaxAngularVelocity());
 
 		// TODO: TEST TEST TEST, this is trash code
 		if (headingCorrection) {
 			speeds.omegaRadiansPerSecond = headingCorrectionController.calculate(getRobotRotation().getRadians(),
 					lastHeading.getRadians());
-
 		} else {
 			lastHeading = getRobotRotation();
 		}
 
-		// TODO: Does this work? lowkey feels like it's bum
 		runVelocity(speeds);
 	}
 
