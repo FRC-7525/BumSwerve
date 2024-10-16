@@ -58,7 +58,8 @@ public class SwerveDrive {
 			};
 
 	/**
-	 * Creates a new SwerveDrive object
+	 * Creates a new SwerveDrive object, if configs are messed up
+	 * your robot wont drive correctly. Take time to make measurments.
 	 * 
 	 * @param trackWidthX Distance between the left and right wheels in meters
 	 * @param trackWidthY Distance between the front and back wheels in meters

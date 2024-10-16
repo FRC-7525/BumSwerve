@@ -12,16 +12,13 @@ import frc.robot.pioneersLib.subsystem.Subsystem;
 public class Drive extends Subsystem<DriveStates> {
     private SwerveDrive drive;
 
-    private final double WHEEL_RADIUS = Units.inchesToMeters(2);
-    private final double TRACK_WIDTH_X = Units.inchesToMeters(25);
-    private final double TRACK_WIDTH_Y = Units.inchesToMeters(25);
-    private final double MAX_SPEED = Units.feetToMeters(19.5);
+   
 
 
     public Drive(SwerveModule[] modules, SwerveGyroIO gyroIO, boolean sim) {
         super("Drive", DriveStates.REGULAR);
         // Sim is passed in because I don't want to make two switch statements (think about it)
-        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
+        drive = new SwerveDrive(Constants.Drive.TRACK_WIDTH_X, Constants.Drive.TRACK_WIDTH_Y, modules, gyroIO, Constants.Drive.MAX_SPEED, Constants.Drive.WHEEL_RADIUS, sim);
 
         switch (Constants.ROBOT_STATE) {
             case REAL:

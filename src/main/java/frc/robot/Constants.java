@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
@@ -23,6 +24,11 @@ public class Constants {
     public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
 
     public static final class Drive {
+
+        public static final double WHEEL_RADIUS = Units.inchesToMeters(2);
+        public static final double TRACK_WIDTH_X = Units.inchesToMeters(25);
+        public static final double TRACK_WIDTH_Y = Units.inchesToMeters(25);
+        public static final double MAX_SPEED = Units.feetToMeters(19.5);
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
