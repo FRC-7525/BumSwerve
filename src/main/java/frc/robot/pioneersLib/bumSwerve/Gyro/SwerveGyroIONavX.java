@@ -20,10 +20,22 @@ public class SwerveGyroIONavX implements SwerveGyroIO {
 	private Rotation3d offset;
 	/**
 	 * Creates a new NavX objet that takes high frequency odometry measurments
+	 * @param usbPort The port that the navx is plugged into. Ranges from 1-2
 	 */
-	public SwerveGyroIONavX() {
-		// TODO: Change it so u don't have to plug into specific usb port
-		navx = new AHRS(SerialPort.Port.kUSB1);
+	public SwerveGyroIONavX(int usbPort) {
+
+		switch (usbPort) {
+			case 1:
+				navx = new AHRS(SerialPort.Port.kUSB1);
+				break;
+			case 2:
+				navx = new AHRS(SerialPort.Port.kUSB2);
+				break;
+			default:
+				navx = new AHRS(SerialPort.Port.kUSB1);
+				break;
+		}
+
 		navx.reset();
 		offset = new Rotation3d();
 
