@@ -2,17 +2,13 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
+import frc.robot.pioneersLib.bumSwerve.VisionUtil.CameraResolution;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIONavX;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
@@ -42,21 +38,9 @@ public class Constants {
         public static final Rotation3d ROBOT_TO_FRONT_CAMERA_ROTATION = new Rotation3d(0, Math.toRadians(-67), Math.toRadians(180));
         public static final Transform3d ROBOT_TO_FRONT_CAMERA = new Transform3d(ROBOT_TO_FRONT_CAMERA_TRANSLATION, ROBOT_TO_FRONT_CAMERA_ROTATION);
 
-        // Camera Quality
-        public enum CameraResolution {
-            HIGH_RES,
-            NORMAL
-        }
-
-        // TODO: What camera resolutions actually are these?
+        // TODO: What camera resolutions actually are these? Assuming they're high bc 1080p is high
         public static final CameraResolution SIDE_RESOLUTION = CameraResolution.HIGH_RES;
         public static final CameraResolution FRONT_RESOLUTION = CameraResolution.HIGH_RES;
-
-        // STDEV Pre-calculated
-        public static final Matrix<N3, N1> highResSingleTagStdDev = VecBuilder.fill(0.4, 0.4, Double.MAX_VALUE);
-	    public static final Matrix<N3, N1> normalSingleTagStdDev = VecBuilder.fill(0.8, 0.8, Double.MAX_VALUE);
-	    public static final Matrix<N3, N1> highResMultiTagStdDev = VecBuilder.fill(0.2, 0.2, 3);
-	    public static final Matrix<N3, N1> normalMultiTagStdDev = VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
 
         // Other
         public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
