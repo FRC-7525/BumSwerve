@@ -2,7 +2,6 @@ package frc.robot.subsystems.drive;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
@@ -11,9 +10,6 @@ import frc.robot.pioneersLib.subsystem.Subsystem;
 
 public class Drive extends Subsystem<DriveStates> {
     private SwerveDrive drive;
-
-   
-
 
     public Drive(SwerveModule[] modules, SwerveGyroIO gyroIO, boolean sim) {
         super("Drive", DriveStates.REGULAR);

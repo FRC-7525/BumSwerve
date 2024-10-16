@@ -1,6 +1,5 @@
 package frc.robot.subsystems.manager;
 
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.drive.Drive;
