@@ -22,8 +22,8 @@ public class Drive extends Subsystem<DriveStates> {
 
         switch (Constants.ROBOT_STATE) {
             case REAL:
-                drive.configureAnglePID(0.5, 0, 0);
-                drive.configureDrivePID(0.01, 0, 0);
+                drive.configureAnglePID(0.01, 0, 0);
+                drive.configureDrivePID(0.001, 0, 0);
                 break;
             case SIM:
                 drive.configureAnglePID(0.5, 0, 0);

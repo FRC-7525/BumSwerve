@@ -24,7 +24,7 @@ public class Constants {
         SIM, REAL, REPLAY
     }
   
-    public static final RobotState ROBOT_STATE = RobotState.SIM;
+    public static final RobotState ROBOT_STATE = RobotState.REAL;
     
     public static final XboxController CONTROLLER = new XboxController(0);
     public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
@@ -77,22 +77,22 @@ public class Constants {
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(2, 5.357),
                             new SwerveMotorIOSparkMax(1, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(3, 171.826171875), 
+                            new SwerveAbsoluteEncoderIOCANcoder(3, 0), 
                             "FrontLeft"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(5, 5.357),
                             new SwerveMotorIOSparkMax(4, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(6, -23.115234375),
+                            new SwerveAbsoluteEncoderIOCANcoder(6, 0),
                             "FrontRight"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(11, 5.357),
                             new SwerveMotorIOSparkMax(10, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(12, 220.517578125),
+                            new SwerveAbsoluteEncoderIOCANcoder(12, 0),
                             "BackLeft"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(8, 5.357),
                             new SwerveMotorIOSparkMax(7, 21.4286),
-                            new SwerveAbsoluteEncoderIOCANcoder(9, -67.939453125),
+                            new SwerveAbsoluteEncoderIOCANcoder(9, 0),
                             "BackRight")
             };
         }

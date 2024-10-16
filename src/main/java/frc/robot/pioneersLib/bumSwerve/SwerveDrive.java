@@ -215,6 +215,7 @@ public class SwerveDrive {
 
 		gyroIO.updateInputs(gyroInputs);
 		for (var module : modules) {
+			System.out.println("updating module");
 			module.updateInputs();
 		}
 		odometryLock.unlock();

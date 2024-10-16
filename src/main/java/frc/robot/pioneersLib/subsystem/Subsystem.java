@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-public abstract class Subsystem<StateType extends SubsystemStates> extends SubsystemBase{
+public abstract class Subsystem<StateType extends SubsystemStates> extends SubsystemBase {
 
 	private Map<StateType, ArrayList<Trigger<StateType>>> triggerMap = new HashMap<
 		StateType,
@@ -35,7 +35,6 @@ public abstract class Subsystem<StateType extends SubsystemStates> extends Subsy
 	// State operation
 	public void periodic() {
 		// Logger.recordOutput(subsystemName + "/state", state.getStateString());
-		if (!DriverStation.isEnabled()) return;
 
 		runState();
 

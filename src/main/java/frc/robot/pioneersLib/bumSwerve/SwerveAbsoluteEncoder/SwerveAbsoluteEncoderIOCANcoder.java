@@ -1,7 +1,9 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder;
 
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -30,6 +32,8 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
         this.configurator = CANcoder.getConfigurator();
         this.magnetSensorConfiguration = new MagnetSensorConfigs();
 
+        configurator.apply(new CANcoderConfiguration());
+
         configurator.refresh(magnetSensorConfiguration);
         configurator.apply(magnetSensorConfiguration
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
@@ -40,9 +44,11 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
     @Override
     public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs) {
+        BaseStatusSignal.refreshAll(turnAbsolutePosition);
+
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = turnAbsolutePosition.getValueAsDouble();
+        inputs.turnAbsolutePosition = turnAbsolutePosition.getValueAsDouble() * 360;
     }
 
     @Override
@@ -57,7 +63,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
     @Override
     public Rotation2d getTurnAbsolutePosition() {
-        return new Rotation2d(Units.degreesToRadians(turnAbsolutePosition.getValueAsDouble()));
+        return Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
     }
 
     @Override //does nothing because it is only used in sim?

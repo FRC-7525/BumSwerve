@@ -161,10 +161,10 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     public void setVelocity(double speedpoint) {
         if (!isDrive) throw new UnsupportedOperationException("Cannot set velocity on a turn motor");
 
-        // VelocityVoltage command = new VelocityVoltage(speedpoint).withSlot(0);
-        // motor.setControl(command);
+        VelocityVoltage command = new VelocityVoltage(speedpoint).withSlot(0);
+        motor.setControl(command);
 
-        setVoltage(feedforwardController.calculate(speedpoint) + feedbackController.calculate(getVelocity(), speedpoint));
+        // setVoltage(feedforwardController.calculate(speedpoint) + feedbackController.calculate(getVelocity(), speedpoint));
     }
 
 

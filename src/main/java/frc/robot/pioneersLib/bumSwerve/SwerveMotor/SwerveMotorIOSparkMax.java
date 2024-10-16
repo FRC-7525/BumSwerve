@@ -57,6 +57,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         encoder = motor.getEncoder();
 
         encoder.setPosition(0);
+        encoder.setPositionConversionFactor(1);
 
 		motor.restoreFactoryDefaults();
 		motor.setCANTimeout(SPARK_TIMEOUT_MS);
@@ -116,7 +117,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 
     @Override
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(encoder.getPosition());
+        return Rotation2d.fromRotations(encoder.getPosition() / gearRatio);
     }
 
     @Override
@@ -138,7 +139,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     public void setPosition(double setpoint) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
 
-        setVoltage(feedbackController.calculate(getAngle().getDegrees(), setpoint));
+        setVoltage(feedbackController.calculate(getAngle().getDegrees() / (Math.PI * 2), setpoint));
     }
 
     @Override

@@ -36,6 +36,7 @@ public class Manager extends Subsystem<ManagerStates> {
 
     @Override
     public void runState() {
+
         // Call subystem periodics
         driveSubsystem.periodic();
 
