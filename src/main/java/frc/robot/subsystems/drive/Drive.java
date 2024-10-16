@@ -17,24 +17,22 @@ public class Drive extends Subsystem<DriveStates> {
     private final double TRACK_WIDTH_Y = Units.inchesToMeters(25);
     private final double MAX_SPEED = Units.feetToMeters(19.5);
 
-    private boolean sim;
 
-    public Drive(SwerveModule[] modules, SwerveGyroIO gyroIO) {
+    public Drive(SwerveModule[] modules, SwerveGyroIO gyroIO, boolean sim) {
         super("Drive", DriveStates.REGULAR);
+        // Sim is passed in because I don't want to make two switch statements (think about it)
+        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
 
         switch (Constants.ROBOT_STATE) {
             case REAL:
-                sim = false;
                 drive.configureAnglePID(0.5, 0, 0);
                 drive.configureDrivePID(0.01, 0, 0);
                 break;
             case SIM:
-                sim = true;
                 drive.configureAnglePID(0.5, 0, 0);
                 drive.configureDrivePID(0.01, 0, 0);
                 break;
             case REPLAY:
-                sim = false;
                 drive.configureAnglePID(0, 0, 0);
                 drive.configureDrivePID(0, 0, 0);
                 break;
@@ -42,7 +40,6 @@ public class Drive extends Subsystem<DriveStates> {
                 break;
         }    
 
-        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
     }
 
     /**

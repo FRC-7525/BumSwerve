@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIONavX;
@@ -17,7 +18,9 @@ public class Constants {
     }
 
     public static final RobotState ROBOT_STATE = RobotState.SIM;
-
+    
+    public static final XboxController CONTROLLER = new XboxController(0);
+    public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
 
     public static final class Drive {
         public static final class Sim {
