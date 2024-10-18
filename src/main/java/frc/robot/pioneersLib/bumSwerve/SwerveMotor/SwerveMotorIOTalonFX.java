@@ -35,6 +35,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     private double gearRatio;
     private boolean isDrive;
 
+    // TODO: Delete if we get regular PID working well
     private PIDController feedbackController;
     private SimpleMotorFeedforward feedforwardController;
 
