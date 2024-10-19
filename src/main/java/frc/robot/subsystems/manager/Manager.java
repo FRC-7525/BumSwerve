@@ -13,6 +13,9 @@ public class Manager extends Subsystem<ManagerStates> {
     private Drive driveSubsystem;
     private Vision visionSubsystem;
 
+    private Boolean headingCorrection;
+    private Boolean fieldRelative;
+
     public Manager() { 
         super("Manager", ManagerStates.IDLE);
 
@@ -32,6 +35,14 @@ public class Manager extends Subsystem<ManagerStates> {
             default:
                 break;
         }
+
+        // Default value, please change once tested to be true by default
+        headingCorrection = false;
+        fieldRelative = false;
+
+        // Toggles
+        addRunnableTrigger(() -> fieldRelative = !fieldRelative, () -> Constants.CONTROLLER.getStartButtonPressed());
+        addRunnableTrigger(() -> headingCorrection = !headingCorrection, () -> Constants.CONTROLLER.getBackButtonPressed());
     }
 
     @Override
@@ -44,7 +55,7 @@ public class Manager extends Subsystem<ManagerStates> {
         // visionSubsystem.periodic();
 
         // Drive the robot
-        driveSubsystem.drive(() -> Constants.CONTROLLER.getLeftX(), () -> Constants.CONTROLLER.getLeftY(), () -> Constants.CONTROLLER.getRightX(), true, false);
+        driveSubsystem.drive(() -> Constants.CONTROLLER.getLeftX(), () -> Constants.CONTROLLER.getLeftY(), () -> Constants.CONTROLLER.getRightX(), fieldRelative, headingCorrection);
     }
 
 }  
