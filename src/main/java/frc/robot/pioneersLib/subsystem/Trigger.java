@@ -2,6 +2,7 @@ package frc.robot.pioneersLib.subsystem;
 
 import java.util.function.BooleanSupplier;
 
+// TODO: Rename to state trigger
 public class Trigger<StateType extends SubsystemStates> {
 
 	BooleanSupplier supplier;
