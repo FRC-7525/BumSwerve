@@ -17,6 +17,8 @@ public abstract class Subsystem<StateType extends SubsystemStates> extends Subsy
 		ArrayList<Trigger<StateType>>
 	>();
 
+	private List<RunnableTrigger> runnableTriggerMap = new ArrayList<>();
+
 	private StateType state = null;
 	private Timer stateTimer = new Timer();
 	private String subsystemName;
@@ -38,6 +40,7 @@ public abstract class Subsystem<StateType extends SubsystemStates> extends Subsy
 		runState();
 
 		checkTriggers();
+		checkRunnableTriggers();
 	}
 
 	protected abstract void runState();
@@ -65,6 +68,20 @@ public abstract class Subsystem<StateType extends SubsystemStates> extends Subsy
 		for (var trigger : triggers) {
 			if (trigger.isTriggered()) {
 				setState(trigger.getResultState());
+				return;
+			}
+		}
+	}
+
+	protected void addRunnableTrigger(Runnable runnable, BooleanSupplier check) {
+		runnableTriggerMap.add(new RunnableTrigger(check, runnable));
+	}
+
+	private void checkRunnableTriggers() {
+		if (triggerMap == null) return;
+		for (var trigger : runnableTriggerMap) {
+			if (trigger.isTriggered()) {
+				trigger.run();
 				return;
 			}
 		}
