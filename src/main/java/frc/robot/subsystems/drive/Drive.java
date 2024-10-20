@@ -40,7 +40,7 @@ public class Drive extends SubsystemBase {
     private XboxController controller;
 
     private boolean sim;
-    private SysIdRoutine sysId;
+    private SysIdRoutine sysIdDrive;
     private String state;
     CommandScheduler commandScheduler;
 
@@ -102,7 +102,7 @@ public class Drive extends SubsystemBase {
         drive.configureAnglePID(0.1, 0, 0.0);
         drive.configureDrivePID(0.01, 0, 0);
 
-        sysId =
+        sysIdDrive =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 null,
@@ -126,19 +126,19 @@ public class Drive extends SubsystemBase {
                         true, false);
 
                 if (sysIdController.getAButton()) {
-                        commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kForward));
+                        commandScheduler.schedule(sysIdDrive.quasistatic(SysIdRoutine.Direction.kForward));
                         state = "quasistatic-forward";
                 }
                 if (sysIdController.getBButton()) {
-                        commandScheduler.schedule(sysId.quasistatic(SysIdRoutine.Direction.kReverse));
+                        commandScheduler.schedule(sysIdDrive.quasistatic(SysIdRoutine.Direction.kReverse));
                         state = "quasistatic-reverse";
                 }
                 if (sysIdController.getXButton()) {
-                        commandScheduler.schedule(sysId.dynamic(SysIdRoutine.Direction.kForward));
+                        commandScheduler.schedule(sysIdDrive.dynamic(SysIdRoutine.Direction.kForward));
                         state = "dynamic-forward";
                 }
                 if (sysIdController.getYButton()) {
-                        commandScheduler.schedule(sysId.dynamic(SysIdRoutine.Direction.kReverse));
+                        commandScheduler.schedule(sysIdDrive.dynamic(SysIdRoutine.Direction.kReverse));
                         state = "dynamic-reverse";
                 }
                 SignalLogger.writeString("SysIdState", state);
@@ -146,11 +146,11 @@ public class Drive extends SubsystemBase {
         }
 
         public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-                return sysId.quasistatic(direction);
+                return sysIdDrive.quasistatic(direction);
         }
 
         /** Returns a command to run a dynamic test in the specified direction. */
         public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysId.dynamic(direction);
+        return sysIdDrive.dynamic(direction);
         } 
 }

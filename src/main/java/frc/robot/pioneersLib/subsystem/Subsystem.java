@@ -1,20 +1,23 @@
 package frc.robot.pioneersLib.subsystem;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-public abstract class Subsystem<StateType extends SubsystemStates> {
+public abstract class Subsystem<StateType extends SubsystemStates> extends SubsystemBase {
 
 	private Map<StateType, ArrayList<Trigger<StateType>>> triggerMap = new HashMap<
 		StateType,
 		ArrayList<Trigger<StateType>>
 	>();
+
+	private List<RunnableTrigger> runnableTriggerMap = new ArrayList<>();
 
 	private StateType state = null;
 	private Timer stateTimer = new Timer();
@@ -32,12 +35,14 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
 
 	// State operation
 	public void periodic() {
+		// Commented out bc bad code
 		// Logger.recordOutput(subsystemName + "/state", state.getStateString());
-		if (!DriverStation.isEnabled()) return;
+		// if (!DriverStation.isEnabled()) return;
 
 		runState();
 
 		checkTriggers();
+		checkRunnableTriggers();
 	}
 
 	protected abstract void runState();
@@ -59,12 +64,26 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
 		triggerMap.get(startType).add(new Trigger<StateType>(check, endType));
 	}
 
+	protected void addRunnableTrigger(Runnable runnable, BooleanSupplier check) {
+		runnableTriggerMap.add(new RunnableTrigger(check, runnable));
+	}
+
 	private void checkTriggers() {
 		List<Trigger<StateType>> triggers = triggerMap.get(state);
 		if (triggers == null) return;
 		for (var trigger : triggers) {
 			if (trigger.isTriggered()) {
 				setState(trigger.getResultState());
+				return;
+			}
+		}
+	}
+
+	private void checkRunnableTriggers() {
+		if (triggerMap == null) return;
+		for (var trigger : runnableTriggerMap) {
+			if (trigger.isTriggered()) {
+				trigger.run();
 				return;
 			}
 		}
