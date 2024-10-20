@@ -99,6 +99,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition() / gearRatio);
         inputs.motorVelocityRPS = (encoder.getVelocity() / RPS_CONVERSION_FACTOR) / gearRatio;
         inputs.motorCurrentAmps = new double[] { motor.getOutputCurrent() };
+        inputs.motorAppliedVolts = motor.getAppliedOutput();
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / gearRatio)).toArray(Rotation2d[]::new);
@@ -250,5 +251,10 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
      */
     public void burnFlash() {
         motor.burnFlash();
+    }
+
+    @Override
+    public void runVolt(double volts) {
+        motor.setVoltage(volts);
     }
 }

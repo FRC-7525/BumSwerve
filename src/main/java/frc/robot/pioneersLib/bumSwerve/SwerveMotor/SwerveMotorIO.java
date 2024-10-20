@@ -13,7 +13,7 @@ public interface SwerveMotorIO {
         public double motorPositionAsDouble = 0.0;
         public double motorVelocityRPS = 0.0;
         public double[] motorCurrentAmps = new double[] {};
-        public double motorVolts = 0.0;
+        public double motorAppliedVolts = 0.0;
 
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDriveAccumulatedPosition = new double[] {};
@@ -118,5 +118,5 @@ public interface SwerveMotorIO {
      * Runs the motor with given voltage. For sysID
      * @param volts
      */
-    public default void runVolt(double volts) {}
+    public void runVolt(double volts);
 }

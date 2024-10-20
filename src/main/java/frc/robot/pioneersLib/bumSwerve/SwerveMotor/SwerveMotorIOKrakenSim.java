@@ -38,7 +38,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private double gearing;
     private double positionError;
     private boolean isDrive;
-    private double volts;
     
     public SwerveMotorIOKrakenSim(int placeholderCanID, double gearRatio, double motorMOI) {
         dummyTalon = new TalonFX(placeholderCanID);
@@ -68,7 +67,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
 		motorPositionQueue = OdometryThread.getInstance().registerSignal(dummyTalon, motorPosition);
-        volts = 0;
     }  
     
     public void updateInputs(SwerveMotorIOInputs inputs) {
@@ -78,7 +76,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
         inputs.motorPositionAsDouble = Rotation2d.fromRotations(motorPosition.getValueAsDouble()/gearing).getRotations();
         inputs.motorVelocityRPS = motorVelocityRPS.getValueAsDouble();
         inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
-        inputs.motorVolts = dummyTalon.getMotorVoltage().getValueAsDouble();
+        inputs.motorAppliedVolts = dummyTalon.getMotorVoltage().getValueAsDouble();
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
@@ -174,7 +172,6 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
 
     @Override
     public void runVolt(double volts) {
-        this.volts = volts;
         motorSim.setInputVoltage(volts);
     }
 }

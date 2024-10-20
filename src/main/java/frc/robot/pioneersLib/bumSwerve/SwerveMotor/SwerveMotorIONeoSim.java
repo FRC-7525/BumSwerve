@@ -14,7 +14,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
@@ -91,6 +90,7 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
         inputs.motorPosition = Rotation2d.fromRotations(encoder.getPosition());
         inputs.motorCurrentAmps = new double[] {dummySpark.getOutputCurrent()};
         inputs.motorVelocityRPS = encoder.getVelocity();
+        inputs.motorAppliedVolts = dummySpark.getAppliedOutput();
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
@@ -168,5 +168,10 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     @Override
     public void setIsDrive(boolean isDrive) {
         this.isDrive = isDrive;
+    }
+
+    @Override
+    public void runVolt(double volts) {
+        dummySpark.setVoltage(volts);
     }
 }

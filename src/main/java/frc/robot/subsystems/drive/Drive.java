@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 
@@ -10,24 +9,22 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIONavX;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
-import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOCANcoder;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOSim;
-import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO.SwerveAbsoluteEncoderIOInputs;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOKrakenSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOSparkMax;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 
-public class Drive extends SubsystemBase {
+public class Drive extends Subsystem<DriveStates> {
     private SwerveDrive drive;
 
     private final double WHEEL_RADIUS = Units.inchesToMeters(2);
@@ -41,18 +38,25 @@ public class Drive extends SubsystemBase {
 
     private boolean sim;
     private SysIdRoutine sysIdDrive;
+    private SysIdRoutine sysIdDriveRotation;
     private String state;
     CommandScheduler commandScheduler;
 
-    private XboxController sysIdController = new XboxController(0);
+    private XboxController sysIdController;
+    private XboxController secondarySysIdController;
 
     public Drive() {
+        super("Drive", DriveStates.REGULAR);
         SignalLogger.enableAutoLogging(true);
         SignalLogger.setPath("Logs");
         SignalLogger.start();
-        controller = new XboxController(0);
         sim = true;
         state = "none";
+
+        controller = new XboxController(0);
+        sysIdController = new XboxController(4);
+        secondarySysIdController = new XboxController(5);
+        
 
         commandScheduler = CommandScheduler.getInstance();
 
@@ -108,15 +112,42 @@ public class Drive extends SubsystemBase {
                 null,
                 null,
                 null,
-                (state) -> SignalLogger.writeString("Phoenix6/SysIdState", state.toString())),
+                (state) -> SignalLogger.writeString("Phoenix6/SysIdStateDrive", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> {
                   for (int i = 0; i < 4; i++) {
-                    modules[i].runVolt(voltage.in(Volts));
+                    modules[i].runVoltDrive((voltage.in(Volts)));
                   }
                 },
                 null,
                 this));
+                
+        sysIdDriveRotation =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> SignalLogger.writeString("Phoenix6/SysIdStateRotation", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> {
+                  for (int i = 0; i < 4; i++) {
+                    modules[i].runVoltRotation((voltage.in(Volts)));
+                  }
+                },
+                null,
+                this));
+
+
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdQuasistaticDrive(Direction.kForward)), () -> sysIdController.getXButtonPressed());
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdQuasistaticDrive(Direction.kReverse)), () -> sysIdController.getYButtonPressed());
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdDynamicDrive(Direction.kForward)), () -> sysIdController.getAButtonPressed());
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdDynamicDrive(Direction.kReverse)), () -> sysIdController.getBButtonPressed());
+        
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdQuasistaticRotation(Direction.kForward)), () -> secondarySysIdController.getXButtonPressed());
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdQuasistaticRotation(Direction.kReverse)), () -> secondarySysIdController.getYButtonPressed());
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdDynamicRotation(Direction.kForward)), () -> secondarySysIdController.getAButtonPressed());
+                addRunnableTrigger(() -> commandScheduler.schedule(sysIdDynamicRotation(Direction.kReverse)), () -> secondarySysIdController.getBButtonPressed());
         }
 
         public void runState() {
@@ -124,33 +155,25 @@ public class Drive extends SubsystemBase {
                 // Drive the robot
                 drive.drive(() -> controller.getLeftY(), () -> controller.getLeftX(), () -> controller.getRightX(),
                         true, false);
-
-                if (sysIdController.getAButton()) {
-                        commandScheduler.schedule(sysIdDrive.quasistatic(SysIdRoutine.Direction.kForward));
-                        state = "quasistatic-forward";
-                }
-                if (sysIdController.getBButton()) {
-                        commandScheduler.schedule(sysIdDrive.quasistatic(SysIdRoutine.Direction.kReverse));
-                        state = "quasistatic-reverse";
-                }
-                if (sysIdController.getXButton()) {
-                        commandScheduler.schedule(sysIdDrive.dynamic(SysIdRoutine.Direction.kForward));
-                        state = "dynamic-forward";
-                }
-                if (sysIdController.getYButton()) {
-                        commandScheduler.schedule(sysIdDrive.dynamic(SysIdRoutine.Direction.kReverse));
-                        state = "dynamic-reverse";
-                }
                 SignalLogger.writeString("SysIdState", state);
 
         }
 
-        public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        // command factories my favorite!!!
+        public Command sysIdQuasistaticDrive(SysIdRoutine.Direction direction) {
                 return sysIdDrive.quasistatic(direction);
         }
 
         /** Returns a command to run a dynamic test in the specified direction. */
-        public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdDrive.dynamic(direction);
+        public Command sysIdDynamicDrive(SysIdRoutine.Direction direction) {
+                return sysIdDrive.dynamic(direction);
+        } 
+
+        public Command sysIdQuasistaticRotation(SysIdRoutine.Direction direction) {
+                return sysIdDriveRotation.quasistatic(direction);
+        }
+
+        public Command sysIdDynamicRotation(SysIdRoutine.Direction direction) {
+                return sysIdDriveRotation.dynamic(direction);
         } 
 }

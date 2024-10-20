@@ -273,7 +273,11 @@ public class SwerveModule {
         antiJitterThreshold = threshold;
     }
     
-    public void runVolt(double volts) {
+    public void runVoltDrive(double volts) {
         driveMotor.runVolt(volts);
+    }
+
+    public void runVoltRotation(double volts) {
+        turnMotor.runVolt(volts);
     }
 }

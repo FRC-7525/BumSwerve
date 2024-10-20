@@ -236,4 +236,9 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
             motorAppliedVolts
         );
     }
+
+    @Override
+    public void runVolt(double volts) {
+        motor.setVoltage(volts);
+    }
 }
