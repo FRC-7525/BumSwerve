@@ -24,7 +24,7 @@ public class Constants {
         SIM, REAL, REPLAY
     }
   
-    public static final RobotState ROBOT_STATE = RobotState.REAL;
+    public static final RobotState ROBOT_STATE = RobotState.SIM;
     
     public static final XboxController CONTROLLER = new XboxController(0);
     public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
@@ -37,6 +37,8 @@ public class Constants {
         public static final Translation3d ROBOT_TO_FRONT_CAMERA_TRANSLATION = new Translation3d(Units.inchesToMeters(-14.25), 0, Units.inchesToMeters(6));
         public static final Rotation3d ROBOT_TO_FRONT_CAMERA_ROTATION = new Rotation3d(0, Math.toRadians(-67), Math.toRadians(180));
         public static final Transform3d ROBOT_TO_FRONT_CAMERA = new Transform3d(ROBOT_TO_FRONT_CAMERA_TRANSLATION, ROBOT_TO_FRONT_CAMERA_ROTATION);
+
+        public static final double CAMERA_DEBOUNCE_TIME = 0.5;
 
         // TODO: What camera resolutions actually are these? Assuming they're high bc 1080p is high
         public static final CameraResolution SIDE_RESOLUTION = CameraResolution.HIGH_RES;

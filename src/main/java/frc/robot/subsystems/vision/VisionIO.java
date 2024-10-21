@@ -22,7 +22,7 @@ public interface VisionIO {
         int frontTargetCount = 0;
     }
 
-    public default void updateInptus(VisionIOInputs inputs) {}
+    public default void updateInputs(VisionIOInputs inputs) {}
     
     public default void updateRobotPose(Pose2d robotPose) {}
 

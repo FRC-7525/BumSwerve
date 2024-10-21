@@ -30,12 +30,12 @@ public class VisionIOReal implements VisionIO {
         // Pose estimators :/
         frontEstimator = new PhotonPoseEstimator(Constants.Vision.APRIL_TAG_FIELD_LAYOUT, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCamera, Constants.Vision.ROBOT_TO_FRONT_CAMERA);
         sideEstimator = new PhotonPoseEstimator(Constants.Vision.APRIL_TAG_FIELD_LAYOUT, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, sideCamera, Constants.Vision.ROBOT_TO_SIDE_CAMERA);
-        sideDebouncer = new Debouncer(0.5, DebounceType.kFalling);
-        frontDebouncer = new Debouncer(0.5, DebounceType.kFalling);
+        sideDebouncer = new Debouncer(Constants.Vision.CAMERA_DEBOUNCE_TIME, DebounceType.kFalling);
+        frontDebouncer = new Debouncer(Constants.Vision.CAMERA_DEBOUNCE_TIME, DebounceType.kFalling);
     }
 
     @Override
-    public void updateInptus(VisionIOInputs inputs) {
+    public void updateInputs(VisionIOInputs inputs) {
         Optional<EstimatedRobotPose> sidePose = sideEstimator.update();
         Optional<EstimatedRobotPose> frontPose = frontEstimator.update();
 

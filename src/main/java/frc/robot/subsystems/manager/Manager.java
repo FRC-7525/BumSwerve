@@ -52,7 +52,7 @@ public class Manager extends Subsystem<ManagerStates> {
         driveSubsystem.periodic();
 
         // TODO: Uncoment when drive is fully working
-        // visionSubsystem.periodic();
+        visionSubsystem.periodic();
 
         // Drive the robot
         driveSubsystem.drive(() -> Constants.CONTROLLER.getLeftX(), () -> Constants.CONTROLLER.getLeftY(), () -> Constants.CONTROLLER.getRightX(), fieldRelative, headingCorrection);

@@ -39,6 +39,7 @@ public class VisionUtil {
         };
         var targets = estimatedPose.targetsUsed;
         int numTags = 0;
+        // dist = distance not distribution
         double avgDist = 0;
         for (var tgt : targets) {
             var tagPose = Constants.Vision.APRIL_TAG_FIELD_LAYOUT.getTagPose(tgt.getFiducialId());
@@ -58,11 +59,13 @@ public class VisionUtil {
         avgDist /= numTags;
 
         // Decrease std devs if multiple targets are visible
+        // 8 and 5 is meters
         if (numTags > 1
                 && avgDist > switch (resolution) {
                     case HIGH_RES -> 8;
                     case NORMAL -> 5;
                 }) {
+            // Infinity STDEVs if u have bad masurments (MAX_VALUE > a big number)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
             estStdDevs = switch (resolution) {
