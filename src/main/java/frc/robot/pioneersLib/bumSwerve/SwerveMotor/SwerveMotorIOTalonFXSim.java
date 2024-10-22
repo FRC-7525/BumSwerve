@@ -18,7 +18,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 
-public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
+public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
 
     private TalonFX dummyTalon;
     private TalonFXSimState talonController;
@@ -42,7 +42,7 @@ public class SwerveMotorIOKrakenSim implements SwerveMotorIO {
     private final double POSITION_UPDATE_FREQUENCY = 250.0;
     private final double SIGNAL_UPDATE_FREQUENCY = 50.0;
     
-    public SwerveMotorIOKrakenSim(int placeholderCanID, double gearRatio, double motorMOI) {
+    public SwerveMotorIOTalonFXSim(int placeholderCanID, double gearRatio, double motorMOI, DCMotor motorType) {
         dummyTalon = new TalonFX(placeholderCanID);
         talonController = dummyTalon.getSimState();    
         configurator = dummyTalon.getConfigurator();
