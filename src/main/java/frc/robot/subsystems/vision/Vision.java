@@ -7,7 +7,8 @@ import org.photonvision.EstimatedRobotPose;
 import frc.robot.pioneersLib.VisionUtil;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.Constants;
+
+import static frc.robot.Constants.Vision.*;
 
 public class Vision extends Subsystem<VisionStates> {
 
@@ -30,7 +31,7 @@ public class Vision extends Subsystem<VisionStates> {
             Optional<EstimatedRobotPose> frontPose = io.getFrontPoseEstimation();
             if (io.getFrontPoseEstimation().isPresent()) {
                 drive.addVisionMeasurment(frontPose.get().estimatedPose.toPose2d(), frontPose.get().timestampSeconds,
-                        VisionUtil.getEstimationStdDevs(frontPose.get(), Constants.Vision.FRONT_RESOLUTION));
+                        VisionUtil.getEstimationStdDevs(frontPose.get(), FRONT_RESOLUTION));
             }
     
             Optional<EstimatedRobotPose> sidePose = io.getSidePoseEstimation();
@@ -38,7 +39,7 @@ public class Vision extends Subsystem<VisionStates> {
                 drive.addVisionMeasurment(
                         sidePose.get().estimatedPose.toPose2d(),
                         sidePose.get().timestampSeconds,
-                        VisionUtil.getEstimationStdDevs(sidePose.get(), Constants.Vision.SIDE_RESOLUTION));
+                        VisionUtil.getEstimationStdDevs(sidePose.get(), SIDE_RESOLUTION));
             }
         }
     }

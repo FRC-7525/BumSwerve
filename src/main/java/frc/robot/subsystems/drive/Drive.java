@@ -4,13 +4,15 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import frc.robot.Constants;
 import frc.robot.pioneersLib.bumSwerve.SwerveDrive;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import java.util.function.DoubleSupplier;
 
-import frc.robot.Constants;
 import frc.robot.pioneersLib.subsystem.Subsystem;
+
+import static frc.robot.Constants.Drive.*;
 
 public class Drive extends Subsystem<DriveStates> {
     private SwerveDrive drive;
@@ -18,7 +20,7 @@ public class Drive extends Subsystem<DriveStates> {
     public Drive(SwerveModule[] modules, SwerveGyroIO gyroIO, boolean sim) {
         super("Drive", DriveStates.REGULAR);
         // Sim is passed in because I don't want to make two switch statements (think about it)
-        drive = new SwerveDrive(Constants.Drive.TRACK_WIDTH_X, Constants.Drive.TRACK_WIDTH_Y, modules, gyroIO, Constants.Drive.MAX_SPEED, Constants.Drive.WHEEL_RADIUS, sim);
+        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
 
         switch (Constants.ROBOT_STATE) {
             case REAL:
