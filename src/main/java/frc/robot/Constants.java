@@ -51,13 +51,14 @@ public class Constants {
     public static final class Drive {
 
         public enum DriveBase {
-            // TODO: Get actual values on a lot of these lol (everything 0 is unknown)
-            KRAKEN_SWERVE(5.357, 0, DCMotor.getKrakenX60(1), DCMotor.getKrakenX60(1)),
-            NEO_SWERVE(0, 21.4286, DCMotor.getNEO(1), DCMotor.getNEO(1)),
-            FALCON_AZIMUTH_KRAKEN_DRIVE(5.357, 0, DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1)),
+            // TODO: Get actual values on a lot of these lol (everything 0.001 is unknown)
+            KRAKEN_SWERVE(5.357, 0.001, DCMotor.getKrakenX60(1), DCMotor.getKrakenX60(1)),
+            NEO_SWERVE(0.001, 21.4286, DCMotor.getNEO(1), DCMotor.getNEO(1)),
+            FALCON_AZIMUTH_KRAKEN_DRIVE(5.357, 0.001, DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1)),
             NEO_AZIMUTH_KRAKEN_DRIVE(5.357, 21.4286, DCMotor.getKrakenX60(1), DCMotor.getNEO(1)),;
 
             /**
+             * Creates a DriveBase with the specified gearing and simulated motors
              * @param driveGearing
              * @param azimuthGearing
              * @param driveMotorSim

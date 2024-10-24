@@ -2,7 +2,6 @@ package frc.robot.pioneersLib.subsystem;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-public abstract class Subsystem<StateType extends SubsystemStates> extends SubsystemBase {
+public abstract class Subsystem<StateType extends SubsystemStates> implements edu.wpi.first.wpilibj2.command.Subsystem {
 
 	private Map<StateType, ArrayList<Trigger<StateType>>> triggerMap = new HashMap<
 		StateType,
@@ -34,6 +33,7 @@ public abstract class Subsystem<StateType extends SubsystemStates> extends Subsy
 	}
 
 	// State operation
+	@Override
 	public void periodic() {
 		// Logger.recordOutput(subsystemName + "/state", state.getStateString());
 
@@ -90,6 +90,11 @@ public abstract class Subsystem<StateType extends SubsystemStates> extends Subsy
 	// Other utilities
 	public StateType getState() {
 		return state;
+	}
+
+	@Override
+	public String getName() {
+		return subsystemName;
 	}
 
 	public void setState(StateType state) {
