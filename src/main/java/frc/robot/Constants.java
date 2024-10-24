@@ -84,17 +84,6 @@ public class Constants {
         // TODO: Change to whatever we name our canivore bus
         public static final String CANIVORE_BUS = "canivore";
         private static final String CAN_BUS = CANIVORE_USED ? CANIVORE_BUS : RIO_BUS;
-
-
-        // GEARINGs (all on L3+ or L3 because we don't use other things)
-        public static final double KRAKEN_DRIVE_GEARING = 5.357;
-        public static final double NEO_DRIVE_GEARING = 5.33;
-        public static final double FALCON_DRIVE_GEARING = 21.4286;
-
-        public static final double NEO_AZIMUTH_GEARING = 0.000520786;
-        public static final double FALCON_AZIMUTH_GEARING = 0.00062093;
-        // TODO: If we ever get rich enough to have this find the actual number
-        public static final double KRAKEN_AZIMUTH_GEARING = 0.0;
         
         // Physical Measurments
         public static final double WHEEL_RADIUS = Units.inchesToMeters(2);
