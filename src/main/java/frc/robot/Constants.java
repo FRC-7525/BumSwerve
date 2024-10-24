@@ -16,8 +16,6 @@ import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOCANcoder;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFXSim;
-import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
-import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOSparkMax;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 
 public class Constants {
@@ -52,24 +50,75 @@ public class Constants {
 
     public static final class Drive {
 
+        public enum DriveBase {
+            KRAKEN_SWERVE(0, 0, DCMotor.getKrakenX60(1), DCMotor.getKrakenX60(1)),
+            NEO_SWERVE(0, 0, DCMotor.getNEO(1), DCMotor.getNEO(1)),
+            FALCON_AZIMUTH_KRAKEN_DRIVE(0, 0, DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1)),
+            NEO_AZIMUTH_KRAKEN_DRIVE(0, 0, DCMotor.getKrakenX60(1), DCMotor.getNEO(1)),;
+
+            /**
+             * @param driveGearing
+             * @param azimuthGearing
+             * @param driveMotorSim
+             * @param azimuthMotorSim
+             */
+            DriveBase(double driveGearing, double azimuthGearing, DCMotor driveMotorSim, DCMotor azimuthMotorSim) {
+                this.driveGearing = driveGearing;
+                this.azimuthGearing = azimuthGearing;
+                this.driveMotorSim = driveMotorSim;
+                this.azimuthMotorSim = azimuthMotorSim;
+            }
+
+            public double driveGearing;
+            public double azimuthGearing;
+            public DCMotor azimuthMotorSim;
+            public DCMotor driveMotorSim;
+        }
+
+        public static final DriveBase DRIVE_BASE = DriveBase.FALCON_AZIMUTH_KRAKEN_DRIVE;
+
+        // Canbus to use
+        public static final boolean CANIVORE_USED = false;
+        public static final String RIO_BUS = "rio";
+        // TODO: Change to whatever we name our canivore bus
+        public static final String CANIVORE_BUS = "canivore";
+        private static final String CAN_BUS = CANIVORE_USED ? CANIVORE_BUS : RIO_BUS;
+
+
+        // GEARINGs (all on L3+ or L3 because we don't use other things)
+        public static final double KRAKEN_DRIVE_GEARING = 5.357;
+        public static final double NEO_DRIVE_GEARING = 5.33;
+        public static final double FALCON_DRIVE_GEARING = 21.4286;
+
+        public static final double NEO_AZIMUTH_GEARING = 0.000520786;
+        public static final double FALCON_AZIMUTH_GEARING = 0.00062093;
+        // TODO: If we ever get rich enough to have this find the actual number
+        public static final double KRAKEN_AZIMUTH_GEARING = 0.0;
+        
+        // Physical Measurments
         public static final double WHEEL_RADIUS = Units.inchesToMeters(2);
         public static final double TRACK_WIDTH_X = Units.inchesToMeters(25);
         public static final double TRACK_WIDTH_Y = Units.inchesToMeters(25);
         public static final double MAX_SPEED = Units.feetToMeters(19.5);
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
+
+            // MOIs, should be neglidgeble and in turn the same for all motors
+            public static final double DRIVE_MOI = 0.000520786;
+            public static final double AZIMUTH_MOI = 0.000520786;
+
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(1, 5.357, 0.000520786, DCMotor.getKrakenX60(1)),
-                            new SwerveMotorIOTalonFXSim(5, 21.4286, 0.000520786, DCMotor.getFalcon500(1)),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
+                            new SwerveMotorIOTalonFXSim(5, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
                             new SwerveAbsoluteEncoderIOSim(9, 121.0), "FrontLeft"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(2, 5.357, 0.000520786, DCMotor.getKrakenX60(1)),
-                            new SwerveMotorIOTalonFXSim(6, 21.4286, 0.000520786, DCMotor.getFalcon500(1)),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
+                            new SwerveMotorIOTalonFXSim(6, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
                             new SwerveAbsoluteEncoderIOSim(10, 11.0), "FrontRight"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(3, 5.357, 0.000520786, DCMotor.getKrakenX60(1)),
-                            new SwerveMotorIOTalonFXSim(7, 21.4286, 0.0005, DCMotor.getNEO(1)),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
+                            new SwerveMotorIOTalonFXSim(7, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
                             new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(4, 5.357, 0.000520786, DCMotor.getKrakenX60(1)),
-                            new SwerveMotorIOTalonFXSim(8, 21.4286, 0.00062093, DCMotor.getFalcon500(1)),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
+                            new SwerveMotorIOTalonFXSim(8, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
                             new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
             };       
         }
@@ -78,23 +127,23 @@ public class Constants {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIONavX(1);
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(2, 5.357),
-                            new SwerveMotorIOTalonFX(1, 21.4286),
+                            new SwerveMotorIOTalonFX(2, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(1, CAN_BUS, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOCANcoder(3, 0), 
                             "FrontLeft"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(5, 5.357),
-                            new SwerveMotorIOTalonFX(4, 21.4286),
+                            new SwerveMotorIOTalonFX(5, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(4, CAN_BUS, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOCANcoder(6, 0),
                             "FrontRight"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(11, 5.357),
-                            new SwerveMotorIOTalonFX(10, 21.4286),
+                            new SwerveMotorIOTalonFX(11, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(10, CAN_BUS, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOCANcoder(12, 0),
                             "BackLeft"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(8, 5.357),
-                            new SwerveMotorIOTalonFX(7, 21.4286),
+                            new SwerveMotorIOTalonFX(8, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(7, CAN_BUS, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOCANcoder(9, 0),
                             "BackRight")
             };

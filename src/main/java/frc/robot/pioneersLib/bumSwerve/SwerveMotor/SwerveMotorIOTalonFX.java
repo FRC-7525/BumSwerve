@@ -51,12 +51,20 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     private static final double SIGNAL_UPDATE_FREQUENCY = 50.0;
     private static final double VOLTAGE_CLOSED_LOOP_RAMP_PERIOD = 0.15;
 
-    public SwerveMotorIOTalonFX(int canID, double gearRatio) {
+    /**
+     * Creates a TalonFx swerve motor with the specified can ID
+     * canbus should be rio for the native rio bus and whatever you
+     * CANiovre bus is named otherwise
+     * @param canID
+     * @param canbus
+     * @param gearRatio
+     */
+    public SwerveMotorIOTalonFX(int canID, String canbus, double gearRatio) {
         this.gearRatio = gearRatio;
 
         configs = new Slot0Configs();
 
-        motor = new TalonFX(canID);
+        motor = new TalonFX(canID, canbus);
 
         configurator = motor.getConfigurator();
 
