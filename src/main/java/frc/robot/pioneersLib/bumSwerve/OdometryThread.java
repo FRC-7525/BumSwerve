@@ -21,11 +21,16 @@ public class OdometryThread extends Thread {
 	private List<Queue<Double>> queues = new ArrayList<>();
 	private List<Queue<Double>> timestampQueues = new ArrayList<>();
 
-	// Ensures samples added to correct queue
-	private List<Integer> signalTypes = new ArrayList<>(); // 0 for Phoenix 1 for polled
+	// Ensures samples added to correct queue (0 for phoenix, 1 for polled)
+	private List<Integer> signalTypes = new ArrayList<>();
 
 	private static final int PHOENIX_SIGNAL = 0;
 	private static final int POLLED_SIGNAL = 1;
+
+	private static final int MAX_QUEUE_SIZE = 20;
+
+	private static final double PHOENIX_SIGNAL_TIMEOUT = 2.0 / 250.0;
+	private static final double PHOENIX_EMPTY_WAIT_TIME = 1000.0 / 250.0;
 
 	private static OdometryThread instance = null;
 
@@ -50,7 +55,7 @@ public class OdometryThread extends Thread {
 
 	public Queue<Double> registerSignal(ParentDevice device, StatusSignal<Double> signal) {
 		Queue<Double> queue = new ArrayBlockingQueue<>(
-			20
+			MAX_QUEUE_SIZE
 		);
 		signalsLock.lock();
 		SwerveDrive.odometryLock.lock();
@@ -67,7 +72,7 @@ public class OdometryThread extends Thread {
 	
 	public Queue<Double> registerSignal(Supplier<OptionalDouble> signal) {
 		Queue<Double> queue = new ArrayBlockingQueue<>(
-			20
+			MAX_QUEUE_SIZE
 		);
 		SwerveDrive.odometryLock.lock();
 		try {
@@ -82,7 +87,7 @@ public class OdometryThread extends Thread {
 
 	public Queue<Double> makeTimestampQueue() {
 		Queue<Double> queue = new ArrayBlockingQueue<>(
-			20
+			MAX_QUEUE_SIZE
 		);
 		SwerveDrive.odometryLock.lock();
 		try {
@@ -100,11 +105,11 @@ public class OdometryThread extends Thread {
 			try {
 				if (!phoenixSignals.isEmpty()) {
 					BaseStatusSignal.waitForAll(
-						2.0 / 250.0,
+						PHOENIX_SIGNAL_TIMEOUT,
 						phoenixSignals.toArray(new BaseStatusSignal[0])
 					);
 				} else {
-					Thread.sleep((long) (1000.0 / 250.0));
+					Thread.sleep((long) (PHOENIX_EMPTY_WAIT_TIME));
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
