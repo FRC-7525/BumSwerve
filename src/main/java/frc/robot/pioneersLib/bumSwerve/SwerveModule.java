@@ -34,6 +34,7 @@ public class SwerveModule {
     
     private SwerveModuleState lastModuleState;
 
+    // Starting threshold for anti-jitter
     private double antiJitterThreshold = 0.01;
 
     /**

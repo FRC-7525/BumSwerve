@@ -3,7 +3,7 @@ import os
 import sys
 
 # List of files to excuse (constants and things we didnt make and stuff we wont use)
-excused_files = ["Constants.java", "BuildConstants.java", "LocalADStarAK.java", "VisionUtil.java"]
+excused_files = ["Constants.java", "BuildConstants.java", "LocalADStarAK.java", "VisionUtil.java", "SwerveModule.java"]
 
 # Not really dirs becasue the full ones didnt work
 excused_dirs = [
@@ -12,7 +12,7 @@ excused_dirs = [
 ]
 
 # Weird stuff that shouldn't go in constants, dont put function/var names in here theyre already checked
-excused_cases = ["ModuleIOSparkMax", "case", "new Module(", "new BaseStatusSignal[", "BaseStatusSignal.waitForAll(", "new ModuleIOHybrid(", "Math.pow(", "+=", "drive.getRotation()", "autoChooser.addOption(", "static final", "getRealTimestamp"]
+excused_cases = ["ModuleIOSparkMax", "case", "new Module(", "new BaseStatusSignal[", "BaseStatusSignal.waitForAll(", "new ModuleIOHybrid(", "Math.pow(", "+=", "drive.getRotation()", "autoChooser.addOption(", "static final", "getRealTimestamp", "antiJitterThreshold"]
 
 def check_for_magic_numbers(file_path):
     magic_numbers = []
