@@ -32,6 +32,12 @@ public class SwerveDrive {
 	static final Lock odometryLock = new ReentrantLock();
 	private final SwerveGyroIOInputsAutoLogged gyroInputs = new SwerveGyroIOInputsAutoLogged();
 
+	// Constants
+	private static final double OPTIMAL_VOLTAGE = 12.0;
+	private static final double GRAVITY = 9.81;
+	private static final double HEADING_CORRECTION_DEADBAND = 0.05;
+	private static final double DT_TIME_SECONDS = 0.02;
+
 	private PIDController headingCorrectionController;
 	private SwerveGyroIO gyroIO;
 	private final SwerveModule[] modules; // FL, FR, BL, BR
@@ -88,7 +94,7 @@ public class SwerveDrive {
 		this.isSim = isSim;
 		this.numModules = modules.length;
 
-		SimpleMotorFeedforward driveFF = createDriveFeedforward(12, maxSpeed, 1.19);
+		SimpleMotorFeedforward driveFF = createDriveFeedforward(OPTIMAL_VOLTAGE, maxSpeed, 1.19);
 
 		for (var module : modules) {
 			module.configureDriveFF(driveFF.ks, driveFF.kv, driveFF.ka);
@@ -123,7 +129,7 @@ public class SwerveDrive {
 	 * @return Max possible acceleration
 	 */
 	public static double calculateMaxAcceleration(double cof) {
-		return cof * 9.81;
+		return cof * GRAVITY;
 	}
 
 	/**
@@ -154,7 +160,7 @@ public class SwerveDrive {
 		// Heading correction / field rel stuff
 		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
 		boolean headingCorrection = useHeadingCorrection && omegaSupplier.getAsDouble() == 0
-				&& (ySupplier.getAsDouble() > 0.05 || xSupplier.getAsDouble() > 0.05);
+				&& (ySupplier.getAsDouble() > HEADING_CORRECTION_DEADBAND || xSupplier.getAsDouble() > HEADING_CORRECTION_DEADBAND);
 
 		// TODO: TEST TEST TEST, this is trash code
 		if (headingCorrection) {
@@ -296,9 +302,10 @@ public class SwerveDrive {
 		// Taken largely from akit
 		// Turns chassis speeds over a time into like splits that u can discretely set
 		// module states to
+		// TODO: Tune dt time? Hear sum1 talking about how that improves odo significantly
 		ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(
 				speeds,
-				0.02);
+				DT_TIME_SECONDS);
 
 		// Turns chassis speeds into module states and then makes sure they're
 		// attainable

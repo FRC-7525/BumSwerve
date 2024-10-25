@@ -21,8 +21,8 @@ public class OdometryThread extends Thread {
 	private List<Queue<Double>> queues = new ArrayList<>();
 	private List<Queue<Double>> timestampQueues = new ArrayList<>();
 
-	// Ensures samples added to correct queue
-	private List<Integer> signalTypes = new ArrayList<>(); // 0 for Phoenix 1 for polled
+	// Ensures samples added to correct queue (0 for phoenix, 1 for polled)
+	private List<Integer> signalTypes = new ArrayList<>();
 
 	private static final int PHOENIX_SIGNAL = 0;
 	private static final int POLLED_SIGNAL = 1;
