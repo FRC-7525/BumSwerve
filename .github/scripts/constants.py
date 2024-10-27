@@ -9,6 +9,7 @@ excused_files = ["Constants.java", "BuildConstants.java", "LocalADStarAK.java", 
 excused_dirs = [
     "bin",
     "build"
+    "src/main/java/frc/robot/pioneersLib",
 ]
 
 # Weird stuff that shouldn't go in constants, dont put function/var names in here theyre already checked
