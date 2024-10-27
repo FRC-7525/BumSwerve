@@ -41,6 +41,7 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
     //Default configs
     private final double POSITION_UPDATE_FREQUENCY = 250.0;
     private final double SIGNAL_UPDATE_FREQUENCY = 50.0;
+    private final double DT_TIME = 0.02;
     
     public SwerveMotorIOTalonFXSim(int placeholderCanID, double gearRatio, double motorMOI, DCMotor motorType) {
         dummyTalon = new TalonFX(placeholderCanID);
@@ -139,7 +140,7 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
 
     @Override
     public void setVelocity(double velocityRPS) {
-        motorSim.update(0.02);
+        motorSim.update(DT_TIME);
         if (!isDrive) throw new Error("Cannot use setVelocity with a turn motor");
 
         VelocityVoltage command = new VelocityVoltage(velocityRPS).withSlot(0);
