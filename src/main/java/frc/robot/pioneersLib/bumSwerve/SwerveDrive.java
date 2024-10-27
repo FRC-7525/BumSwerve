@@ -37,6 +37,7 @@ public class SwerveDrive {
 	private static final double GRAVITY = 9.81;
 	private static final double HEADING_CORRECTION_DEADBAND = 0.05;
 	private static final double DT_TIME_SECONDS = 0.02;
+	private static final double WHEEL_GRIP_KCF = 1.19;
 
 	private PIDController headingCorrectionController;
 	private SwerveGyroIO gyroIO;
@@ -94,7 +95,7 @@ public class SwerveDrive {
 		this.isSim = isSim;
 		this.numModules = modules.length;
 
-		SimpleMotorFeedforward driveFF = createDriveFeedforward(OPTIMAL_VOLTAGE, maxSpeed, 1.19);
+		SimpleMotorFeedforward driveFF = createDriveFeedforward(OPTIMAL_VOLTAGE, maxSpeed, WHEEL_GRIP_KCF);
 
 		for (var module : modules) {
 			module.configureDriveFF(driveFF.ks, driveFF.kv, driveFF.ka);
