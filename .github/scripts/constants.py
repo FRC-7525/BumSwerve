@@ -12,7 +12,7 @@ excused_dirs = [
 ]
 
 # Weird stuff that shouldn't go in constants, dont put function/var names in here theyre already checked
-excused_cases = ["ModuleIOSparkMax", "case", "new Module(", "new BaseStatusSignal[", "BaseStatusSignal.waitForAll(", "new ModuleIOHybrid(", "Math.pow(", "+=", "drive.getRotation()", "autoChooser.addOption(", "static final", "getRealTimestamp", "antiJitterThreshold", "trackWidth", "i < 4", "SwerveModuleState[4]", "gearRatio", "Math.PI", "private final", "/ 360", "/360", "* 360", "*360"]
+excused_cases = ["ModuleIOSparkMax", "case", "new Module(", "new BaseStatusSignal[", "BaseStatusSignal.waitForAll(", "new ModuleIOHybrid(", "Math.pow(", "+=", "drive.getRotation()", "autoChooser.addOption(", "static final", "getRealTimestamp", "antiJitterThreshold", "trackWidth", "i < 4", "SwerveModuleState[4]", "gearRatio", "Math.PI", "private final", "/ 360", "/360", "* 360", "*360", "DCMotor.get"]
 
 def check_for_magic_numbers(file_path):
     magic_numbers = []

@@ -41,6 +41,8 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     private static final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
 
     private static final double RPS_CONVERSION_FACTOR = 60;
+    private static final double ENCODER_CF= 1;
+    private static final double RAMP_RATE = 1;
 
     private double gearRatio = 21.4286;
 
@@ -57,7 +59,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
         encoder = motor.getEncoder();
 
         encoder.setPosition(0);
-        encoder.setPositionConversionFactor(1);
+        encoder.setPositionConversionFactor(ENCODER_CF);
 
 		motor.restoreFactoryDefaults();
 		motor.setCANTimeout(SPARK_TIMEOUT_MS);
@@ -65,7 +67,7 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 		motor.setInverted(MOTOR_INVERTED);
 		motor.setSmartCurrentLimit(MOTOR_CURRENT_LIMIT);
 		motor.enableVoltageCompensation(MAX_VOLTS);
-		motor.setClosedLoopRampRate(1);
+		motor.setClosedLoopRampRate(RAMP_RATE);
 
 		encoder.setMeasurementPeriod(
 			SPARK_MEASUREMENT_PERIOD_MS
