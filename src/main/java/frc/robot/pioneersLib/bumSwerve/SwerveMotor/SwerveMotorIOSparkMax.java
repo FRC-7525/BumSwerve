@@ -32,15 +32,15 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
 
     //Default config values
 
-    private final boolean MOTOR_INVERTED = true;
-    private final int SPARK_TIMEOUT_MS = 250;
-    private final int MOTOR_CURRENT_LIMIT = 30;
-    private final double MAX_VOLTS = 12.0;
-    private final int SPARK_MEASUREMENT_PERIOD_MS = 10;
-    private final int SPARK_AVG_DEPTH = 2;
-    private final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
+    private static final boolean MOTOR_INVERTED = true;
+    private static final int SPARK_TIMEOUT_MS = 250;
+    private static final int MOTOR_CURRENT_LIMIT = 30;
+    private static final double MAX_VOLTS = 12.0;
+    private static final int SPARK_MEASUREMENT_PERIOD_MS = 10;
+    private static final int SPARK_AVG_DEPTH = 2;
+    private static final double SPARK_FRAME_PERIOD = 1000.0 / SwerveModule.ODOMETRY_FREQUENCY;
 
-    private final double RPS_CONVERSION_FACTOR = 60;
+    private static final double RPS_CONVERSION_FACTOR = 60;
 
     private double gearRatio = 21.4286;
 
