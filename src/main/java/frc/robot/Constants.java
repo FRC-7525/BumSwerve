@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.pioneersLib.VisionUtil.CameraResolution;
 import frc.robot.pioneersLib.bumSwerve.SwerveModule;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIO;
 import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIONavX;
@@ -16,6 +15,8 @@ import frc.robot.pioneersLib.bumSwerve.Gyro.SwerveGyroIOSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOCANcoder;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFXSim;
+import frc.robot.pioneersLib.controlConstants.PIDConstants;
+import frc.robot.pioneersLib.misc.VisionUtil.CameraResolution;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 
 public class Constants {
@@ -93,6 +94,8 @@ public class Constants {
         public static final double MAX_SPEED = Units.feetToMeters(19.5);
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
+            public static final PIDConstants DRIVE_PID = new PIDConstants(0.01, 0, 0);
+            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.5, 0, 0);
 
             // MOIs, should be neglidgeble and in turn the same for all motors
             public static final double DRIVE_MOI = 0.000520786;
@@ -115,6 +118,8 @@ public class Constants {
         }
 
         public static final class Real {
+            public static final PIDConstants DRIVE_PID = new PIDConstants(0.001, 0, 0);
+            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.01, 0, 0);
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIONavX(1);
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
                     new SwerveModule(

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 
-import frc.robot.pioneersLib.VisionUtil;
+import frc.robot.pioneersLib.misc.VisionUtil;
 import frc.robot.pioneersLib.subsystem.Subsystem;
 import frc.robot.subsystems.drive.Drive;
 
