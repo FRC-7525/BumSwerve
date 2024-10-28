@@ -7,14 +7,18 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.pioneersLib.bumSwerve.OdometryThread;
 
@@ -26,6 +30,8 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
 
     private DCMotorSim motorSim;
     private Slot0Configs configs;
+
+    private PIDController pidController;
 
     private StatusSignal<Double> motorPosition;
     private StatusSignal<Double> motorVelocityRPS;
@@ -50,8 +56,7 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
 
         this.gearing = gearRatio;
 
-        // Note: These MOI values are for L3+ SDS Swerve Modules w kraken drive & neo turn isDrive ? 0.000520786 : 0.00062093
-        motorSim = new DCMotorSim(DCMotor.getKrakenX60(1), gearing, motorMOI);
+        motorSim = new DCMotorSim(motorType, gearing, motorMOI);
 
         configs = new Slot0Configs();
 
@@ -61,7 +66,9 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
         configurator.apply(configs);
         
         FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.SensorToMechanismRatio = 1/gearRatio;
         configurator.apply(feedback);
+        pidController = new PIDController(0, 0, 0);
 
         motorPosition = dummyTalon.getPosition();
         motorVelocityRPS = dummyTalon.getVelocity();
@@ -83,12 +90,12 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
     public void updateInputs(SwerveMotorIOInputs inputs) {
         BaseStatusSignal.refreshAll(motorPosition, motorVelocityRPS, motorCurrent);
 
-        inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble()/gearing);
+        inputs.motorPosition = Rotation2d.fromRotations(motorPosition.getValueAsDouble());
         inputs.motorVelocityRPS = motorVelocityRPS.getValueAsDouble();
         inputs.motorCurrentAmps = new double[] {motorCurrent.getValueAsDouble()};
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value/gearing)).toArray(Rotation2d[]::new);
+        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
 
         if (isDrive) inputs.odometryDriveAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
 
@@ -125,6 +132,7 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
         configs.kP = kP;
         configs.kI = kI;
         configs.kD = kD;
+        pidController.setPID(kP, kI, kD);
 
         configurator.apply(configs);
     }
@@ -146,21 +154,23 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
         VelocityVoltage command = new VelocityVoltage(velocityRPS).withSlot(0);
         dummyTalon.setControl(command);
         motorSim.setInputVoltage(talonController.getMotorVoltage());
-        talonController.setRawRotorPosition(motorSim.getAngularPositionRotations());
-        talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/60);
+        talonController.setRawRotorPosition(motorSim.getAngularPositionRotations()/gearing);
+        talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/(60*gearing));
+        // System.out.println((dummyTalon.getVelocity().getValueAsDouble() - velocityRPS) * Math.PI * 2 * Units.inchesToMeters(2));
     }
 
     @Override
     public void setPosition(double positionDeg) {
         if (isDrive) throw new Error("Cannot use setPosition with a drive motor");
+        motorSim.update(DT_TIME);
 
         PositionVoltage command = new PositionVoltage(positionDeg/360).withSlot(0);
         dummyTalon.setControl(command);
         motorSim.setInputVoltage(talonController.getMotorVoltage());
-        talonController.setRawRotorPosition(motorSim.getAngularPositionRotations());
-        talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/60);
+        talonController.setRawRotorPosition(motorSim.getAngularPositionRotations()/gearing);
+        talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/(60 * gearing));
 
-        positionError = Math.abs(positionDeg/360 - dummyTalon.getPosition().getValueAsDouble());
+        positionError = Math.abs(positionDeg/360 - (dummyTalon.getPosition().getValueAsDouble()));
     }
 
     /**

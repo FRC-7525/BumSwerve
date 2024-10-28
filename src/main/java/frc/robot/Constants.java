@@ -56,7 +56,7 @@ public class Constants {
             // TODO: Get actual values on a lot of these lol (everything 0.001 is unknown)
             KRAKEN_SWERVE(5.357, 0.001, DCMotor.getKrakenX60(1), DCMotor.getKrakenX60(1)),
             NEO_SWERVE(0.001, 21.4286, DCMotor.getNEO(1), DCMotor.getNEO(1)),
-            FALCON_AZIMUTH_KRAKEN_DRIVE(5.357, 0.001, DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1)),
+            FALCON_AZIMUTH_KRAKEN_DRIVE(5.357, 21.4286, DCMotor.getKrakenX60(1), DCMotor.getFalcon500(1)),
             NEO_AZIMUTH_KRAKEN_DRIVE(5.357, 21.4286, DCMotor.getKrakenX60(1), DCMotor.getNEO(1)),;
 
             /**
@@ -125,41 +125,41 @@ public class Constants {
         public static final double MAX_SPEED = Units.feetToMeters(19.5);
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
-            public static final PIDConstants DRIVE_PID = new PIDConstants(0, 0, 0);
-            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.0, 0, 0);
+            public static final PIDConstants DRIVE_PID = new PIDConstants(0.02, 0, 0);
+            public static final PIDConstants AZIMUTH_PID = new PIDConstants(3, 0, 0.0);
 
             // MOIs, should be neglidgeble and in turn the same for all motors
             public static final double DRIVE_MOI = 0.000520786;
             public static final double AZIMUTH_MOI = 0.000520786;
 
-            // public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
-            //         new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-            //                 new SwerveMotorIOTalonFXSim(5, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
-            //                 new SwerveAbsoluteEncoderIOSim(9, 121.0), "FrontLeft"),
-            //         new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-            //                 new SwerveMotorIOTalonFXSim(6, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI,  DRIVE_BASE.createAzimuthSim()),
-            //                 new SwerveAbsoluteEncoderIOSim(10, 11.0), "FrontRight"),
-            //         new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-            //                 new SwerveMotorIOTalonFXSim(7, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
-            //                 new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
-            //         new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-            //                 new SwerveMotorIOTalonFXSim(8, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
-            //                 new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
-            // };    
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
                     new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-                            new SwerveMotorIONeoSim(5, DRIVE_BASE.azimuthGearing),
+                            new SwerveMotorIOTalonFXSim(5, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
                             new SwerveAbsoluteEncoderIOSim(9, 121.0), "FrontLeft"),
                     new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-                            new SwerveMotorIONeoSim(6, DRIVE_BASE.azimuthGearing),
+                            new SwerveMotorIOTalonFXSim(6, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI,  DRIVE_BASE.createAzimuthSim()),
                             new SwerveAbsoluteEncoderIOSim(10, 11.0), "FrontRight"),
                     new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-                            new SwerveMotorIONeoSim(7, DRIVE_BASE.azimuthGearing),
+                            new SwerveMotorIOTalonFXSim(7, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
                             new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
                     new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
-                            new SwerveMotorIONeoSim(8, DRIVE_BASE.azimuthGearing),
+                            new SwerveMotorIOTalonFXSim(8, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
                             new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
-            };     
+            };    
+            // public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIONeoSim(5, DRIVE_BASE.azimuthGearing),
+            //                 new SwerveAbsoluteEncoderIOSim(9, 121.0), "FrontLeft"),
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIONeoSim(6, DRIVE_BASE.azimuthGearing),
+            //                 new SwerveAbsoluteEncoderIOSim(10, 11.0), "FrontRight"),
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIONeoSim(7, DRIVE_BASE.azimuthGearing),
+            //                 new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIONeoSim(8, DRIVE_BASE.azimuthGearing),
+            //                 new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
+            // };     
         }
 
         public static final class Real {
