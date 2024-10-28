@@ -171,6 +171,7 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
         talonController.setRotorVelocity(motorSim.getAngularVelocityRPM()/(60 * gearing));
 
         positionError = Math.abs(positionDeg/360 - (dummyTalon.getPosition().getValueAsDouble()));
+        System.out.println(positionError*360);
     }
 
     /**
