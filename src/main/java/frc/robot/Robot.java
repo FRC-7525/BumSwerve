@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import frc.robot.pioneersLib.simulation.SimulatedArena;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
@@ -18,6 +19,8 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		Logger.addDataReceiver(new NT4Publisher());
 		Logger.start();
+    SimulatedArena.getInstance();
+    // SimulatedArena.overrideInstance(SimulatedArena newInstance); Maybe needed?
 
 		manager = new Manager();
 	}
@@ -66,5 +69,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void simulationPeriodic() {
+    SimulatedArena.getInstance().simulationPeriodic();
 	}
+
 }
