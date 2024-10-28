@@ -50,7 +50,7 @@ public class Drive extends Subsystem<DriveStates> {
      */
     public void drive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot, boolean fieldRelative,
             boolean headingCorrection) {
-        drive.drive(x, y, rot, fieldRelative, headingCorrection);
+        drive.drive(x, y, rot, false, false);
     }
 
     /**

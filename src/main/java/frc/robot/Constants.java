@@ -17,6 +17,7 @@ import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncod
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFXSim;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
 import frc.robot.pioneersLib.misc.VisionUtil.CameraResolution;
+import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 
 public class Constants {
@@ -72,6 +73,36 @@ public class Constants {
                 this.azimuthMotorSim = azimuthMotorSim;
             }
 
+            public DCMotor createDriveSim() {
+                switch (this) {
+                    case KRAKEN_SWERVE:
+                        return DCMotor.getKrakenX60(1);
+                    case NEO_SWERVE:
+                        return DCMotor.getNEO(1);
+                    case FALCON_AZIMUTH_KRAKEN_DRIVE:
+                        return DCMotor.getKrakenX60(1);
+                    case NEO_AZIMUTH_KRAKEN_DRIVE:
+                        return DCMotor.getKrakenX60(1);
+                    default:
+                        throw new IllegalArgumentException("Unknown drive base: " + this);
+                }
+            }
+
+            public DCMotor createAzimuthSim() {
+                switch (this) {
+                    case KRAKEN_SWERVE:
+                        return DCMotor.getKrakenX60(1);
+                    case NEO_SWERVE:
+                        return DCMotor.getNEO(1);
+                    case FALCON_AZIMUTH_KRAKEN_DRIVE:
+                        return DCMotor.getFalcon500(1);
+                    case NEO_AZIMUTH_KRAKEN_DRIVE:
+                        return DCMotor.getNEO(1);
+                    default:
+                        throw new IllegalArgumentException("Unknown drive base: " + this);
+                }
+            }
+
             public double driveGearing;
             public double azimuthGearing;
             public DCMotor azimuthMotorSim;
@@ -101,20 +132,34 @@ public class Constants {
             public static final double DRIVE_MOI = 0.000520786;
             public static final double AZIMUTH_MOI = 0.000520786;
 
+            // public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIOTalonFXSim(5, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
+            //                 new SwerveAbsoluteEncoderIOSim(9, 121.0), "FrontLeft"),
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIOTalonFXSim(6, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI,  DRIVE_BASE.createAzimuthSim()),
+            //                 new SwerveAbsoluteEncoderIOSim(10, 11.0), "FrontRight"),
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIOTalonFXSim(7, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
+            //                 new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
+            //         new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+            //                 new SwerveMotorIOTalonFXSim(8, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
+            //                 new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
+            // };    
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
-                            new SwerveMotorIOTalonFXSim(5, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(1, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+                            new SwerveMotorIONeoSim(5, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOSim(9, 121.0), "FrontLeft"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
-                            new SwerveMotorIOTalonFXSim(6, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(2, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+                            new SwerveMotorIONeoSim(6, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOSim(10, 11.0), "FrontRight"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
-                            new SwerveMotorIOTalonFXSim(7, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+                            new SwerveMotorIONeoSim(7, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.driveMotorSim),
-                            new SwerveMotorIOTalonFXSim(8, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.azimuthMotorSim),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+                            new SwerveMotorIONeoSim(8, DRIVE_BASE.azimuthGearing),
                             new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
-            };       
+            };     
         }
 
         public static final class Real {
