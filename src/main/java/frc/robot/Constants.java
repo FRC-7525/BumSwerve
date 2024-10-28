@@ -94,8 +94,8 @@ public class Constants {
         public static final double MAX_SPEED = Units.feetToMeters(19.5);
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
-            public static final PIDConstants DRIVE_PID = new PIDConstants(0.01, 0, 0);
-            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.5, 0, 0);
+            public static final PIDConstants DRIVE_PID = new PIDConstants(0, 0, 0);
+            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.0, 0, 0);
 
             // MOIs, should be neglidgeble and in turn the same for all motors
             public static final double DRIVE_MOI = 0.000520786;
