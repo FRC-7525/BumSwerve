@@ -126,7 +126,7 @@ public class Constants {
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
             public static final PIDConstants DRIVE_PID = new PIDConstants(0.02, 0, 0);
-            public static final PIDConstants AZIMUTH_PID = new PIDConstants(12, 0, 0.1);
+            public static final PIDConstants AZIMUTH_PID = new PIDConstants(10, 0, 0.5);
 
             // MOIs, should be neglidgeble and in turn the same for all motors
             public static final double DRIVE_MOI = 0.000520786;
@@ -142,7 +142,7 @@ public class Constants {
                     new SwerveModule(new SwerveMotorIOTalonFXSim(3, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
                             new SwerveMotorIOTalonFXSim(7, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
                             new SwerveAbsoluteEncoderIOSim(11, 21.0), "BackLeft"),
-                    new SwerveModule(new SwerveMotorIOTalonFXSim(4, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
+                    new SwerveModule(new SwerveMotorIOTalonFXSim(18, DRIVE_BASE.driveGearing, DRIVE_MOI, DRIVE_BASE.createDriveSim()),
                             new SwerveMotorIOTalonFXSim(8, DRIVE_BASE.azimuthGearing, AZIMUTH_MOI, DRIVE_BASE.createAzimuthSim()),
                             new SwerveAbsoluteEncoderIOSim(12, 1), "BackRight")
             };    

@@ -104,7 +104,6 @@ public class SwerveModule {
      * @return The optimized SwerveModuleState
      */
     public SwerveModuleState runState(SwerveModuleState state) {
-
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null) {
             turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
@@ -120,13 +119,13 @@ public class SwerveModule {
 			lastModuleState = state;
 		}
 
-        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
+        // antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
 
         angleSetPoint = optimizedState.angle.getDegrees();
-        speedSetPoint = Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * (optimizedState.speedMetersPerSecond / (SwerveDrive.wheelRadius * Math.PI * 2));
+        speedSetPoint = (Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);
 
         lastModuleState = optimizedState;
         return optimizedState;

@@ -7,6 +7,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -52,6 +54,7 @@ public class SwerveDrive {
 	private int numModules;
 	private boolean isSim;
 	private Rotation2d lastHeading;
+	private double lastHeadingRadians;
 
 	private SwerveDriveKinematics kinematics;
 	private SwerveDrivePoseEstimator poseEstimator;
@@ -90,6 +93,7 @@ public class SwerveDrive {
 		this.gyroIO = gyroIO;
 		SwerveDrive.maxSpeed = maxSpeed;
 		SwerveDrive.wheelRadius = wheelRadius;
+		this.lastHeadingRadians = 0;
 
 		this.modules = modules;
 		this.isSim = isSim;
@@ -144,34 +148,72 @@ public class SwerveDrive {
 	 */
 	public void drive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,
 		boolean fieldRelative, boolean useHeadingCorrection) {
-		boolean isFlipped = DriverStation.getAlliance().isPresent() &&
-				DriverStation.getAlliance().get() == Alliance.Red;
+		// Apply deadband
+		double linearMagnitude = MathUtil.applyDeadband(
+			Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
+			0.05
+		);
+		Rotation2d linearDirection = new Rotation2d(
+			xSupplier.getAsDouble(),
+			ySupplier.getAsDouble()
+		);
+		double omega = MathUtil.applyDeadband(
+			omegaSupplier.getAsDouble(),
+			0.05
+		);
 
-		ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-				xSupplier.getAsDouble() * getMaxSpeed(),
-				ySupplier.getAsDouble() * getMaxSpeed(),
-				omegaSupplier.getAsDouble() * getMaxAngularVelocity(),
-				getRobotRotation());
-		ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-				xSupplier.getAsDouble() * getMaxSpeed(), 
-				ySupplier.getAsDouble() * getMaxSpeed(),
-				omegaSupplier.getAsDouble() * (getMaxAngularVelocity()),
-				isFlipped ? getRobotRotation().plus(new Rotation2d(Math.PI)) : getRobotRotation());
-
-		// Heading correction / field rel stuff
-		ChassisSpeeds speeds = fieldRelative ? fieldRelativeSpeeds : robotRelativeSpeeds;
-		boolean headingCorrection = useHeadingCorrection && omegaSupplier.getAsDouble() == 0
-				&& (ySupplier.getAsDouble() > HEADING_CORRECTION_DEADBAND || xSupplier.getAsDouble() > HEADING_CORRECTION_DEADBAND);
-
-		// TODO: TEST TEST TEST, this is trash code
-		if (headingCorrection) {
-			speeds.omegaRadiansPerSecond = headingCorrectionController.calculate(getRobotRotation().getRadians(),
-					lastHeading.getRadians());
-		} else {
-			lastHeading = getRobotRotation();
+		if (useHeadingCorrection) {
+			if (
+				Math.abs(omega) == 0.0 &&
+				(Math.abs(xSupplier.getAsDouble()) > 0.05 ||
+					Math.abs(ySupplier.getAsDouble()) > 0.05)
+			) {
+				omega = headingCorrectionController.calculate(
+					poseEstimator.getEstimatedPosition().getRotation().getRadians(),
+					lastHeadingRadians
+				) *
+				getMaxAngularVelocity();
+			} else {
+				lastHeadingRadians = poseEstimator
+					.getEstimatedPosition()
+					.getRotation()
+					.getRadians();
+			}
 		}
 
-		runVelocity(speeds);
+		// Square values
+		linearMagnitude = linearMagnitude * linearMagnitude;
+		omega = Math.copySign(omega * omega, omega);
+
+		// Calcaulate new linear velocity
+		Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
+			.transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+			.getTranslation();
+
+		// Convert to field relative speeds & send command
+		boolean isFlipped =
+			DriverStation.getAlliance().isPresent() &&
+			DriverStation.getAlliance().get() == Alliance.Red;
+		runVelocity(
+			fieldRelative
+				? ChassisSpeeds.fromFieldRelativeSpeeds(
+					linearVelocity.getX() *
+					getMaxSpeed(),
+					linearVelocity.getY() *
+					getMaxSpeed(),
+					omega * getMaxSpeed(),
+					(isFlipped
+							? getRobotRotation().plus(new Rotation2d(Math.PI))
+							: getRobotRotation()).times(-1)
+				)
+				: new ChassisSpeeds(
+					linearVelocity.getX() *
+					getMaxSpeed(),
+					linearVelocity.getY() *
+					getMaxSpeed(),
+					omega * getMaxSpeed()
+				)
+		);
 	}
 
 	/**
@@ -300,6 +342,10 @@ public class SwerveDrive {
 	 * @param speeds Chassis speeds to set module states to
 	 */
 	public void runVelocity(ChassisSpeeds speeds) {
+		System.out.println("Omega " +speeds.omegaRadiansPerSecond);
+		System.out.println("Y " + speeds.vxMetersPerSecond);
+		System.out.println("X " + speeds.vyMetersPerSecond);
+		Logger.recordOutput("Speeds", speeds);
 		// Taken largely from akit
 		// Turns chassis speeds over a time into like splits that u can discretely set
 		// module states to

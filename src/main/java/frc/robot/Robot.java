@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
@@ -18,6 +19,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		Logger.addDataReceiver(new NT4Publisher());
 		Logger.start();
+		DriverStation.silenceJoystickConnectionWarning(true);
 
 		manager = new Manager();
 	}
