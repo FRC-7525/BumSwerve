@@ -342,9 +342,6 @@ public class SwerveDrive {
 	 * @param speeds Chassis speeds to set module states to
 	 */
 	public void runVelocity(ChassisSpeeds speeds) {
-		System.out.println("Omega " +speeds.omegaRadiansPerSecond);
-		System.out.println("Y " + speeds.vxMetersPerSecond);
-		System.out.println("X " + speeds.vyMetersPerSecond);
 		Logger.recordOutput("Speeds", speeds);
 		// Taken largely from akit
 		// Turns chassis speeds over a time into like splits that u can discretely set
