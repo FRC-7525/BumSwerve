@@ -3,7 +3,6 @@ package frc.robot.pioneersLib.simulation.seasonSpecific;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import org.dyn4j.geometry.Geometry;
-import frc.robot.pioneersLib.simulation.gamePieces.GamePieceOnFieldSimulation;
 
 public class CrescendoNoteOnField extends frc.robot.pioneersLib.simulation.gamePieces.GamePieceOnFieldSimulation {
   /* https://www.andymark.com/products/frc-2024-am-4999 */

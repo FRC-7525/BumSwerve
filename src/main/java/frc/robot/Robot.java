@@ -28,6 +28,7 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotPeriodic() {
 		manager.periodic();
+		SimulatedArena.getInstance().simulationPeriodic();
 	}
 
 	@Override

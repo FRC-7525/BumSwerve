@@ -10,6 +10,7 @@ import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Convex;
 import org.dyn4j.geometry.MassType;
+import frc.robot.pioneersLib.simulation.IntakeSimulation;
 import frc.robot.pioneersLib.simulation.SimulatedArena;
 import frc.robot.pioneersLib.misc.GeometryConvertor;
 
@@ -104,7 +105,7 @@ public class GamePieceOnFieldSimulation extends Body {
     bodyFixture.setRestitution(COEFFICIENT_OF_RESTITUTION);
     bodyFixture.setRestitutionVelocity(MINIMUM_BOUNCING_VELOCITY);
 
-    // bodyFixture.setDensity(mass / shape.getArea());  FIX LATER/INVESTIGATE
+    bodyFixture.setDensity(mass / (Math.pow(shape.getRadius(),2)*3.14));
     super.setMass(MassType.NORMAL);
 
     super.translate(GeometryConvertor.toDyn4jVector2(initialPosition));

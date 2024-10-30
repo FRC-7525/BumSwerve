@@ -1,6 +1,5 @@
 package frc.robot.pioneersLib.simulation;
 
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -122,9 +121,11 @@ public abstract class SimulatedArena {
   }
 
   protected final World<Body> physicsWorld;
+  protected final Set<AbstractDriveTrainSimulation> driveTrainSimulations;
   protected final Set<GamePieceOnFieldSimulation> gamePieces;
   protected final Set<GamePieceProjectile> gamePieceProjectile;
   protected final List<Runnable> simulationSubTickActions;
+  private final List<IntakeSimulation> intakeSimulations;
 
   /**
    *
@@ -144,9 +145,11 @@ public abstract class SimulatedArena {
     this.physicsWorld = new World<>();
     this.physicsWorld.setGravity(PhysicsWorld.ZERO_GRAVITY);
     for (Body obstacle : obstaclesMap.obstacles) this.physicsWorld.addBody(obstacle);
+    this.driveTrainSimulations = new HashSet<>();
     simulationSubTickActions = new ArrayList<>();
     this.gamePieces = new HashSet<>();
     this.gamePieceProjectile = new HashSet<>();
+    this.intakeSimulations = new ArrayList<>();
   }
 
   /**
@@ -175,12 +178,15 @@ public abstract class SimulatedArena {
    * part of its collision space.
    *
    * <p>This method immediately starts the {@link
-   * org.ironmaple.simulation.IntakeSimulation.GamePieceContactListener}, which listens for contact
+   * frc.robot.pioneersLib.simulation.IntakeSimulation.GamePieceContactListener}, which listens for contact
    * between the intake and any game piece.
    *
    * @param intakeSimulation the intake simulation to be registered
    */
-
+  protected void addIntakeSimulation(IntakeSimulation intakeSimulation) {
+    this.intakeSimulations.add(intakeSimulation);
+    this.physicsWorld.addContactListener(intakeSimulation.getGamePieceContactListener());
+  }
 
   /**
    *
@@ -195,7 +201,10 @@ public abstract class SimulatedArena {
    *
    * @param driveTrainSimulation the drivetrain simulation to be registered
    */
-  
+  public void addDriveTrainSimulation(AbstractDriveTrainSimulation driveTrainSimulation) {
+    this.physicsWorld.addBody(driveTrainSimulation);
+    this.driveTrainSimulations.add(driveTrainSimulation);
+  }
 
   /**
    *
@@ -300,6 +309,18 @@ public abstract class SimulatedArena {
    * </ul>
    */
   private void simulationSubTick() {
+    for (AbstractDriveTrainSimulation driveTrainSimulation : driveTrainSimulations)
+      driveTrainSimulation.simulationSubTick();
+
+    GamePieceProjectile.updateGamePieceProjectiles(this, this.gamePieceProjectile);
+
+    this.physicsWorld.step(1, SIMULATION_DT);
+
+    for (IntakeSimulation intakeSimulation : intakeSimulations)
+      while (!intakeSimulation.getGamePiecesToRemove().isEmpty())
+        removeGamePiece(intakeSimulation.getGamePiecesToRemove().poll());
+
+    for (Runnable runnable : simulationSubTickActions) runnable.run();
   }
 
   /**
@@ -318,7 +339,7 @@ public abstract class SimulatedArena {
    * <ul>
    *   <li>The type is determined in the constructor of {@link GamePieceOnFieldSimulation}.
    *   <li>For example, {@link
-   *       org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField} has the type
+   *       frc.robot.pioneersLib.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField} has the type
    *       "Note".
    * </ul>
    *
