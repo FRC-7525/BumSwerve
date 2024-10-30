@@ -117,7 +117,10 @@ public class Constants {
         // TODO: Change to whatever we name our canivore bus
         public static final String CANIVORE_BUS = "canivore";
         private static final String CAN_BUS = CANIVORE_USED ? CANIVORE_BUS : RIO_BUS;
-        
+
+        // Deabands
+        public static final double CONTROLLER_DEADBAND = 0.05;
+
         // Physical Measurments
         public static final double WHEEL_RADIUS = Units.inchesToMeters(2);
         public static final double TRACK_WIDTH_X = Units.inchesToMeters(25);

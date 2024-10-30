@@ -37,7 +37,6 @@ public class SwerveDrive {
 	// Constants
 	private static final double OPTIMAL_VOLTAGE = 12.0;
 	private static final double GRAVITY = 9.81;
-	private static final double HEADING_CORRECTION_DEADBAND = 0.05;
 	private static final double DT_TIME_SECONDS = 0.02;
 	private static final double WHEEL_GRIP_KCF = 1.19;
 
@@ -53,13 +52,13 @@ public class SwerveDrive {
 	public static double wheelRadius;
 	private int numModules;
 	private boolean isSim;
-	private Rotation2d lastHeading;
 	private double lastHeadingRadians;
+
+	private double controllerDeadband;
 
 	private SwerveDriveKinematics kinematics;
 	private SwerveDrivePoseEstimator poseEstimator;
-	private SwerveModulePosition[] lastModulePositions = // "for delta tracking", no idea what this does :( helps pose
-															// estimator ig
+	private SwerveModulePosition[] lastModulePositions = // for delta tracking (change in rotation n whatnot)
 			new SwerveModulePosition[] {
 					new SwerveModulePosition(),
 					new SwerveModulePosition(),
@@ -80,7 +79,7 @@ public class SwerveDrive {
 	 * @param isSim       If or not the drivetrain is in simulation
 	 */
 	public SwerveDrive(double trackWidthX, double trackWidthY, SwerveModule[] modules, SwerveGyroIO gyroIO,
-			double maxSpeed, double wheelRadius, boolean isSim) {
+			double maxSpeed, double wheelRadius, boolean isSim, double controllerDeadband) {
 		SwerveDrive.trackWidthX = trackWidthX;
 		SwerveDrive.trackWidthY = trackWidthY;
 		OdometryThread.getInstance().start();
@@ -88,13 +87,12 @@ public class SwerveDrive {
 		kinematics = new SwerveDriveKinematics(getModuleTranslations());
 		poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 		headingCorrectionController = new PIDController(0, 0, 0);
-		lastHeading = new Rotation2d();
 
 		this.gyroIO = gyroIO;
 		SwerveDrive.maxSpeed = maxSpeed;
 		SwerveDrive.wheelRadius = wheelRadius;
 		this.lastHeadingRadians = 0;
-
+		this.controllerDeadband = controllerDeadband;
 		this.modules = modules;
 		this.isSim = isSim;
 		this.numModules = modules.length;
@@ -151,7 +149,7 @@ public class SwerveDrive {
 		// Apply deadband
 		double linearMagnitude = MathUtil.applyDeadband(
 			Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
-			0.05
+			controllerDeadband
 		);
 		Rotation2d linearDirection = new Rotation2d(
 			xSupplier.getAsDouble(),
@@ -159,14 +157,14 @@ public class SwerveDrive {
 		);
 		double omega = MathUtil.applyDeadband(
 			omegaSupplier.getAsDouble(),
-			0.05
+			controllerDeadband
 		);
 
 		if (useHeadingCorrection) {
 			if (
 				Math.abs(omega) == 0.0 &&
-				(Math.abs(xSupplier.getAsDouble()) > 0.05 ||
-					Math.abs(ySupplier.getAsDouble()) > 0.05)
+				(Math.abs(xSupplier.getAsDouble()) > controllerDeadband ||
+					Math.abs(ySupplier.getAsDouble()) > controllerDeadband)
 			) {
 				omega = headingCorrectionController.calculate(
 					poseEstimator.getEstimatedPosition().getRotation().getRadians(),

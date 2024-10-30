@@ -20,7 +20,7 @@ public class Drive extends Subsystem<DriveStates> {
     public Drive(SwerveModule[] modules, SwerveGyroIO gyroIO, boolean sim) {
         super("Drive", DriveStates.REGULAR);
         // Sim is passed in because I don't want to make two switch statements (think about it)
-        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim);
+        drive = new SwerveDrive(TRACK_WIDTH_X, TRACK_WIDTH_Y, modules, gyroIO, MAX_SPEED, WHEEL_RADIUS, sim, CONTROLLER_DEADBAND);
         switch (Constants.ROBOT_STATE) {
             case REAL:
                 drive.configureAnglePID(Real.AZIMUTH_PID.kP, Real.AZIMUTH_PID.kI, Real.AZIMUTH_PID.kD);
