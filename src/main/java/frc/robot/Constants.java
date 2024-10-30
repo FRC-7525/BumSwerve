@@ -25,7 +25,7 @@ public class Constants {
         SIM, REAL, REPLAY
     }
   
-    public static final RobotState ROBOT_STATE = RobotState.SIM;
+    public static final RobotState ROBOT_STATE = RobotState.REAL;
     
     public static final XboxController CONTROLLER = new XboxController(0);
     public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
@@ -166,29 +166,29 @@ public class Constants {
         }
 
         public static final class Real {
-            public static final PIDConstants DRIVE_PID = new PIDConstants(0.001, 0, 0);
-            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.01, 0, 0);
+            public static final PIDConstants DRIVE_PID = new PIDConstants(0, 0, 0);
+            public static final PIDConstants AZIMUTH_PID = new PIDConstants(0.1, 0, 0);
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIONavX(1);
             public static final SwerveModule[] MODULE_IO = new SwerveModule[] {
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(2, CAN_BUS, DRIVE_BASE.driveGearing),
-                            new SwerveMotorIOTalonFX(1, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(3, 0), 
+                            new SwerveMotorIOTalonFX(59, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(8, CAN_BUS, DRIVE_BASE.azimuthGearing),
+                            new SwerveAbsoluteEncoderIOCANcoder(3, 172.617), 
                             "FrontLeft"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(5, CAN_BUS, DRIVE_BASE.driveGearing),
-                            new SwerveMotorIOTalonFX(4, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(6, 0),
+                            new SwerveMotorIOTalonFX(56, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(3, CAN_BUS, DRIVE_BASE.azimuthGearing),
+                            new SwerveAbsoluteEncoderIOCANcoder(6, 160.313 + 90),
                             "FrontRight"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(11, CAN_BUS, DRIVE_BASE.driveGearing),
-                            new SwerveMotorIOTalonFX(10, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(12, 0),
+                            new SwerveMotorIOTalonFX(2, CAN_BUS, DRIVE_BASE.azimuthGearing),
+                            new SwerveAbsoluteEncoderIOCANcoder(12, 42.012),
                             "BackLeft"),
                     new SwerveModule(
-                            new SwerveMotorIOTalonFX(8, CAN_BUS, DRIVE_BASE.driveGearing),
-                            new SwerveMotorIOTalonFX(7, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(9, 0),
+                            new SwerveMotorIOTalonFX(58, CAN_BUS, DRIVE_BASE.driveGearing),
+                            new SwerveMotorIOTalonFX(5, CAN_BUS, DRIVE_BASE.azimuthGearing),
+                            new SwerveAbsoluteEncoderIOCANcoder(9, 289.512),
                             "BackRight")
             };
         }

@@ -35,7 +35,7 @@ public class SwerveModule {
     private SwerveModuleState lastModuleState;
 
     // Starting threshold for anti-jitter
-    private double antiJitterThreshold = 0.01;
+    private double antiJitterThreshold = 0.1;
 
     /**
      * Creates a new SwerveModule
@@ -94,6 +94,7 @@ public class SwerveModule {
 			Math.abs(moduleState.speedMetersPerSecond) <=
 			(maxSpeed * antiJitterThreshold)
 		) {
+            System.out.println("stopping jittering");
 			moduleState.angle = lastModuleState.angle;
 		}
 	}
@@ -105,7 +106,7 @@ public class SwerveModule {
      */
     public SwerveModuleState runState(SwerveModuleState state) {
         // Finds encoder offset that's used for odo calculations
-        if (turnRelativeEncoderOffset == null) {
+        if (turnRelativeEncoderOffset == null && absoluteEncoder.getRotationDeg() != 0) {
             turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
         }
 
@@ -119,7 +120,7 @@ public class SwerveModule {
 			lastModuleState = state;
 		}
 
-        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
+        //antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());

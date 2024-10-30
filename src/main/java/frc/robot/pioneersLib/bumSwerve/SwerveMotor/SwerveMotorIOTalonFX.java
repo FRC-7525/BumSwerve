@@ -64,7 +64,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
         configs = new Slot0Configs();
 
-        motor = new TalonFX(canID, canbus);
+        motor = new TalonFX(canID);
 
         configurator = motor.getConfigurator();
 
@@ -160,8 +160,10 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     public void setPosition(double setpoint) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
 
-        PositionVoltage command = new PositionVoltage(setpoint/360).withSlot(0);
-        motor.setControl(command);
+        // PositionVoltage command = new PositionVoltage(setpoint * gearRatio/360).withSlot(0);
+        // motor.setControl(command);
+
+        setVoltage(feedbackController.calculate(getAngle().getDegrees(), setpoint));
 
         positionError = Math.abs(setpoint/360 - motorPosition.getValueAsDouble());
     }

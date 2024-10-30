@@ -24,7 +24,7 @@ public class Drive extends Subsystem<DriveStates> {
         switch (Constants.ROBOT_STATE) {
             case REAL:
                 drive.configureAnglePID(Real.AZIMUTH_PID.kP, Real.AZIMUTH_PID.kI, Real.AZIMUTH_PID.kD);
-                drive.configureDrivePID(Real.DRIVE_PID.kP, Real.AZIMUTH_PID.kI, Real.AZIMUTH_PID.kD);
+                drive.configureDrivePID(Real.DRIVE_PID.kP, Real.DRIVE_PID.kI, Real.DRIVE_PID.kD);
                 break;
             case SIM:
                 drive.configureAnglePID(Sim.AZIMUTH_PID.kP, Sim.AZIMUTH_PID.kI, Sim.AZIMUTH_PID.kD);
