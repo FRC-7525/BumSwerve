@@ -4,11 +4,16 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.pioneersLib.simulation.SimulatedArena;
+import frc.robot.pioneersLib.simulation.seasonSpecific.CrescendoNoteOnField;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
@@ -21,6 +26,8 @@ public class Robot extends LoggedRobot {
 		Logger.start();
     SimulatedArena.getInstance();
     // SimulatedArena.overrideInstance(SimulatedArena newInstance); Maybe needed?
+	SimulatedArena.getInstance().addGamePiece(new CrescendoNoteOnField(new Translation2d(3, 3)));
+
 
 		manager = new Manager();
 	}
@@ -29,6 +36,14 @@ public class Robot extends LoggedRobot {
 	public void robotPeriodic() {
 		manager.periodic();
 		SimulatedArena.getInstance().simulationPeriodic();
+		SimulatedArena.getInstance().addGamePiece(new CrescendoNoteOnField(new Translation2d(3, 3)));
+		List<Pose3d> notesPoses = SimulatedArena.getInstance().getGamePiecesByType("Note");
+		String output = ""; 
+		for (Pose3d notePose : notesPoses) { 
+			output += notePose.toString() + "\n";
+		} 
+		Logger.recordOutput("FieldSimulation/NotesPositions", output.getBytes());
+
 	}
 
 	@Override
