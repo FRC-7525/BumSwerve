@@ -56,14 +56,14 @@ public class Crash {
 
     private static void setMode(boolean autonomous) {
         DriverStationSim.setEnabled(true);
-        System.out.println(DriverStation.getAlliance());
-        System.out.println(DriverStationSim.getEnabled());
+        System.out.println("Alliance: " + DriverStation.getAlliance());
+        System.out.println("Sim Enabled: " + DriverStationSim.getEnabled());
         DriverStationSim.setAutonomous(autonomous);
     }
 
     private static boolean checkForErrors() {
         // Lmao this is peak
-        System.out.println(DriverStation.isEnabled());
+        System.out.println("Real Connected: " + DriverStation.isEnabled());
         return !DriverStation.getJoystickIsXbox(0);
     }
 }
