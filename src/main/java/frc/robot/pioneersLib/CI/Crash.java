@@ -1,7 +1,5 @@
 package frc.robot.pioneersLib.CI;
 
-import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 
 public class Crash {
@@ -56,14 +54,11 @@ public class Crash {
 
     private static void setMode(boolean autonomous) {
         DriverStationSim.setEnabled(true);
-        System.out.println("Alliance: " + DriverStation.getAlliance());
-        System.out.println("Sim Enabled: " + DriverStationSim.getEnabled());
         DriverStationSim.setAutonomous(autonomous);
     }
 
+    // Duh, if ur not enabled it's not bouta work
     private static boolean checkForErrors() {
-        // Lmao this is peak
-        System.out.println("Real Connected: " + DriverStation.isEnabled());
-        return !DriverStation.getJoystickIsXbox(0);
+        return !DriverStationSim.getEnabled();
     }
 }
