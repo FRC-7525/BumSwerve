@@ -23,6 +23,7 @@ public final class Main {
     public static void main(String... args) {
         if (isRunningInCI()) {
             // If running in CI, run the Crash class
+			RobotBase.startRobot(Robot::new);
             Crash.main(args);
         } else {
             // Otherwise, start the normal robot

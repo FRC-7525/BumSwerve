@@ -8,7 +8,7 @@ public class Crash {
     public static void main(String[] args) {
         try {
             // Setup
-            HAL.initialize(500, 0);
+            // HAL.initialize(500, 0);
             
             runSimTests();
             
