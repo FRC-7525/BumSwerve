@@ -17,17 +17,14 @@ public class Crash {
     public Crash(Robot robot) {
         this.robot = robot;
 
-        DriverStationSim.registerAutonomousCallback(new NotifyCallback() {
-            @Override
-            public void callback(String name, HALValue value) {
-                robot.autonomousInit();
-            }
-        }, false);
-
         DriverStationSim.registerEnabledCallback(new NotifyCallback() {
             @Override
             public void callback(String name, HALValue value) {
-                robot.teleopInit();
+                if (DriverStationSim.getAutonomous()) {
+                    robot.autonomousInit();
+                } else {
+                    robot.teleopInit();
+                }
             }
         }, false);
     }
