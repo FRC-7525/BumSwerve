@@ -44,6 +44,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
+		TalonFX lala = new TalonFX(null);
 	}
 
 	@Override
