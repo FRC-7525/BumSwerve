@@ -74,23 +74,23 @@ public class Crash {
         System.out.println("Testing auto");
         setMode(true, true);
         Thread.sleep(1000);
-        setMode(false, false);
 
         if (checkForErrors()) {
             crashesAuto = true;
             System.out.println("auto crash");
         }
+        setMode(false, false);
 
         // Test teleop
         System.out.println("Testing teleop");
         setMode(false, true);
         Thread.sleep(1000);
-        setMode(false, false);
 
         if (checkForErrors()) {
             crashesTele = true;
             System.out.println("teleop crash");
         }
+        setMode(false, false);
 
         // throw errors
         if (crashesAuto && crashesTele) {
