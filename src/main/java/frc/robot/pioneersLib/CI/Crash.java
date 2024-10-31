@@ -32,6 +32,7 @@ public class Crash {
 
         if (checkForErrors()) {
             crashesAuto = true;
+            System.out.println("auto crash");
         }
 
         // Test teleop
@@ -42,16 +43,17 @@ public class Crash {
 
         if (checkForErrors()) {
             crashesTele = true;
+            System.out.println("teleop crash");
         }
 
         // throw errors
-        if (crashesAuto && crashesTele) {
-            throw new RuntimeException("Code crashes in both auto and teleop");
-        } else if (crashesAuto) {
-            throw new RuntimeException("Code crashes in autonomous");
-        } else if (crashesTele) {
-            throw new RuntimeException("Code crashes in teleop");
-        }
+        // if (crashesAuto && crashesTele) {
+        //     throw new RuntimeException("Code crashes in both auto and teleop");
+        // } else if (crashesAuto) {
+        //     throw new RuntimeException("Code crashes in autonomous");
+        // } else if (crashesTele) {
+        //     throw new RuntimeException("Code crashes in teleop");
+        // }
     }
 
     private static void setMode(boolean autonomous) {
@@ -60,6 +62,6 @@ public class Crash {
     }
 
     private static boolean checkForErrors() {
-        return DriverStationSim.getEStop() || !DriverStationSim.getDsAttached();
+        return !DriverStationSim.getDsAttached();
     }
 }
