@@ -21,23 +21,8 @@ public final class Main {
      * <p>If you change your main robot class, change the parameter type.
      */
     public static void main(String... args) {
-        if (isRunningInCI()) {
-            // If running in CI, run the Crash class
-			RobotBase.startRobot(Robot::new);
-            Crash.main(args);
-        } else {
-            // Otherwise, start the normal robot
-            RobotBase.startRobot(Robot::new);
-        }
-    }
-
-    /**
-     * Checks if the code is running in a CI environment. (uh or like its just for the crash check but wtv)
-     *
-     * @return true if running in a CI environment; false otherwise.
-     */
-    private static boolean isRunningInCI() {
-        // Check if CI_NAME environment variable is set to "Crash"
-        return "Crash".equals(System.getenv("CI_NAME"));
+      
+		RobotBase.startRobot(Robot::new);
+        
     }
 }

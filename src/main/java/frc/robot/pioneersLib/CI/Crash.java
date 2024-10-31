@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 
 public class Crash {
-    public static void main(String[] args) {
+    public static void run() {
         try {
             // Setup
             HAL.initialize(500, 0);

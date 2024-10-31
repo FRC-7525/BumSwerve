@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.pioneersLib.CI.Crash;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
@@ -22,6 +23,10 @@ public class Robot extends LoggedRobot {
 		DriverStation.silenceJoystickConnectionWarning(true);
 
 		manager = new Manager();
+
+		if ("Crash".equals(System.getenv("CI_NAME"))) {
+			Crash.run();
+		}
 	}
 
 	@Override
