@@ -2,9 +2,6 @@ name: FRC Crash Test
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   crash-test:
