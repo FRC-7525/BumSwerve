@@ -42,7 +42,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
-		System.out.println("AUTO ENABLED");
+		// System.out.println("AUTO ENABLED");
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		System.out.println("TELE ENABLED");
+		// System.out.println("TELE ENABLED");
 		TalonFX lala = new TalonFX(-5);
 	}
 
