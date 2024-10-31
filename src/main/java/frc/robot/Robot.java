@@ -28,6 +28,7 @@ public class Robot extends LoggedRobot {
 
 		if ("Crash".equals(System.getenv("CI_NAME"))) {
 			Crash.getInstance(this).run();
+			System.out.println("lalala");
 		}
 	}
 
@@ -37,6 +38,7 @@ public class Robot extends LoggedRobot {
 
 		if ("Crash".equals(System.getenv("CI_NAME"))) {
 			Crash.getInstance(this).periodic();
+			System.out.println("lalala");
 		}
 	}
 

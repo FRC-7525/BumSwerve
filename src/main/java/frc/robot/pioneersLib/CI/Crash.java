@@ -69,9 +69,9 @@ public class Crash {
 
         // Test autonomous
         System.out.println("Testing auto");
-        setMode(true);
-        Thread.sleep(3000);
-        setMode(false);
+        setMode(true, true);
+        Thread.sleep(1000);
+        setMode(false, false);
 
         if (checkForErrors()) {
             crashesAuto = true;
@@ -80,9 +80,9 @@ public class Crash {
 
         // Test teleop
         System.out.println("Testing teleop");
-        setMode(false);
-        Thread.sleep(3000);
-        setMode(false);
+        setMode(false, true);
+        Thread.sleep(1000);
+        setMode(false, false);
 
         if (checkForErrors()) {
             crashesTele = true;
@@ -99,8 +99,8 @@ public class Crash {
         }
     }
 
-    public void setMode(boolean autonomous) {
-        DriverStationSim.setEnabled(true);
+    public void setMode(boolean autonomous, boolean enable) {
+        DriverStationSim.setEnabled(enable);
 
         DriverStationSim.setAutonomous(autonomous);
     }
