@@ -27,13 +27,17 @@ public class Robot extends LoggedRobot {
 		manager = new Manager();
 
 		if ("Crash".equals(System.getenv("CI_NAME"))) {
-			Crash.run();
+			Crash.getInstance(this).run();
 		}
 	}
 
 	@Override
 	public void robotPeriodic() {
 		manager.periodic();
+
+		if ("Crash".equals(System.getenv("CI_NAME"))) {
+			Crash.getInstance(this).periodic();
+		}
 	}
 
 	@Override
