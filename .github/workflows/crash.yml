@@ -1,4 +1,4 @@
-name: CI
+name: Crash
 
 on: [push, pull_request]
 
@@ -14,7 +14,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: '17'
-
+      - name: Grant execute permission
+        run: chmod +x gradlew
+        
       - name: Build with Gradle
         run: ./gradlew build
 
