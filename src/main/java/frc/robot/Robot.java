@@ -8,6 +8,8 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.pioneersLib.CI.Crash;
 import frc.robot.subsystems.manager.Manager;
@@ -44,7 +46,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		TalonFX lala = new TalonFX(null);
+		TalonFX lala = new TalonFX(-5);
 	}
 
 	@Override
