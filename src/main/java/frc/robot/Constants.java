@@ -17,15 +17,15 @@ import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncod
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFXSim;
 import frc.robot.pioneersLib.controlConstants.PIDConstants;
 import frc.robot.pioneersLib.misc.VisionUtil.CameraResolution;
-import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIONeoSim;
 import frc.robot.pioneersLib.bumSwerve.SwerveMotor.SwerveMotorIOTalonFX;
 
 public class Constants {
     public enum RobotState {
         SIM, REAL, REPLAY
     }
-  
-    public static final RobotState ROBOT_STATE = RobotState.SIM;
+    
+    // Set the second one to whatever, weird stuff for CI
+    public static final RobotState ROBOT_STATE = "Crash".equals(System.getenv("CI_NAME")) ? RobotState.SIM : RobotState.REAL;
     
     public static final XboxController CONTROLLER = new XboxController(0);
     public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
