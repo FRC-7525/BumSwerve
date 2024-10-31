@@ -54,7 +54,8 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void teleopInit() {
 		System.out.println("TELE ENABLED");
-		// TalonFX lala = new TalonFX(-5);
+		int hehe;
+		TalonFX lala = new TalonFX(hehe);
 	}
 
 	@Override
