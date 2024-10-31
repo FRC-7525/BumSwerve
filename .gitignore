@@ -4,6 +4,7 @@
 
 # sim files
 /ctre_sim
+.github/scripts/venv
 simgui-ds.json
 simgui.json
 networktables.json

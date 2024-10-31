@@ -80,6 +80,20 @@ test {
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
+task runCrashTest(type: JavaExec) {
+    group = 'verification'
+    description = 'Runs the FRC crash test'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'frc.robot.pioneersLib.CI.Crash'
+    
+    // Basic simulation environment setup
+    dependsOn simulateExternalJavaRelease
+    
+    environment('HALSIM_EXTENSIONS', '')  // Disable HAL extensions for CI
+    environment('WPILIB_NATIVE_PATH', "${buildDir}/jni/${wpi.platforms.desktop}")
+}
+
+
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()

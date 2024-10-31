@@ -4,18 +4,38 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
+    {
+      "type": "java",
+      "name": "Crash",
+      "request": "launch",
+      "mainClass": "frc.robot.pioneersLib.CI.Crash",
+      "projectName": "BumSwerve"
+    },
+    {
+      "type": "java",
+      "name": "Crash",
+      "request": "launch",
+      "mainClass": "frc.robot.pioneersLib.Crash",
+      "projectName": "BumSwerve"
+    },
+    {
+      "type": "java",
+      "name": "CITests",
+      "request": "launch",
+      "mainClass": "frc.robot.pioneersLib.CITests",
+      "projectName": "BumSwerve"
+    },
     {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
-      "desktop": true,
+      "desktop": true
     },
     {
       "type": "wpilib",
       "name": "WPILib roboRIO Debug",
       "request": "launch",
-      "desktop": false,
+      "desktop": false
     }
   ]
 }
