@@ -1,6 +1,7 @@
 package frc.robot.pioneersLib.CI;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 
 public class Crash {
@@ -58,6 +59,8 @@ public class Crash {
 
     private static void setMode(boolean autonomous) {
         DriverStationSim.setEnabled(true);
+        System.out.println(DriverStation.getAlliance());
+        System.out.println(DriverStationSim.getEnabled());
         DriverStationSim.setAutonomous(autonomous);
     }
 
