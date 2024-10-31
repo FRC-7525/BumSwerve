@@ -56,10 +56,13 @@ public class Crash {
         System.out.println(DriverStationSim.getEnabled());
         if (DriverStationSim.getEnabled() && !DriverStationSim.getAutonomous()) {
             robot.teleopPeriodic();
+            System.out.println("Tele periodic running")
         } else if (DriverStationSim.getAutonomous() && DriverStationSim.getEnabled()) {
             robot.autonomousPeriodic();
+            System.out.println("Auto periodic running");
         } else {
             robot.disabledPeriodic();
+            System.out.println("Disabled periodic running");
         }
     }
 
