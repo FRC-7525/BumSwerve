@@ -7,9 +7,6 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 public class Crash {
     public static void run() {
         try {
-            // Setup
-            HAL.initialize(500, 0);
-            
             runSimTests();
             
             System.out.println("All tests passed");
@@ -48,13 +45,13 @@ public class Crash {
         }
 
         // throw errors
-        // if (crashesAuto && crashesTele) {
-        //     throw new RuntimeException("Code crashes in both auto and teleop");
-        // } else if (crashesAuto) {
-        //     throw new RuntimeException("Code crashes in autonomous");
-        // } else if (crashesTele) {
-        //     throw new RuntimeException("Code crashes in teleop");
-        // }
+        if (crashesAuto && crashesTele) {
+            throw new RuntimeException("Code crashes in both auto and teleop");
+        } else if (crashesAuto) {
+            throw new RuntimeException("Code crashes in autonomous");
+        } else if (crashesTele) {
+            throw new RuntimeException("Code crashes in teleop");
+        }
     }
 
     private static void setMode(boolean autonomous) {
@@ -65,6 +62,8 @@ public class Crash {
     }
 
     private static boolean checkForErrors() {
-        return !DriverStationSim.getDsAttached();
+        // Lmao this is peak
+        System.out.println(DriverStation.isEnabled());
+        return !DriverStation.getJoystickIsXbox(0);
     }
 }
