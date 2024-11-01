@@ -49,8 +49,7 @@ public class SwerveGyroIOSim implements SwerveGyroIO {
         gyroController.setGyroAngleY(0);
         gyroController.setGyroAngleZ(0);
     }
-    
-    // TODO: Set these angles (and prob rates) based on module states
+
     public void setGyroAngle(Rotation3d rotation) {
         gyroController.setGyroAngleX(rotation.getX());
         gyroController.setGyroAngleY(rotation.getY());

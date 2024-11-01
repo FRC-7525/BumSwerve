@@ -5,42 +5,68 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
-  @Override
-  public void robotInit() {}
 
-  @Override
-  public void robotPeriodic() {}
+	private Manager manager;
 
-  @Override
-  public void autonomousInit() {}
+	@Override
+	public void robotInit() {
+		Logger.addDataReceiver(new NT4Publisher());
+		Logger.start();
+		DriverStation.silenceJoystickConnectionWarning(true);
 
-  @Override
-  public void autonomousPeriodic() {}
+		manager = new Manager();
+	}
 
-  @Override
-  public void teleopInit() {}
+	@Override
+	public void robotPeriodic() {
+		manager.periodic();
+	}
 
-  @Override
-  public void teleopPeriodic() {}
+	@Override
+	public void autonomousInit() {
+	}
 
-  @Override
-  public void disabledInit() {}
+	@Override
+	public void autonomousPeriodic() {
+	}
 
-  @Override
-  public void disabledPeriodic() {}
+	@Override
+	public void teleopInit() {
+	}
 
-  @Override
-  public void testInit() {}
+	@Override
+	public void teleopPeriodic() {
+	}
 
-  @Override
-  public void testPeriodic() {}
+	@Override
+	public void disabledInit() {
+	}
 
-  @Override
-  public void simulationInit() {}
+	@Override
+	public void disabledPeriodic() {
+		manager.periodic();
+	}
 
-  @Override
-  public void simulationPeriodic() {}
+	@Override
+	public void testInit() {
+	}
+
+	@Override
+	public void testPeriodic() {
+	}
+
+	@Override
+	public void simulationInit() {
+	}
+
+	@Override
+	public void simulationPeriodic() {
+	}
 }
