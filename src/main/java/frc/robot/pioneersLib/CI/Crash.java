@@ -50,7 +50,7 @@ public class Crash {
     }
 
     public void periodic() {
-        System.out.println(DriverStationSim.getEnabled());
+        System.out.println("running crash period");
         if (DriverStationSim.getEnabled() && !DriverStationSim.getAutonomous()) {
             robot.teleopPeriodic();
             System.out.println("Tele periodic running");

@@ -35,7 +35,7 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotPeriodic() {
 		manager.periodic();
-
+		System.out.println("running robot periodic");
 		if ("Crash".equals(System.getenv("CI_NAME"))) {
 			Crash.getInstance(this).periodic();
 			System.out.println("lalala");
