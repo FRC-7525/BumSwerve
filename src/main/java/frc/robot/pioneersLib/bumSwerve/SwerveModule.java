@@ -112,7 +112,7 @@ public class SwerveModule {
 
         //feeds value directly to encoder if it is sim.
         if (absoluteEncoder.isSim()) {
-            absoluteEncoder.setRotationDeg(turnMotor.getAngle().getDegrees());
+            absoluteEncoder.setRotationDeg(getAngle().getDegrees());
         }
 
 		// Set last moule state at start
@@ -123,10 +123,10 @@ public class SwerveModule {
         //antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // Prevents the turn motor from doing unneeded rotations
-        var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
+        var optimizedState = SwerveModuleState.optimize(state, getAngle());
 
         angleSetPoint = optimizedState.angle.getDegrees();
-        speedSetPoint = (Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);
+        speedSetPoint = (Math.cos(Units.degreesToRadians(getAngle().getDegrees() - angleSetPoint)) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);
 
         lastModuleState = optimizedState;
         return optimizedState;
@@ -137,7 +137,7 @@ public class SwerveModule {
      */
     public void periodic() {
         if (angleSetPoint != null) {
-            turnMotor.setPosition(angleSetPoint);
+            turnMotor.setPosition(angleSetPoint + (turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset.getDegrees() : 0));
 
             if (speedSetPoint != null) {
                 driveMotor.setVelocity(speedSetPoint);
