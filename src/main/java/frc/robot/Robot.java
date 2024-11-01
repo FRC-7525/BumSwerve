@@ -25,7 +25,7 @@ public class Robot extends LoggedRobot {
 		DriverStation.silenceJoystickConnectionWarning(true);
 
 		manager = new Manager();
-
+		System.out.println(System.getenv("CI_NAME"));
 		if ("Crash".equals(System.getenv("CI_NAME"))) {
 			Crash.getInstance(this).run();
 			System.out.println("Crash Instance Created");
