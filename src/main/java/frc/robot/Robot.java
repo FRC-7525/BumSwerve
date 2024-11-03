@@ -11,7 +11,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.pioneersLib.CI.Crash;
 import frc.robot.subsystems.manager.Manager;
 
 public class Robot extends LoggedRobot {
@@ -25,26 +24,15 @@ public class Robot extends LoggedRobot {
 		DriverStation.silenceJoystickConnectionWarning(true);
 
 		manager = new Manager();
-		System.out.println(System.getenv("CI_NAME"));
-		if ("Crash".equals(System.getenv("CI_NAME"))) {
-			Crash.getInstance(this).run();
-			System.out.println("Crash Instance Created");
-		}
 	}
 
 	@Override
 	public void robotPeriodic() {
 		manager.periodic();
-		System.out.println("running robot periodic");
-		if ("Crash".equals(System.getenv("CI_NAME"))) {
-			Crash.getInstance(this).periodic();
-			System.out.println("lalala");
-		}
 	}
 
 	@Override
 	public void autonomousInit() {
-		System.out.println("AUTO ENABLED");
 	}
 
 	@Override
@@ -53,9 +41,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		System.out.println("TELE ENABLED");
-		// int hehe;
-		// TalonFX lala = new TalonFX(hehe);
 	}
 
 	@Override
