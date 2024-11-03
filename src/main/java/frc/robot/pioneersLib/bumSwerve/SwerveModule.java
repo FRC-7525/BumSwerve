@@ -35,7 +35,7 @@ public class SwerveModule {
     private SwerveModuleState lastModuleState;
 
     // Starting threshold for anti-jitter
-    private double antiJitterThreshold = 0.01;
+    private double antiJitterThreshold = 0.1;
 
     /**
      * Creates a new SwerveModule
@@ -94,6 +94,7 @@ public class SwerveModule {
 			Math.abs(moduleState.speedMetersPerSecond) <=
 			(maxSpeed * antiJitterThreshold)
 		) {
+            System.out.println("stopping jittering");
 			moduleState.angle = lastModuleState.angle;
 		}
 	}
@@ -105,13 +106,13 @@ public class SwerveModule {
      */
     public SwerveModuleState runState(SwerveModuleState state) {
         // Finds encoder offset that's used for odo calculations
-        if (turnRelativeEncoderOffset == null) {
+        if (turnRelativeEncoderOffset == null && absoluteEncoder.getRotationDeg() != 0) {
             turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
         }
 
         //feeds value directly to encoder if it is sim.
         if (absoluteEncoder.isSim()) {
-            absoluteEncoder.setRotationDeg(turnMotor.getAngle().getDegrees());
+            absoluteEncoder.setRotationDeg(getAngle().getDegrees());
         }
 
 		// Set last moule state at start
@@ -119,13 +120,13 @@ public class SwerveModule {
 			lastModuleState = state;
 		}
 
-        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
+        //antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // Prevents the turn motor from doing unneeded rotations
-        var optimizedState = SwerveModuleState.optimize(state, turnMotor.getAngle());
+        var optimizedState = SwerveModuleState.optimize(state, getAngle());
 
         angleSetPoint = optimizedState.angle.getDegrees();
-        speedSetPoint = (Math.cos(Units.rotationsToRadians(turnMotor.getPositionError())) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);
+        speedSetPoint = (Math.cos(Units.degreesToRadians(getAngle().getDegrees() - angleSetPoint)) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);
 
         lastModuleState = optimizedState;
         return optimizedState;
@@ -136,7 +137,7 @@ public class SwerveModule {
      */
     public void periodic() {
         if (angleSetPoint != null) {
-            turnMotor.setPosition(angleSetPoint);
+            turnMotor.setPosition(angleSetPoint + (turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset.getDegrees() : 0));
 
             if (speedSetPoint != null) {
                 driveMotor.setVelocity(speedSetPoint);

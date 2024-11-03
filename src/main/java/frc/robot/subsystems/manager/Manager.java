@@ -55,7 +55,7 @@ public class Manager extends Subsystem<ManagerStates> {
         visionSubsystem.periodic();
 
         // Drive the robot
-        driveSubsystem.drive(() -> Constants.CONTROLLER.getLeftX(), () -> Constants.CONTROLLER.getLeftY(), () -> Constants.CONTROLLER.getRightX(), fieldRelative, headingCorrection);
+        driveSubsystem.drive(() -> -Constants.CONTROLLER.getLeftY(), () -> Constants.CONTROLLER.getLeftX(), () -> Constants.CONTROLLER.getRightX(), fieldRelative, headingCorrection);
     }
 
 }  
