@@ -2,10 +2,12 @@ package frc.robot.pioneersLib.bumSwerve;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.proto.System;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIO;
 import frc.robot.pioneersLib.bumSwerve.SwerveAbsoluteEncoder.SwerveAbsoluteEncoderIOInputsAutoLogged;
@@ -94,7 +96,7 @@ public class SwerveModule {
 			Math.abs(moduleState.speedMetersPerSecond) <=
 			(maxSpeed * antiJitterThreshold)
 		) {
-            System.out.println("stopping jittering");
+            // System.out.println("stopping jittering");
 			moduleState.angle = lastModuleState.angle;
 		}
 	}
@@ -107,7 +109,7 @@ public class SwerveModule {
     public SwerveModuleState runState(SwerveModuleState state) {
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null && absoluteEncoder.getRotationDeg() != 0) {
-            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
+            turnRelativeEncoderOffset =  absoluteEncoder.getTurnAbsolutePosition().minus(turnMotor.getAngle());
         }
 
         //feeds value directly to encoder if it is sim.
@@ -136,8 +138,10 @@ public class SwerveModule {
      * Runs the module at the specified state
      */
     public void periodic() {
+        // if (moduleName == "FrontLeft" && turnRelativeEncoderOffset != null) {System.out.println(turnRelativeEncoderOffset.getDegrees());}
         if (angleSetPoint != null) {
-            turnMotor.setPosition(angleSetPoint + (turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset.getDegrees() : 0));
+            double adjustedAngleSetpoint = Units.radiansToDegrees(MathUtil.angleModulus(Units.degreesToRadians(angleSetPoint + (turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset.getDegrees() : 0))));
+            turnMotor.setPosition(adjustedAngleSetpoint);
 
             if (speedSetPoint != null) {
                 driveMotor.setVelocity(speedSetPoint);
@@ -179,7 +183,7 @@ public class SwerveModule {
      * @return the rotation of the wheel with 0 being your absolute encoder's 0
      */
     public Rotation2d getAngle() {
-        return turnRelativeEncoderOffset != null ?turnMotor.getAngle().plus(turnRelativeEncoderOffset) : turnMotor.getAngle();
+        return turnRelativeEncoderOffset != null ? turnMotor.getAngle().plus(turnRelativeEncoderOffset) : turnMotor.getAngle();
     }
 
     /**

@@ -174,7 +174,7 @@ public class Constants {
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(59, CAN_BUS, DRIVE_BASE.driveGearing),
                             new SwerveMotorIOTalonFX(8, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(3, 172.617), 
+                            new SwerveAbsoluteEncoderIOCANcoder(3, 50), 
                             "FrontLeft"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(56, CAN_BUS, DRIVE_BASE.driveGearing),

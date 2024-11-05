@@ -39,7 +39,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
             .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
         );
-        configurator.apply(magnetSensorConfiguration.withMagnetOffset(encoderOffset/360));
+        // configurator.apply(magnetSensorConfiguration.withMagnetOffset(encoderOffset/360));
         
     }
 
@@ -64,7 +64,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
     @Override
     public Rotation2d getTurnAbsolutePosition() {
-        return Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
+        return Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble()).plus(Rotation2d.fromDegrees(absoluteEncoderOffset));
     }
 
     @Override //does nothing because it is only used in sim?
