@@ -36,7 +36,9 @@ public class Robot extends LoggedRobot {
 	public void robotPeriodic() {
 		manager.periodic();
 		SimulatedArena.getInstance().simulationPeriodic();
+		if (Constants.CONTROLLER.getBButton()) {
 		SimulatedArena.getInstance().addGamePiece(new CrescendoNoteOnField(new Translation2d(3, 3)));
+		}
 		List<Pose3d> notesPoses = SimulatedArena.getInstance().getGamePiecesByType("Note");
 		String output = ""; 
 		for (Pose3d notePose : notesPoses) { 
