@@ -174,22 +174,22 @@ public class Constants {
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(59, CAN_BUS, DRIVE_BASE.driveGearing),
                             new SwerveMotorIOTalonFX(8, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(3, 50), 
+                            new SwerveAbsoluteEncoderIOCANcoder(3, 170.156), 
                             "FrontLeft"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(56, CAN_BUS, DRIVE_BASE.driveGearing),
                             new SwerveMotorIOTalonFX(3, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(6, 160.313 + 90),
+                            new SwerveAbsoluteEncoderIOCANcoder(6, -18.721),
                             "FrontRight"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(11, CAN_BUS, DRIVE_BASE.driveGearing),
                             new SwerveMotorIOTalonFX(2, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(12, 42.012),
+                            new SwerveAbsoluteEncoderIOCANcoder(12, 42.715),
                             "BackLeft"),
                     new SwerveModule(
                             new SwerveMotorIOTalonFX(58, CAN_BUS, DRIVE_BASE.driveGearing),
                             new SwerveMotorIOTalonFX(5, CAN_BUS, DRIVE_BASE.azimuthGearing),
-                            new SwerveAbsoluteEncoderIOCANcoder(9, 289.512),
+                            new SwerveAbsoluteEncoderIOCANcoder(9, 106.084),
                             "BackRight")
             };
         }

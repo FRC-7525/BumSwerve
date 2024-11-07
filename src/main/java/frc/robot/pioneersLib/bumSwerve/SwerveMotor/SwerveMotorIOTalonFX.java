@@ -133,7 +133,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public Rotation2d getAngle() {
-        return Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio);
+        return Rotation2d.fromRotations(motorPosition.getValueAsDouble() / gearRatio);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public void setEncoderPosition(double positionDeg) {
-        motor.setPosition(positionDeg/360);
+        motor.setPosition((positionDeg/360) * gearRatio);
     }
 
     @Override

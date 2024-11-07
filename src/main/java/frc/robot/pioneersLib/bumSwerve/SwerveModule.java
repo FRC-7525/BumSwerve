@@ -108,6 +108,7 @@ public class SwerveModule {
     public SwerveModuleState runState(SwerveModuleState state) {
         // Finds encoder offset that's used for odo calculations
         if (turnRelativeEncoderOffset == null && absoluteEncoder.getRotationDeg() != 0) {
+            turnMotor.setEncoderPosition(absoluteEncoder.getTurnAbsolutePosition().getDegrees());
             turnRelativeEncoderOffset =  absoluteEncoder.getTurnAbsolutePosition().minus(turnMotor.getAngle());
         }
 
@@ -121,7 +122,7 @@ public class SwerveModule {
 			lastModuleState = state;
 		}
 
-        //antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
+        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, getAngle());
@@ -139,8 +140,7 @@ public class SwerveModule {
     public void periodic() {
         // if (moduleName == "FrontLeft" && turnRelativeEncoderOffset != null) {System.out.println(turnRelativeEncoderOffset.getDegrees());}
         if (angleSetPoint != null) {
-            double adjustedAngleSetpoint = Units.radiansToDegrees(MathUtil.angleModulus(Units.degreesToRadians(angleSetPoint + (turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset.getDegrees() : 0))));
-            turnMotor.setPosition(adjustedAngleSetpoint);
+            turnMotor.setPosition(angleSetPoint);
 
             if (speedSetPoint != null) {
                 driveMotor.setVelocity(speedSetPoint);
@@ -182,7 +182,7 @@ public class SwerveModule {
      * @return the rotation of the wheel with 0 being your absolute encoder's 0
      */
     public Rotation2d getAngle() {
-        return turnRelativeEncoderOffset != null ? turnMotor.getAngle().plus(turnRelativeEncoderOffset) : turnMotor.getAngle();
+        return turnMotor.getAngle();
     }
 
     /**
