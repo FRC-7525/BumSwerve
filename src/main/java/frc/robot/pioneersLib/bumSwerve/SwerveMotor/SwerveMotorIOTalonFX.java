@@ -98,6 +98,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         feedbackController = new PIDController(0, 0, 0);
 
         FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.SensorToMechanismRatio = 1/gearRatio;
         configurator.apply(feedback);
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
@@ -113,14 +114,14 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
             motorCurrent
         );
 
-        inputs.motorVelocityRPS = motorVelocity.getValueAsDouble() / gearRatio;
-        inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio);
+        inputs.motorVelocityRPS = motorVelocity.getValueAsDouble();
+        inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()));
         inputs.motorCurrentAmps = new double[] { motorCurrent.getValueAsDouble() };
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value / gearRatio)).toArray(Rotation2d[]::new);
+        inputs.odometryMotorPositions = motorPositionQueue.stream().map((Double value) -> Rotation2d.fromRotations(value)).toArray(Rotation2d[]::new);
 
-        if (isDrive) inputs.odometryDriveAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value / gearRatio).toArray();
+        if (isDrive) inputs.odometryDriveAccumulatedPosition = motorPositionQueue.stream().mapToDouble((Double value) -> value).toArray();
 
         timestampQueue.clear();
         motorPositionQueue.clear();
@@ -133,17 +134,17 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(motorPosition.getValueAsDouble() / gearRatio);
+        return Rotation2d.fromRotations(motorPosition.getValueAsDouble());
     }
 
     @Override
     public double getVelocity() {
-        return motorVelocity.getValueAsDouble() / gearRatio;
+        return motorVelocity.getValueAsDouble();
     }
 
     @Override
     public void setEncoderPosition(double positionDeg) {
-        motor.setPosition((positionDeg/360) * gearRatio);
+        motor.setPosition((positionDeg/360));
     }
 
     @Override
@@ -160,10 +161,10 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     public void setPosition(double setpoint) {
         if (isDrive) throw new UnsupportedOperationException("Cannot set position on a drive motor");
 
-        // PositionVoltage command = new PositionVoltage(setpoint * gearRatio/360).withSlot(0);
-        // motor.setControl(command);
+        PositionVoltage command = new PositionVoltage(setpoint/360).withSlot(0);
+        motor.setControl(command);
 
-        setVoltage(feedbackController.calculate(getAngle().getDegrees(), setpoint));
+        // setVoltage(feedbackController.calculate(getAngle().getDegrees(), setpoint));
 
         positionError = Math.abs(setpoint/360 - motorPosition.getValueAsDouble());
     }
