@@ -45,6 +45,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     private double positionError;
 
+
     //Default config values
     private static final double CURRENT_LIMIT = 40.0;
     private static final double POSITION_UPDATE_FREQUENCY = 250.0;
@@ -114,7 +115,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         );
 
         inputs.motorVelocityRPS = motorVelocity.getValueAsDouble() / gearRatio;
-        inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio);
+        inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio).minus(Rotation2d.fromDegrees(0));
         inputs.motorCurrentAmps = new double[] { motorCurrent.getValueAsDouble() };
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -143,7 +144,9 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public void setEncoderPosition(double positionDeg) {
-        motor.setPosition((positionDeg/360) * gearRatio);
+        System.out.println(positionDeg);
+        motor.setPosition(Units.degreesToRotations(positionDeg) * gearRatio);
+        // motor.setPosition((positionDeg/360) * gearRatio);
     }
 
     @Override

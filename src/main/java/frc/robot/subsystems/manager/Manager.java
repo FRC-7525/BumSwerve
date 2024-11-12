@@ -22,7 +22,7 @@ public class Manager extends Subsystem<ManagerStates> {
         switch (Constants.ROBOT_STATE) {
             case REAL:
                 driveSubsystem = new Drive(Constants.Drive.Real.MODULE_IO, Constants.Drive.Real.GYRO_IO, false);
-                visionSubsystem = new Vision(new VisionIOReal(), driveSubsystem);
+                // visionSubsystem = new Vision(new VisionIOReal(), driveSubsystem);
                 break;
             case SIM:
                 driveSubsystem = new Drive(Constants.Drive.Sim.MODULE_IO, Constants.Drive.Sim.GYRO_IO, true);
@@ -52,7 +52,7 @@ public class Manager extends Subsystem<ManagerStates> {
         driveSubsystem.periodic();
 
         // TODO: Uncoment when drive is fully working
-        visionSubsystem.periodic();
+        // visionSubsystem.periodic();
 
         // Drive the robot
         driveSubsystem.drive(() -> -Constants.CONTROLLER.getLeftY(), () -> Constants.CONTROLLER.getLeftX(), () -> Constants.CONTROLLER.getRightX(), fieldRelative, headingCorrection);

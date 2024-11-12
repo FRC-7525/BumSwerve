@@ -12,59 +12,62 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.CAN;
 
 public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO {
     
     private double absoluteEncoderOffset;
     private boolean inverted;
 
-    private CANcoder CANcoder;
-    private StatusSignal<Double> turnAbsolutePosition;
+    // private StatusSignal<Double> turnAbsolutePosition;
     private CANcoderConfigurator configurator;
+    private CANcoder CaNcoder;
     private MagnetSensorConfigs magnetSensorConfiguration;
 
     public SwerveAbsoluteEncoderIOCANcoder(int ID, double encoderOffset) {
         this.absoluteEncoderOffset = encoderOffset;
         this.inverted = false;
         
-        this.CANcoder = new CANcoder(ID);
-        this.turnAbsolutePosition = CANcoder.getAbsolutePosition();
-        this.configurator = CANcoder.getConfigurator();
-        this.magnetSensorConfiguration = new MagnetSensorConfigs();
+        CaNcoder = new CANcoder(ID);
+            // this.turnAbsolutePosition = CaNcoder.getAbsolutePosition();
+        // this.configurator = CaNcoder.getConfigurator();
+        
+        // this.magnetSensorConfiguration = new MagnetSensorConfigs();
 
-        configurator.apply(new CANcoderConfiguration());
+        // configurator.apply(new CANcoderConfiguration());
 
-        configurator.refresh(magnetSensorConfiguration);
-        configurator.apply(magnetSensorConfiguration
-            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
-        );
+        // configurator.refresh(magnetSensorConfiguration);
+        // configurator.apply(magnetSensorConfiguration
+        //     .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+        //     .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+        // );
         // configurator.apply(magnetSensorConfiguration.withMagnetOffset(encoderOffset/360));
         
     }
 
     @Override
     public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs) {
-        BaseStatusSignal.refreshAll(turnAbsolutePosition);
+        // BaseStatusSignal.refreshAll(turnAbsolutePosition);
 
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = turnAbsolutePosition.getValueAsDouble() * 360;
+        inputs.turnAbsolutePosition = (CaNcoder.getAbsolutePosition().getValueAsDouble() * 360) + absoluteEncoderOffset;
     }
 
     @Override
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
-        configurator.refresh(magnetSensorConfiguration);
-        configurator.apply(magnetSensorConfiguration
-            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withSensorDirection((inverted ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive))
-        );
+        // configurator.refresh(magnetSensorConfiguration);
+        // configurator.apply(magnetSensorConfiguration
+        //     .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+        //     .withSensorDirection((inverted ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive))
+        // );
     }
 
     @Override
     public Rotation2d getTurnAbsolutePosition() {
-        return Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble()).plus(Rotation2d.fromDegrees(absoluteEncoderOffset));
+        return Rotation2d.fromRotations(CaNcoder.getAbsolutePosition().getValueAsDouble()).plus(Rotation2d.fromDegrees(absoluteEncoderOffset));
+        // return new Rotation2d();
     }
 
     @Override //does nothing because it is only used in sim?
@@ -74,7 +77,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
     @Override
     public double getRotationDeg() {
-        return turnAbsolutePosition.getValueAsDouble()/360;
+        return getTurnAbsolutePosition().getDegrees();
     }
 
     @Override
