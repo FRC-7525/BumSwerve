@@ -109,6 +109,11 @@ public class SwerveDrive {
 		return poseEstimator.getEstimatedPosition();
 	}
 
+	public void setRobotPose(Pose2d pose) {
+		//TODO: Can i use lastModulePositions w/ this?
+		poseEstimator.resetPosition(rawGyroRotation, lastModulePositions, pose);
+	}
+
 	/**
 	 * Creates a new simple FF object
 	 * 

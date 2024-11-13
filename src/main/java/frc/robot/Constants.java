@@ -25,8 +25,8 @@ public class Constants {
     }
     
     // Set the second one to whatever, weird stuff for CI
-    public static final RobotState ROBOT_STATE = "Crash".equals(System.getenv("CI_NAME")) ? RobotState.SIM : RobotState.REAL;
-
+    // public static final RobotState ROBOT_STATE = "Crash".equals(System.getenv("CI_NAME")) ? RobotState.SIM : RobotState.REAL;
+    public static final RobotState ROBOT_STATE = RobotState.SIM;
     
     public static final XboxController CONTROLLER = new XboxController(0);
     public static final XboxController OPERATOR_CONTROLLER = new XboxController(1);
@@ -127,6 +127,17 @@ public class Constants {
         public static final double TRACK_WIDTH_X = Units.inchesToMeters(25);
         public static final double TRACK_WIDTH_Y = Units.inchesToMeters(25);
         public static final double MAX_SPEED = Units.feetToMeters(19.5);
+        public static final double DRIVE_BASE_RADIUS = Math.hypot(
+			TRACK_WIDTH_X / 2.0,
+			TRACK_WIDTH_Y / 2.0
+		);
+
+        public static final class Auto {
+            public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.0, 0.0, 0.0);
+            public static final PIDConstants ROTATION_PID = new PIDConstants(4.0, 0.0, 0.4);
+            public static final double MAX_MODULE_SPEED = 6.0;
+        }
+
         public static final class Sim {
             public static final SwerveGyroIO GYRO_IO = new SwerveGyroIOSim();
             public static final PIDConstants DRIVE_PID = new PIDConstants(0.04, 0, 0);
