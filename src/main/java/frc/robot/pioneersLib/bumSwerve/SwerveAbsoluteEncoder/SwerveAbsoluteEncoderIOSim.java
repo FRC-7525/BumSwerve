@@ -64,10 +64,10 @@ public class SwerveAbsoluteEncoderIOSim implements SwerveAbsoluteEncoderIO {
         CANcoderController.setRawPosition(rotationDeg / 360);
     }
 
-    @Override
-    public double getRotationDeg() {
-        return turnAbsolutePosition.getValueAsDouble() / 360;
-    }
+    // @Override
+    // public double getRotationDeg() {
+    //     return turnAbsolutePosition.getValueAsDouble() / 360;
+    // }
 
     @Override 
     public boolean isSim() {

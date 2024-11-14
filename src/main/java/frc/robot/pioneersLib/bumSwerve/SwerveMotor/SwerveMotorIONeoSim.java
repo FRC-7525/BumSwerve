@@ -1,5 +1,6 @@
 package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 
+import com.ctre.phoenix6.StatusCode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.REVPhysicsSim;
@@ -110,8 +111,9 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     }   
 
     @Override
-    public void setEncoderPosition(double positionDeg) {
+    public StatusCode setEncoderPosition(double positionDeg) {
         encoder.setPosition(positionDeg / 360);
+        return StatusCode.OK;
     }
 
     @Override

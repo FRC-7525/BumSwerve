@@ -2,6 +2,8 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.StatusCode;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface SwerveMotorIO {
@@ -53,7 +55,9 @@ public interface SwerveMotorIO {
     /**
      * Sets the motors position
      */
-    public default void setEncoderPosition(double positionDeg) {}
+    public default StatusCode setEncoderPosition(double positionDeg) {
+        return StatusCode.OK;
+    }
 
     /**
      * @return The current position error of the motor from the feedback controller (in rotations)

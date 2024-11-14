@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CAN;
@@ -51,7 +52,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = (CaNcoder.getAbsolutePosition().getValueAsDouble() * 360) + absoluteEncoderOffset;
+        inputs.turnAbsolutePosition = MathUtil.angleModulus(Units.degreesToRadians(CaNcoder.getAbsolutePosition().getValueAsDouble() * 360 + absoluteEncoderOffset));
     }
 
     @Override
@@ -66,6 +67,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
     @Override
     public Rotation2d getTurnAbsolutePosition() {
+        // CHECK: Subtracting offset instead of adding offset
         return Rotation2d.fromRotations(CaNcoder.getAbsolutePosition().getValueAsDouble()).plus(Rotation2d.fromDegrees(absoluteEncoderOffset));
         // return new Rotation2d();
     }
@@ -75,10 +77,10 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
         return;
     }
 
-    @Override
-    public double getRotationDeg() {
-        return getTurnAbsolutePosition().getDegrees();
-    }
+    // @Override
+    // public double getRotationDeg() {
+    //     // return getTurnAbsolutePosition().getDegrees();
+    // }
 
     @Override
     public boolean isSim() {

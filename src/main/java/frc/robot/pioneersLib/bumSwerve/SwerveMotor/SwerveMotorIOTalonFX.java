@@ -3,6 +3,7 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 import java.util.Queue;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -143,9 +144,8 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     }
 
     @Override
-    public void setEncoderPosition(double positionDeg) {
-        System.out.println(positionDeg);
-        motor.setPosition(Units.degreesToRotations(positionDeg) * gearRatio);
+    public StatusCode setEncoderPosition(double positionDeg) {
+        return motor.setPosition(Units.degreesToRotations(positionDeg) * gearRatio);
         // motor.setPosition((positionDeg/360) * gearRatio);
     }
 
