@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedDriverStation;
+import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -70,5 +73,12 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void simulationPeriodic() {
+		refreshAkitData();
+	}
+
+	private void refreshAkitData() {
+		ConduitApi.getInstance().captureData();
+		LoggedDriverStation.periodic();
+		LoggedSystemStats.periodic();
 	}
 }

@@ -100,6 +100,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         feedbackController = new PIDController(0, 0, 0);
 
         FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.SensorToMechanismRatio = 1;
         configurator.apply(feedback);
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();

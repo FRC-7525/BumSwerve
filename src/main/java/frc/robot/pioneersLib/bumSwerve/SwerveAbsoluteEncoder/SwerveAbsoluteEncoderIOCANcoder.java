@@ -43,6 +43,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
         //     .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
         // );
         // configurator.apply(magnetSensorConfiguration.withMagnetOffset(encoderOffset/360));
+        // CaNcoder.getConfigurator().withSensorDirection(getS)
         
     }
 
@@ -52,7 +53,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = MathUtil.angleModulus(Units.degreesToRadians(CaNcoder.getAbsolutePosition().getValueAsDouble() * 360 + absoluteEncoderOffset));
+        inputs.turnAbsolutePosition = MathUtil.angleModulus(Units.degreesToRadians((CaNcoder.getAbsolutePosition().getValueAsDouble() * 360) + absoluteEncoderOffset));
     }
 
     @Override
