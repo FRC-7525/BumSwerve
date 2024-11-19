@@ -55,7 +55,7 @@ public interface SwerveMotorIO {
     /**
      * Sets the motors position
      */
-    public default StatusCode setEncoderPosition(double positionDeg) {
+    public default StatusCode setEncoderPosition(Rotation2d positionDeg) {
         return StatusCode.OK;
     }
 

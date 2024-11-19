@@ -73,6 +73,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         driveConfig = new TalonFXConfiguration();
         driveConfig.CurrentLimits.SupplyCurrentLimit = CURRENT_LIMIT;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         configurator.apply(driveConfig);
         //TODO: Apparently this might not work (idk what it's even supposed to do)
         configurator.apply(driveConfig.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(VOLTAGE_CLOSED_LOOP_RAMP_PERIOD)); 
@@ -145,8 +146,8 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     }
 
     @Override
-    public StatusCode setEncoderPosition(double positionDeg) {
-        return motor.setPosition(Units.degreesToRotations(positionDeg) * gearRatio);
+    public StatusCode setEncoderPosition(Rotation2d positionDeg) {
+        return motor.setPosition(positionDeg.getRotations() * gearRatio);
         // motor.setPosition((positionDeg/360) * gearRatio);
     }
 

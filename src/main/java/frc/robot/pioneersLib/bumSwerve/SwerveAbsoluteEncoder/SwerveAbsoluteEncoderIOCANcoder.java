@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.CAN;
 
 public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO {
@@ -20,7 +21,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
     private double absoluteEncoderOffset;
     private boolean inverted;
 
-    // private StatusSignal<Double> turnAbsolutePosition;
+    private StatusSignal<Double> turnAbsolutePosition;
     private CANcoderConfigurator configurator;
     private CANcoder CaNcoder;
     private MagnetSensorConfigs magnetSensorConfiguration;
@@ -28,28 +29,28 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
     public SwerveAbsoluteEncoderIOCANcoder(int ID, double encoderOffset) {
         this.absoluteEncoderOffset = encoderOffset;
         this.inverted = false;
+
+        double offsetRotations = encoderOffset/360;
         
         CaNcoder = new CANcoder(ID);
-            // this.turnAbsolutePosition = CaNcoder.getAbsolutePosition();
-        // this.configurator = CaNcoder.getConfigurator();
-        
-        // this.magnetSensorConfiguration = new MagnetSensorConfigs();
+        this.turnAbsolutePosition = CaNcoder.getAbsolutePosition();
+        this.configurator = CaNcoder.getConfigurator();
 
-        // configurator.apply(new CANcoderConfiguration());
+        this.magnetSensorConfiguration = new MagnetSensorConfigs();
 
-        // configurator.refresh(magnetSensorConfiguration);
-        // configurator.apply(magnetSensorConfiguration
-        //     .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-        //     .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
-        // );
-        // configurator.apply(magnetSensorConfiguration.withMagnetOffset(encoderOffset/360));
-        // CaNcoder.getConfigurator().withSensorDirection(getS)
-        
+        configurator.apply(new CANcoderConfiguration());
+
+        configurator.refresh(magnetSensorConfiguration);
+        configurator.apply(magnetSensorConfiguration
+            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+        );
+        configurator.apply(magnetSensorConfiguration.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive));
+        configurator.apply(magnetSensorConfiguration.withMagnetOffset((offsetRotations)));
     }
 
     @Override
     public void updateInputs(SwerveAbsoluteEncoderIOInputs inputs) {
-        // BaseStatusSignal.refreshAll(turnAbsolutePosition);
+        BaseStatusSignal.refreshAll(turnAbsolutePosition);
 
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
@@ -59,17 +60,17 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
     @Override
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
-        // configurator.refresh(magnetSensorConfiguration);
-        // configurator.apply(magnetSensorConfiguration
-        //     .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-        //     .withSensorDirection((inverted ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive))
-        // );
+        configurator.refresh(magnetSensorConfiguration);
+        configurator.apply(magnetSensorConfiguration
+            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+            .withSensorDirection((inverted ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive))
+        );
     }
 
     @Override
     public Rotation2d getTurnAbsolutePosition() {
         // CHECK: Subtracting offset instead of adding offset
-        return Rotation2d.fromRotations(CaNcoder.getAbsolutePosition().getValueAsDouble()).plus(Rotation2d.fromDegrees(absoluteEncoderOffset));
+        return Rotation2d.fromRotations(CaNcoder.getAbsolutePosition().getValueAsDouble());
         // return new Rotation2d();
     }
 

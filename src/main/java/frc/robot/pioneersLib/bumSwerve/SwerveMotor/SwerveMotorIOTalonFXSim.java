@@ -124,8 +124,8 @@ public class SwerveMotorIOTalonFXSim implements SwerveMotorIO {
     }
     
     @Override
-    public StatusCode setEncoderPosition(double positionDeg) {
-        return dummyTalon.setPosition((positionDeg/360) * gearing);
+    public StatusCode setEncoderPosition(Rotation2d positionDeg) {
+        return dummyTalon.setPosition(positionDeg.getRotations() * gearing);
     }
 
     @Override

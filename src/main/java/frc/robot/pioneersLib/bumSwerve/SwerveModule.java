@@ -117,7 +117,7 @@ public class SwerveModule {
         // }
 
         if(!offsetedTurnEncoder && absoluteEncoder.getTurnAbsolutePosition().getDegrees() != 0) {
-            offsetedTurnEncoder = turnMotor.setEncoderPosition(absoluteEncoder.getTurnAbsolutePosition().getDegrees()) == StatusCode.OK ?  true : false;
+            offsetedTurnEncoder = turnMotor.setEncoderPosition(absoluteEncoder.getTurnAbsolutePosition()) == StatusCode.OK ?  true : false;
         }
 
         //feeds value directly to encoder if it is sim.
@@ -134,6 +134,9 @@ public class SwerveModule {
 
         // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, getAngle());
+
+        System.out.println(angleSetPoint + " " + moduleName);
+        System.out.println(getAngle() + " " + moduleName);
 
         angleSetPoint = optimizedState.angle.getDegrees();
         speedSetPoint = (Math.cos(Units.degreesToRadians(getAngle().getDegrees() - angleSetPoint)) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);

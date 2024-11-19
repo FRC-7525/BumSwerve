@@ -111,8 +111,8 @@ public class SwerveMotorIONeoSim implements SwerveMotorIO {
     }   
 
     @Override
-    public StatusCode setEncoderPosition(double positionDeg) {
-        encoder.setPosition(positionDeg / 360);
+    public StatusCode setEncoderPosition(Rotation2d positionDeg) {
+        encoder.setPosition(positionDeg.getDegrees());
         return StatusCode.OK;
     }
 
