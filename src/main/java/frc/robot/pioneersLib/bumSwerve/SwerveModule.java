@@ -2,6 +2,8 @@ package frc.robot.pioneersLib.bumSwerve;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.StatusCode;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -19,7 +21,7 @@ public class SwerveModule {
     private SwerveMotorIO driveMotor;
     private SwerveMotorIO turnMotor;
     private SwerveAbsoluteEncoderIO absoluteEncoder;
-    private Rotation2d turnRelativeEncoderOffset;
+    // private Rotation2d turnRelativeEncoderOffset;
 
     private SwerveModulePosition[] odometryPositions;
 
@@ -32,6 +34,8 @@ public class SwerveModule {
     private Double speedSetPoint;
     private Double angleSetPoint;
     
+    private boolean offsetedTurnEncoder = false;
+
     private SwerveModuleState lastModuleState;
 
     // Starting threshold for anti-jitter
@@ -94,7 +98,7 @@ public class SwerveModule {
 			Math.abs(moduleState.speedMetersPerSecond) <=
 			(maxSpeed * antiJitterThreshold)
 		) {
-            System.out.println("stopping jittering");
+            // System.out.println("stopping jittering");
 			moduleState.angle = lastModuleState.angle;
 		}
 	}
@@ -106,13 +110,19 @@ public class SwerveModule {
      */
     public SwerveModuleState runState(SwerveModuleState state) {
         // Finds encoder offset that's used for odo calculations
-        if (turnRelativeEncoderOffset == null && absoluteEncoder.getRotationDeg() != 0) {
-            turnRelativeEncoderOffset =  Rotation2d.fromDegrees(absoluteEncoder.getRotationDeg()).minus(turnMotor.getAngle());
+        // if (turnRelativeEncoderOffset == null) {
+        //     turnMotor.setEncoderPosition(absoluteEncoder.getTurnAbsolutePosition().getDegrees());
+        //     // turnRelativeEncoderOffset =  absoluteEncoder.getTurnAbsolutePosition().minus(turnMotor.getAngle());
+        //     turnRelativeEncoderOffset = new Rotation2d();
+        // }
+
+        if(!offsetedTurnEncoder && absoluteEncoder.getTurnAbsolutePosition().getDegrees() != 0) {
+            offsetedTurnEncoder = turnMotor.setEncoderPosition(absoluteEncoder.getTurnAbsolutePosition()) == StatusCode.OK ?  true : false;
         }
 
         //feeds value directly to encoder if it is sim.
         if (absoluteEncoder.isSim()) {
-            absoluteEncoder.setRotationDeg(getAngle().getDegrees());
+            // absoluteEncoder.setRotationDeg(getAngle().getDegrees());
         }
 
 		// Set last moule state at start
@@ -120,10 +130,13 @@ public class SwerveModule {
 			lastModuleState = state;
 		}
 
-        //antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
+        antiJitter(state, lastModuleState, SwerveDrive.maxSpeed);
 
         // Prevents the turn motor from doing unneeded rotations
         var optimizedState = SwerveModuleState.optimize(state, getAngle());
+
+        System.out.println(angleSetPoint + " " + moduleName);
+        System.out.println(getAngle() + " " + moduleName);
 
         angleSetPoint = optimizedState.angle.getDegrees();
         speedSetPoint = (Math.cos(Units.degreesToRadians(getAngle().getDegrees() - angleSetPoint)) * optimizedState.speedMetersPerSecond) / (SwerveDrive.wheelRadius * Math.PI * 2);
@@ -136,8 +149,9 @@ public class SwerveModule {
      * Runs the module at the specified state
      */
     public void periodic() {
+        // if (moduleName == "FrontLeft" && turnRelativeEncoderOffset != null) {System.out.println(turnRelativeEncoderOffset.getDegrees());}
         if (angleSetPoint != null) {
-            turnMotor.setPosition(angleSetPoint + (turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset.getDegrees() : 0));
+            turnMotor.setPosition(angleSetPoint);
 
             if (speedSetPoint != null) {
                 driveMotor.setVelocity(speedSetPoint);
@@ -151,12 +165,10 @@ public class SwerveModule {
 		for (int i = 0; i < sampleCount; i++) {
 			double positionMeters = driveInputs.odometryDriveAccumulatedPosition[i] * 2 * Math.PI * SwerveDrive.wheelRadius;
 			Rotation2d angle =
-				turnInputs.odometryMotorPositions[i].plus(
-						turnRelativeEncoderOffset != null ? turnRelativeEncoderOffset : new Rotation2d()
-					);
+				turnInputs.odometryMotorPositions[i];
 			odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
 		}
-    }
+    } 
     
     public void updateInputs() {
         turnMotor.updateInputs(turnInputs);
@@ -179,7 +191,7 @@ public class SwerveModule {
      * @return the rotation of the wheel with 0 being your absolute encoder's 0
      */
     public Rotation2d getAngle() {
-        return turnRelativeEncoderOffset != null ?turnMotor.getAngle().plus(turnRelativeEncoderOffset) : turnMotor.getAngle();
+        return turnMotor.getAngle();
     }
 
     /**

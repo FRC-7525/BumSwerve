@@ -3,6 +3,7 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 import java.util.Queue;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -45,6 +46,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     private double positionError;
 
+
     //Default config values
     private static final double CURRENT_LIMIT = 40.0;
     private static final double POSITION_UPDATE_FREQUENCY = 250.0;
@@ -71,6 +73,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         driveConfig = new TalonFXConfiguration();
         driveConfig.CurrentLimits.SupplyCurrentLimit = CURRENT_LIMIT;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         configurator.apply(driveConfig);
         //TODO: Apparently this might not work (idk what it's even supposed to do)
         configurator.apply(driveConfig.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(VOLTAGE_CLOSED_LOOP_RAMP_PERIOD)); 
@@ -98,6 +101,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         feedbackController = new PIDController(0, 0, 0);
 
         FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.SensorToMechanismRatio = 1;
         configurator.apply(feedback);
 
         timestampQueue = OdometryThread.getInstance().makeTimestampQueue();
@@ -114,7 +118,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
         );
 
         inputs.motorVelocityRPS = motorVelocity.getValueAsDouble() / gearRatio;
-        inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio);
+        inputs.motorPosition = Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio).minus(Rotation2d.fromDegrees(0));
         inputs.motorCurrentAmps = new double[] { motorCurrent.getValueAsDouble() };
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -133,7 +137,7 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
 
     @Override
     public Rotation2d getAngle() {
-        return Rotation2d.fromRadians(Units.rotationsToRadians(motorPosition.getValueAsDouble()) / gearRatio);
+        return Rotation2d.fromRotations(motorPosition.getValueAsDouble() / gearRatio);
     }
 
     @Override
@@ -142,8 +146,9 @@ public class SwerveMotorIOTalonFX implements SwerveMotorIO {
     }
 
     @Override
-    public void setEncoderPosition(double positionDeg) {
-        motor.setPosition(positionDeg/360);
+    public StatusCode setEncoderPosition(Rotation2d positionDeg) {
+        return motor.setPosition(positionDeg.getRotations() * gearRatio);
+        // motor.setPosition((positionDeg/360) * gearRatio);
     }
 
     @Override

@@ -27,7 +27,7 @@ public interface SwerveAbsoluteEncoderIO{
     public Rotation2d getTurnAbsolutePosition();
     
     /*Returns position status signal */
-    public double getRotationDeg();
+    // public double getRotationDeg();
 
     public boolean isSim();
 

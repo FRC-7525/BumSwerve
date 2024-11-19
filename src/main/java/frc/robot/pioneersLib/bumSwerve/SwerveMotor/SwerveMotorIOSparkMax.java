@@ -3,6 +3,7 @@ package frc.robot.pioneersLib.bumSwerve.SwerveMotor;
 import java.util.OptionalDouble;
 import java.util.Queue;
 
+import com.ctre.phoenix6.StatusCode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -145,8 +146,9 @@ public class SwerveMotorIOSparkMax implements SwerveMotorIO {
     }
 
     @Override
-    public void setEncoderPosition(double positionDeg) {
-        encoder.setPosition(positionDeg / 360);
+    public StatusCode setEncoderPosition(Rotation2d positionDeg) {
+        encoder.setPosition(positionDeg.getRotations() * gearRatio);
+        return StatusCode.OK;
     }
 
     @Override

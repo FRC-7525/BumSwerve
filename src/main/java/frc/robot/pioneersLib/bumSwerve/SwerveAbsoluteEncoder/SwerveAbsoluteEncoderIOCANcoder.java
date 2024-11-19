@@ -10,26 +10,32 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.wpilibj.CAN;
 
 public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO {
     
     private double absoluteEncoderOffset;
     private boolean inverted;
 
-    private CANcoder CANcoder;
     private StatusSignal<Double> turnAbsolutePosition;
     private CANcoderConfigurator configurator;
+    private CANcoder CaNcoder;
     private MagnetSensorConfigs magnetSensorConfiguration;
 
     public SwerveAbsoluteEncoderIOCANcoder(int ID, double encoderOffset) {
         this.absoluteEncoderOffset = encoderOffset;
         this.inverted = false;
+
+        double offsetRotations = encoderOffset/360;
         
-        this.CANcoder = new CANcoder(ID);
-        this.turnAbsolutePosition = CANcoder.getAbsolutePosition();
-        this.configurator = CANcoder.getConfigurator();
+        CaNcoder = new CANcoder(ID);
+        this.turnAbsolutePosition = CaNcoder.getAbsolutePosition();
+        this.configurator = CaNcoder.getConfigurator();
+
         this.magnetSensorConfiguration = new MagnetSensorConfigs();
 
         configurator.apply(new CANcoderConfiguration());
@@ -37,10 +43,9 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
         configurator.refresh(magnetSensorConfiguration);
         configurator.apply(magnetSensorConfiguration
             .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
-            .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
         );
-        configurator.apply(magnetSensorConfiguration.withMagnetOffset(encoderOffset/360));
-        
+        configurator.apply(magnetSensorConfiguration.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive));
+        configurator.apply(magnetSensorConfiguration.withMagnetOffset((offsetRotations)));
     }
 
     @Override
@@ -49,7 +54,7 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
         inputs.absoluteEncoderOffset = absoluteEncoderOffset;
         inputs.inverted = inverted;
-        inputs.turnAbsolutePosition = turnAbsolutePosition.getValueAsDouble() * 360;
+        inputs.turnAbsolutePosition = MathUtil.angleModulus(Units.degreesToRadians((CaNcoder.getAbsolutePosition().getValueAsDouble() * 360) + absoluteEncoderOffset));
     }
 
     @Override
@@ -64,7 +69,9 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
 
     @Override
     public Rotation2d getTurnAbsolutePosition() {
-        return Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
+        // CHECK: Subtracting offset instead of adding offset
+        return Rotation2d.fromRotations(CaNcoder.getAbsolutePosition().getValueAsDouble());
+        // return new Rotation2d();
     }
 
     @Override //does nothing because it is only used in sim?
@@ -72,10 +79,10 @@ public class SwerveAbsoluteEncoderIOCANcoder implements SwerveAbsoluteEncoderIO 
         return;
     }
 
-    @Override
-    public double getRotationDeg() {
-        return turnAbsolutePosition.getValueAsDouble()/360;
-    }
+    // @Override
+    // public double getRotationDeg() {
+    //     // return getTurnAbsolutePosition().getDegrees();
+    // }
 
     @Override
     public boolean isSim() {
